@@ -23,6 +23,7 @@ struct LiveWallpaper {
 struct FrameBackground {
     let frameName: String
     let frameImage: String
+    let framResult: String
 }
 
 struct EditBackgroundView: View {
@@ -45,32 +46,33 @@ struct EditBackgroundView: View {
     
     var wallpaperOption: [LiveWallpaper] = [
         LiveWallpaper(wallpaperName: "None", wallpaperImage: "noSelectionIcon"),
-        LiveWallpaper(wallpaperName: "Abstract1", wallpaperImage: "live1"),
-        LiveWallpaper(wallpaperName: "Abstract2", wallpaperImage: "live2"),
-        LiveWallpaper(wallpaperName: "Getty", wallpaperImage: "live3"),
-        LiveWallpaper(wallpaperName: "Minimal", wallpaperImage: "live4"),
-        LiveWallpaper(wallpaperName: "NeonLight1", wallpaperImage: "live5"),
-        LiveWallpaper(wallpaperName: "NeonLight2", wallpaperImage: "live6"),
-        LiveWallpaper(wallpaperName: "NeonLight3", wallpaperImage: "live7"),
-        LiveWallpaper(wallpaperName: "Pikaso", wallpaperImage: "live8"),
-        LiveWallpaper(wallpaperName: "SpeedLine", wallpaperImage: "live9"),
-        LiveWallpaper(wallpaperName: "Wavebreak", wallpaperImage: "live10"),
+        LiveWallpaper(wallpaperName: "gif1", wallpaperImage: "live1"),
+        LiveWallpaper(wallpaperName: "gif2", wallpaperImage: "live2"),
+        LiveWallpaper(wallpaperName: "gif3", wallpaperImage: "live3"),
+        LiveWallpaper(wallpaperName: "gif4", wallpaperImage: "live4"),
+        LiveWallpaper(wallpaperName: "gif5", wallpaperImage: "live5"),
+        LiveWallpaper(wallpaperName: "gif6", wallpaperImage: "live6"),
+        LiveWallpaper(wallpaperName: "gif7", wallpaperImage: "live7"),
+        LiveWallpaper(wallpaperName: "gif8", wallpaperImage: "live8"),
+        LiveWallpaper(wallpaperName: "gif9", wallpaperImage: "live9"),
+        LiveWallpaper(wallpaperName: "gif10", wallpaperImage: "live10"),
     ]
     
     @Binding var frameBg: String
+    @Binding var frameResultBg: String
     
     var frameOption: [FrameBackground] = [
-        FrameBackground(frameName: "None", frameImage: "noSelectionIcon"),
-        FrameBackground(frameName: "frame1", frameImage: "f1"),
-        FrameBackground(frameName: "frame2", frameImage: "f2"),
-        FrameBackground(frameName: "frame3", frameImage: "f3"),
-        FrameBackground(frameName: "frame4", frameImage: "f4"),
-        FrameBackground(frameName: "frame5", frameImage: "f5"),
-        FrameBackground(frameName: "frame6", frameImage: "f6"),
-        FrameBackground(frameName: "frame7", frameImage: "f7"),
-        FrameBackground(frameName: "frame8", frameImage: "f8"),
-        FrameBackground(frameName: "frame9", frameImage: "f9"),
-        FrameBackground(frameName: "frame10", frameImage: "f10"),
+        FrameBackground(frameName: "None", frameImage: "noSelectionIcon",framResult: "None"),
+        FrameBackground(frameName: "frame1", frameImage: "f1",framResult: "fr1"),
+        FrameBackground(frameName: "frame2", frameImage: "f2",framResult: "fr2"),
+        FrameBackground(frameName: "frame3", frameImage: "f3",framResult: "fr3"),
+        FrameBackground(frameName: "frame4", frameImage: "f4",framResult: "fr4"),
+        FrameBackground(frameName: "frame5", frameImage: "f5",framResult: "fr5"),
+        FrameBackground(frameName: "frame6", frameImage: "f6",framResult: "fr6"),
+        FrameBackground(frameName: "frame7", frameImage: "f7",framResult: "fr7"),
+        FrameBackground(frameName: "frame8", frameImage: "f8",framResult: "fr8"),
+        FrameBackground(frameName: "frame9", frameImage: "f9",framResult: "fr9"),
+        FrameBackground(frameName: "frame10", frameImage: "f10",framResult: "fr10"),
     ]
     
     
@@ -163,6 +165,7 @@ struct EditBackgroundView: View {
                                 
                                 Button {
                                     frameBg = frame.frameName
+                                    frameResultBg = frame.framResult
                                 } label: {
                                     
                                     Image(frame.frameImage)

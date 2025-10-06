@@ -35,10 +35,12 @@ struct CreateView: View {
      @State private var selectedShape: String = "None"
      @State private var selectedLiveBg: String = "None"
      @State private var frameBg: String = "None"
+     @State var frameResultBg: String = "None"
      @State private var textSpeed: CGFloat = 1.0
      @State var showPreview: Bool = false
      @State var isHD: Bool = false 
      @State var selectedTab: Int = 0
+ 
     var body: some View {
         VStack(spacing:0) {
             
@@ -103,7 +105,8 @@ struct CreateView: View {
                                        selectedBgColor: $selectedBgColor,
                                        backgroundEnabled: $backgroundEnabled,
                                        selectedLiveBg: $selectedLiveBg,
-                                       frameBg: $frameBg)
+                                       frameBg: $frameBg,
+                                       frameResultBg: $frameResultBg)
                     
                     
                 }
@@ -143,7 +146,9 @@ struct CreateView: View {
                   textSpeed: textSpeed,
                   isHD: isHD,
                   selectedLiveBg: selectedLiveBg,
+                  frameResultBg: frameResultBg,
                   frameBg: frameBg,
+                  isSaved: true,
                   onBack: {
                       showPreview = false
                   }

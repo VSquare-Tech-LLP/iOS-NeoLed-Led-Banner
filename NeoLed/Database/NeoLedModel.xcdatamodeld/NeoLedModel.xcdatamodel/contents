@@ -1,4 +1,27 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23788.4" systemVersion="24F74" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
-    <entity name="Entity" representedClassName="Entity" syncable="YES" codeGenerationType="class"/>
+    <entity name="LEDDesignEntity" representedClassName="LEDDesignEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="backgroundEnabled" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="customTextColorData" optional="YES" attributeType="Binary"/>
+        <attribute name="frameBg" optional="YES" attributeType="String"/>
+        <attribute name="frameResultBg" optional="YES" attributeType="String"/>
+        <attribute name="hasCustomTextColor" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="isHD" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="outlineEnabled" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="selectedAlignment" optional="YES" attributeType="String"/>
+        <attribute name="selectedBgColorId" optional="YES" attributeType="String"/>
+        <attribute name="selectedColorId" optional="YES" attributeType="String"/>
+        <attribute name="selectedEffects" optional="YES" attributeType="String"/>
+        <attribute name="selectedFont" optional="YES" attributeType="String"/>
+        <attribute name="selectedLiveBg" optional="YES" attributeType="String"/>
+        <attribute name="selectedOutlineColorId" optional="YES" attributeType="String"/>
+        <attribute name="selectedShape" optional="YES" attributeType="String"/>
+        <attribute name="strokeSize" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="text" optional="YES" attributeType="String"/>
+        <attribute name="textSize" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="textSpeed" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="thumbnailData" optional="YES" attributeType="Binary"/>
+    </entity>
 </model>

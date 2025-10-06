@@ -85,26 +85,33 @@ struct TopView:View {
                 GeometryReader { geo in
                     
                     ZStack {
-                
+                        
                         if selectedLiveBg != "None" {
-                            // Display GIF based on selectedLiveBg value
-                          GifuGIFView(name: selectedLiveBg)
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: ScaleUtility.scaledValue(335) ,height: ScaleUtility.scaledValue(167))
-                                .cornerRadius(10)
-                                .clipped()
-             
+                            GifuGIFView(name: selectedLiveBg)
+                                .frame(
+                                    width: UIScreen.main.bounds.height,  // Use screen bounds instead of geo
+                                    height: UIScreen.main.bounds.width
+                                )
+                                .position(x: geo.size.width / 2, y: geo.size.height / 2)  // Center it
+                                .if(!isHD) { view in
+                                    view.mask {
+                                        getShapeImage()
+                                            .frame(width: geo.size.width, height: geo.size.height)
+                                    }
+                                }
                         }
                         
-                        if frameBg != "None" {
-                            Image(frameBg)
-                                .resizable()
-                                .frame(width: ScaleUtility.scaledValue(335) ,height: ScaleUtility.scaledValue(167))
-                                .cornerRadius(10)
-                                .clipped()
-                             
-                        }
-                        
+//                
+//                        if selectedLiveBg != "None" {
+//                            // Display GIF based on selectedLiveBg value
+//                          GifuGIFView(name: selectedLiveBg)
+//                                .aspectRatio(contentMode: .fill)
+//                                .frame(width: ScaleUtility.scaledValue(335) ,height: ScaleUtility.scaledValue(167))
+//                                .cornerRadius(10)
+//                                .clipped()
+//             
+//                        }
+                     
                         if !isHD {
                             getShapeImage()
                                 .frame(width: geo.size.width, height: geo.size.height)
@@ -114,20 +121,19 @@ struct TopView:View {
                     }
                         
                     ZStack {
-                      
                         // Blurred glow layers behind
                         if strokeSize > 0.2 {
-                            StrokeText(
-                                text: previewText,
-                                width: strokeSize,
-                                color: outlineEnabled ? selectedOutlineColor.color : .white,
-                                font: .custom(selectedFont, size: textSize * 100),
-                                fontWeight: isBold ? .heavy : (isLight ? .light : .regular),
-                                isItalic: isItalic
-                            )
-                            .modifier(ColorModifier(colorOption: selectedColor))
-                            .blur(radius: isLight ? 40 : 0)
-                            .opacity(isLight ? 0.5 : 1)
+                            Text(previewText)
+                                .font(.custom(selectedFont, size: textSize * 100))
+                                .fontWeight(isBold ? .heavy : (isLight ? .light : .regular))
+                                .italic(isItalic)
+                                .modifier(ColorModifier(colorOption: selectedColor))
+                                .stroke(
+                                    color: outlineEnabled ? selectedOutlineColor.color : .white,
+                                    width: strokeSize
+                                )
+                                .blur(radius: isLight ? 40 : 0)
+                                .opacity(isLight ? 0.5 : 1)
                         } else {
                             Text(previewText)
                                 .font(.custom(selectedFont, size: textSize * 100))
@@ -137,62 +143,57 @@ struct TopView:View {
                                 .blur(radius: isLight ? 40 : 0)
                                 .opacity(isLight ? 0.5 : 1)
                         }
-             
                         
                         if isLight {
-                            
                             if strokeSize > 0.2 {
-                                StrokeText(
-                                    text: previewText,
-                                    width: strokeSize,
-                                    color: outlineEnabled ? selectedOutlineColor.color : .white,
-                                    font: .custom(selectedFont, size: textSize * 100),
-                                    fontWeight: isBold ? .heavy : (isLight ? .light : .regular),
-                                    isItalic: isItalic
-                                )
-                                .kerning(0.6)
-                                .modifier(ColorModifier(colorOption: selectedColor))
-                                .blur(radius: isLight ? 20 : 0)
-                                .opacity(isLight ? 0.7 : 1)
+                                Text(previewText)
+                                    .font(.custom(selectedFont, size: textSize * 100))
+                                    .fontWeight(isBold ? .heavy : .regular)
+                                    .italic(isItalic)
+                                    .kerning(0.6)
+                                    .modifier(ColorModifier(colorOption: selectedColor))
+                                    .stroke(
+                                        color: outlineEnabled ? selectedOutlineColor.color : .white,
+                                        width: strokeSize
+                                    )
+                                    .blur(radius: 20)
+                                    .opacity(0.7)
                             } else {
                                 Text(previewText)
                                     .font(.custom(selectedFont, size: textSize * 100))
                                     .kerning(0.4)
-                                    .fontWeight(isBold ? .heavy : (isLight ? .light : .regular))
+                                    .fontWeight(isBold ? .heavy : .regular)
                                     .italic(isItalic)
                                     .modifier(ColorModifier(colorOption: selectedColor))
-                                    .blur(radius: isLight ? 20 : 0)
-                                    .opacity(isLight ? 0.7 : 1)
+                                    .blur(radius: 20)
+                                    .opacity(0.7)
                             }
                         }
-             
+                        
                         if previewText != "" {
-                            
                             // Sharp text on top
                             if strokeSize > 0.2 {
-                                StrokeText(
-                                    text: previewText,
-                                    width: strokeSize,
-                                    color: outlineEnabled ? selectedOutlineColor.color : .white,
-                                    font: .custom(selectedFont, size: textSize * 100),
-                                    fontWeight: isBold ? .heavy : (isLight ? .light : .regular),
-                                    isItalic: isItalic
-                                )
-                                .modifier(ColorModifier(colorOption: selectedColor))
-                                .brightness(0.1)
-                                .opacity(isFlash && blinkPhase ? 0.1 : 1.0)
+                                Text(previewText)
+                                    .font(.custom(selectedFont, size: textSize * 100))
+                                    .fontWeight(isBold ? .heavy : .regular)
+                                    .italic(isItalic)
+                                    .modifier(ColorModifier(colorOption: selectedColor))
+                                    .stroke(
+                                        color: outlineEnabled ? selectedOutlineColor.color : .white,
+                                        width: strokeSize
+                                    )
+                                    .brightness(0.1)
+                                    .opacity(isFlash && blinkPhase ? 0.1 : 1.0)
                             } else {
                                 Text(previewText)
                                     .font(.custom(selectedFont, size: textSize * 100))
-                                    .fontWeight(isBold ? .heavy : (isLight ? .light : .regular))
+                                    .fontWeight(isBold ? .heavy : .regular)
                                     .italic(isItalic)
                                     .modifier(ColorModifier(colorOption: selectedColor))
                                     .brightness(0.1)
                                     .opacity(isFlash && blinkPhase ? 0.1 : 1.0)
-                                
                             }
                         }
-                        
                     }
                     .scaleEffect(x: isMirror ? -1 : 1, y: 1)
                     .frame(height: 50)
@@ -230,11 +231,16 @@ struct TopView:View {
                         offsety = 0
                         restartAnimation(geo: geo)
                     }
-//                    .onChange(of: textSpeed) { _, _ in
-//                        offsetx = 0
-//                        offsety = 0
-//                        restartAnimation(geo: geo)
-//                    }
+                    .onChange(of: strokeSize) { _, _ in
+                        offsetx = 0
+                        offsety = 0
+                        restartAnimation(geo: geo)
+                    }
+                    .onChange(of: textSpeed) { _, _ in
+                        offsetx = 0
+                        offsety = 0
+                        restartAnimation(geo: geo)
+                    }
 
 //                    .onChange(of: text) { _, _ in
 //                        offsetx = 0
@@ -247,11 +253,7 @@ struct TopView:View {
 //                        offsety = 0
 //                        restartAnimation(geo: geo)
 //                    }
-//                    .onChange(of: strokeSize) { _, _ in
-//                        offsetx = 0
-//                        offsety = 0
-//                        restartAnimation(geo: geo)
-//                    }
+
 //                    .onChange(of: selectedEffects) { _, _ in
 //                        offsetx = 0
 //                        offsety = 0
@@ -297,6 +299,20 @@ struct TopView:View {
                     .onDisappear {
                         flashTimer?.invalidate()
                         flashTimer = nil
+                    }
+                    .overlay {
+                        if frameBg != "None" {
+                            Image(frameBg)
+                                .resizable()
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                .if(!isHD) { view in
+                                    view.mask {
+                                        getShapeImage()
+                                            .frame(width: geo.size.width, height: geo.size.height)
+                                    }
+                                }
+                             
+                        }
                     }
       
                 }

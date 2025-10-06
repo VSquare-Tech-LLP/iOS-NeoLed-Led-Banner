@@ -264,7 +264,7 @@ struct EditTextView: View {
                                  fontWeight: .regular) // Use .regular, .bold, .heavy, etc.
                        
                        
-                       sizeCustomSlider(value: $strokeSize, range: 0...10)
+                       sizeCustomSlider(value: $strokeSize, range: 0...5)
                        
                        
                        StrokeText(text: "A",

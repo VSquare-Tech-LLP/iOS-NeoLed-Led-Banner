@@ -6,6 +6,8 @@
 //
 
 
+
+
 import SwiftUI
 import Gifu
 
@@ -14,13 +16,13 @@ struct GifuGIFView: UIViewRepresentable {
 
     func makeUIView(context: Context) -> GIFImageView {
         let imageview = GIFImageView()
-        imageview.contentMode = .scaleToFill  // Changed from .scaleAspectFit to .scaleAspectFill
+        imageview.contentMode = .scaleAspectFill  // Use aspectFill, not scaleToFill
+        imageview.clipsToBounds = true
         imageview.animate(withGIFNamed: name)
         return imageview
     }
     
     func updateUIView(_ uiView: GIFImageView, context: Context) {
-        // Reload the GIF when name changes
         uiView.animate(withGIFNamed: name)
     }
 }

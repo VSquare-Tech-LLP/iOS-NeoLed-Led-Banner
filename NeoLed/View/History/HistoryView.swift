@@ -10,6 +10,14 @@ import SwiftUI
 
 struct HistoryView: View {
     @State var navToSettings: Bool = false
+    @StateObject private var viewModel = LEDDesignViewModel()
+    @State private var selectedDesign: LEDDesignEntity?
+    @State private var navigateToResult = false
+    
+    let columns = [
+        GridItem(.flexible(), spacing: ScaleUtility.scaledSpacing(15)),
+        GridItem(.flexible(), spacing: ScaleUtility.scaledSpacing(15))
+    ]
     
     var body: some View {
         VStack(spacing: 0) {
@@ -56,18 +64,47 @@ struct HistoryView: View {
             .padding(.top, ScaleUtility.scaledSpacing(62))
             
             
-            EmptyView()
-            
+            // Content
+            if viewModel.designs.isEmpty {
+                   EmptyView()
+                       .frame(maxHeight: .infinity)
+               } else {
+                   ScrollView {
+                       
+                       Spacer()
+                           .frame(height: ScaleUtility.scaledValue(20))
+                       
+                       VStack(spacing: ScaleUtility.scaledSpacing(15)) {
+                           ForEach(viewModel.designs, id: \.id) { design in
+                               HistoryCardViewCoreData(
+                                   design: design,
+                                   onTap: {
+                                       selectedDesign = design
+                                       navigateToResult = true
+                                   },
+                                   onDelete: {
+                                       viewModel.deleteDesign(design)
+                                   }
+                               )
+                               .padding(.horizontal, ScaleUtility.scaledSpacing(20))
+                           }
+                       }
+
+                       Spacer()
+                           .frame(height: ScaleUtility.scaledValue(150))
+                   }
+               }
             
             Spacer()
-            
             
         }
         .background {
             Image(.background)
                 .resizable()
                 .scaledToFill()
-
+        }
+        .onAppear {
+            viewModel.fetchDesigns()
         }
         .navigationDestination(isPresented: $navToSettings) {
             SettingsView {
@@ -80,6 +117,35 @@ struct HistoryView: View {
                     .ignoresSafeArea(.all)
             }
         }
-        
+        .navigationDestination(isPresented: $navigateToResult) {
+            if let design = selectedDesign {
+                ResultView(
+                    text: design.text ?? "",
+                    selectedFont: design.selectedFont ?? FontManager.bricolageGrotesqueRegularFont,
+                    textSize: design.textSize,
+                    strokeSize: design.strokeSize,
+                    selectedColor: design.toColorOption(),
+                    selectedOutlineColor: design.toOutlineColor(),
+                    selectedBgColor: design.toBgColor(),
+                    backgroundEnabled: design.backgroundEnabled,
+                    outlineEnabled: design.outlineEnabled,
+                    hasCustomTextColor: design.hasCustomTextColor,
+                    customTextColor: design.decodedCustomColor ?? .white,
+                    selectedEffects: Set(design.effectsArray),
+                    selectedAlignment: design.selectedAlignment ?? "None",
+                    selectedShape: design.selectedShape ?? "None",
+                    textSpeed: design.textSpeed,
+                    isHD: design.isHD,
+                    selectedLiveBg: design.selectedLiveBg ?? "None",
+                    frameResultBg: design.frameResultBg ?? "None",
+                    frameBg: design.frameBg ?? "None",
+                    isSaved: false,
+                    onBack: {
+                        navigateToResult = false
+                        selectedDesign = nil
+                    }
+                )
+            }
+        }
     }
 }
