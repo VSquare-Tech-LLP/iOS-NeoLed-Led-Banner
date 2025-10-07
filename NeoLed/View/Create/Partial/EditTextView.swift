@@ -43,14 +43,14 @@ struct EditTextView: View {
       Fonts(fontDisplay: FontManager.dmSerifDisplayRegularFont ,fontImageName: FontManager.dmSerifDisplayRegularFont),
       Fonts(fontDisplay: FontManager.dotoRegularFont ,fontImageName: FontManager.dotoBoldFont),
       Fonts(fontDisplay: FontManager.dynaPuffRegular ,fontImageName: FontManager.dynaPuffBold),
-      Fonts(fontDisplay: FontManager.lobsterTwoRegularFont ,fontImageName: FontManager.lobsterTwoBoldFont),
+      Fonts(fontDisplay: FontManager.lobsterTwoBoldFont ,fontImageName: FontManager.lobsterTwoBoldFont),
       Fonts(fontDisplay: FontManager.montserratRegularFont ,fontImageName: FontManager.montserratBoldFont),
       Fonts(fontDisplay: FontManager.nunitoRegularFont ,fontImageName: FontManager.nunitoBoldFont),
       Fonts(fontDisplay: FontManager.openSansRegularFont ,fontImageName: FontManager.openSansBoldFont),
       Fonts(fontDisplay: FontManager.poppinsRegularFont ,fontImageName: FontManager.poppinsBoldFont),
       Fonts(fontDisplay: FontManager.ralewayRegularFont ,fontImageName: FontManager.ralewayBoldFont),
       Fonts(fontDisplay: FontManager.ribeyeRegularFont ,fontImageName: FontManager.ribeyeRegularFont),
-      Fonts(fontDisplay: FontManager.ribeyeRegularFont ,fontImageName: FontManager.robotoBoldFont),
+      Fonts(fontDisplay: FontManager.robotoRegularFont ,fontImageName: FontManager.robotoBoldFont),
       Fonts(fontDisplay: FontManager.zillaSlabRegularFont ,fontImageName: FontManager.zillaSlabBoldFont),
    ]
    
@@ -199,7 +199,7 @@ struct EditTextView: View {
                                    Text("Aa")
                                        .font(.custom(font.fontImageName, size: .scaledFontSize(14)))
                                        .foregroundColor(Color.primaryApp)
-                                       .padding(ScaleUtility.scaledSpacing(12))
+                                       .padding(ScaleUtility.scaledSpacing(11))
                                        .background {
                                            if selectedFont == font.fontDisplay {
                                                EllipticalGradient(
@@ -239,7 +239,7 @@ struct EditTextView: View {
                            .font(FontManager.bricolageGrotesqueRegularFont(size: .scaledFontSize(10)))
                            .foregroundColor(.white)
                        
-                       sizeCustomSlider(value: $textSize, range: 1.0...3.0)
+                       sizeCustomSlider(value: $textSize, range: 2.0...8.0)
                        
                        Text("A")
                            .font(FontManager.bricolageGrotesqueRegularFont(size: .scaledFontSize(16)))
@@ -264,7 +264,7 @@ struct EditTextView: View {
                                  fontWeight: .regular) // Use .regular, .bold, .heavy, etc.
                        
                        
-                       sizeCustomSlider(value: $strokeSize, range: 0...5)
+                       sizeCustomSlider(value: $strokeSize, range: 0...7)
                        
                        
                        StrokeText(text: "A",

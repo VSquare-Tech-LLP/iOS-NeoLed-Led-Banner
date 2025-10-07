@@ -9,28 +9,41 @@ import Foundation
 import SwiftUI
 
 struct CreateView: View {
-    @FocusState private var inputFocused: Bool
-    @State var text: String = ""
+     @Binding var backgroundResultImage: String
+     @Binding var text: String
+     @Binding var backgroundImage: String
+     @Binding var textSize: CGFloat
+     @Binding var strokeSize: CGFloat
+     @Binding var selectedFont: String
+     @Binding var selectedColor: ColorOption
+     @Binding var selectedOutlineColor: OutlineColorOption
+     @Binding var outlineEnabled: Bool
+     @Binding var backgroundEnabled: Bool
+     @Binding var hasCustomTextColor: Bool
+     @Binding var customTextColor: UIColor
+     @Binding var selectedEffects: Set<String>
+     @FocusState private var inputFocused: Bool
+   
     
-    @State var selectedEditOption: String = "Text"
-    var editOptions = ["Text",
+     @State var selectedEditOption: String = "Text"
+      var editOptions = ["Text",
                        "Effect",
                        "Background"]
     
     // Text customization states
-     @State private var textSize: CGFloat = 2.0
-     @State private var strokeSize: CGFloat = 0.0
-     @State private var selectedFont: String = FontManager.bricolageGrotesqueRegularFont
-     @State private var selectedColor: ColorOption = ColorOption.predefinedColors[1]
-     @State private var selectedOutlineColor: OutlineColorOption = OutlineColorOption.predefinedOutlineColors[0]
-     @State private var outlineEnabled = false
-     @State private var backgroundEnabled = false
-     @State private var hasCustomTextColor = false
-     @State private var customTextColor: UIColor = .white
+//     @State private var textSize: CGFloat = 2.0
+//     @State private var strokeSize: CGFloat = 0.0
+//     @State private var selectedFont: String = FontManager.bricolageGrotesqueRegularFont
+//     @State private var selectedColor: ColorOption = ColorOption.predefinedColors[1]
+//     @State private var selectedOutlineColor: OutlineColorOption = OutlineColorOption.predefinedOutlineColors[0]
+//     @State private var outlineEnabled = false
+//     @State private var backgroundEnabled = false
+//     @State private var hasCustomTextColor = false
+//     @State private var customTextColor: UIColor = .white
      @State private var selectedBgColor: OutlineColorOption = OutlineColorOption.predefinedOutlineColors[0]
      
      // Effect customization states
-     @State private var selectedEffects: Set<String> = ["None"]
+//     @State private var selectedEffects: Set<String> = ["None"]
      @State private var selectedAlignment: String = "None"
      @State private var selectedShape: String = "None"
      @State private var selectedLiveBg: String = "None"
@@ -47,6 +60,7 @@ struct CreateView: View {
             VStack(spacing: ScaleUtility.scaledSpacing(20)) {
                 
                 TopView(
+                    backgroundImage: $backgroundImage,
                     text: $text,
                     selectedFont: $selectedFont,
                     textSize: $textSize,
@@ -129,6 +143,8 @@ struct CreateView: View {
         }
         .navigationDestination(isPresented: $showPreview) {
             ResultView(
+                  backgroundResultImage: backgroundResultImage,
+                  backgroundImage: backgroundImage,
                   text: text,
                   selectedFont: selectedFont,
                   textSize: textSize,

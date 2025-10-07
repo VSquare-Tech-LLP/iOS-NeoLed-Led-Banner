@@ -11,9 +11,12 @@ import SwiftUI
 struct CardView : View {
     
     var imageName: String
+    var onTap: () -> Void  // Add callback
     
     var body: some View {
-            
+        Button {
+            onTap()
+        } label: {
             Image(imageName)
             .resizable()
             .aspectRatio(contentMode: .fill)
@@ -25,6 +28,7 @@ struct CardView : View {
                     .stroke(.white.opacity(0.2), lineWidth: 1)
             )
             
-        
+        }
+
     }
 }

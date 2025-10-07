@@ -10,7 +10,7 @@ import SwiftUI
 
 
 struct TopView:View {
-    
+    @Binding var backgroundImage: String
     @Binding var text: String
     @Binding var selectedFont: String
     @Binding var textSize: CGFloat
@@ -86,6 +86,18 @@ struct TopView:View {
                     
                     ZStack {
                         
+                        if backgroundImage != "" {
+                            Image(backgroundImage)
+                                .resizable()
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                .if(!isHD) { view in
+                                    view.mask {
+                                        getShapeImage()
+                                            .frame(width: geo.size.width, height: geo.size.height)
+                                    }
+                                }
+                        }
+                        
                         if selectedLiveBg != "None" {
                             GifuGIFView(name: selectedLiveBg)
                                 .frame(
@@ -124,7 +136,7 @@ struct TopView:View {
                         // Blurred glow layers behind
                         if strokeSize > 0.2 {
                             Text(previewText)
-                                .font(.custom(selectedFont, size: textSize * 100))
+                                .font(.custom(selectedFont, size: textSize * 30))
                                 .fontWeight(isBold ? .heavy : (isLight ? .light : .regular))
                                 .italic(isItalic)
                                 .modifier(ColorModifier(colorOption: selectedColor))
@@ -136,7 +148,7 @@ struct TopView:View {
                                 .opacity(isLight ? 0.5 : 1)
                         } else {
                             Text(previewText)
-                                .font(.custom(selectedFont, size: textSize * 100))
+                                .font(.custom(selectedFont, size: textSize * 30))
                                 .fontWeight(isBold ? .heavy : (isLight ? .light : .regular))
                                 .italic(isItalic)
                                 .modifier(ColorModifier(colorOption: selectedColor))
@@ -147,7 +159,7 @@ struct TopView:View {
                         if isLight {
                             if strokeSize > 0.2 {
                                 Text(previewText)
-                                    .font(.custom(selectedFont, size: textSize * 100))
+                                    .font(.custom(selectedFont, size: textSize * 30))
                                     .fontWeight(isBold ? .heavy : .regular)
                                     .italic(isItalic)
                                     .kerning(0.6)
@@ -160,7 +172,7 @@ struct TopView:View {
                                     .opacity(0.7)
                             } else {
                                 Text(previewText)
-                                    .font(.custom(selectedFont, size: textSize * 100))
+                                    .font(.custom(selectedFont, size: textSize * 30))
                                     .kerning(0.4)
                                     .fontWeight(isBold ? .heavy : .regular)
                                     .italic(isItalic)
@@ -174,7 +186,7 @@ struct TopView:View {
                             // Sharp text on top
                             if strokeSize > 0.2 {
                                 Text(previewText)
-                                    .font(.custom(selectedFont, size: textSize * 100))
+                                    .font(.custom(selectedFont, size: textSize * 30))
                                     .fontWeight(isBold ? .heavy : .regular)
                                     .italic(isItalic)
                                     .modifier(ColorModifier(colorOption: selectedColor))
@@ -186,7 +198,7 @@ struct TopView:View {
                                     .opacity(isFlash && blinkPhase ? 0.1 : 1.0)
                             } else {
                                 Text(previewText)
-                                    .font(.custom(selectedFont, size: textSize * 100))
+                                    .font(.custom(selectedFont, size: textSize * 30))
                                     .fontWeight(isBold ? .heavy : .regular)
                                     .italic(isItalic)
                                     .modifier(ColorModifier(colorOption: selectedColor))
@@ -301,18 +313,20 @@ struct TopView:View {
                         flashTimer = nil
                     }
                     .overlay {
-                        if frameBg != "None" {
-                            Image(frameBg)
-                                .resizable()
-                                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                .if(!isHD) { view in
-                                    view.mask {
-                                        getShapeImage()
-                                            .frame(width: geo.size.width, height: geo.size.height)
+                   
+                            if frameBg != "None" {
+                                Image(frameBg)
+                                    .resizable()
+                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                    .if(!isHD) { view in
+                                        view.mask {
+                                            getShapeImage()
+                                                .frame(width: geo.size.width, height: geo.size.height)
+                                        }
                                     }
-                                }
-                             
-                        }
+                                
+                            }
+                        
                     }
       
                 }
@@ -399,6 +413,9 @@ struct TopView:View {
         }
         .padding(.top, ScaleUtility.scaledSpacing(59))
         .onChange(of: text) {
+            previewText = text
+        }
+        .onAppear {
             previewText = text
         }
     }

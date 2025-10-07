@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8B6AD4CC2E953D9400FADEB8 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8B6AD4CB2E953D9400FADEB8 /* GoogleService-Info.plist */; };
+		8B6AD4CF2E953DD200FADEB8 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 8B6AD4CE2E953DD200FADEB8 /* FirebaseAnalytics */; };
+		8B6AD5C32E953F4C00FADEB8 /* FirebaseRemoteConfig in Frameworks */ = {isa = PBXBuildFile; productRef = 8B6AD5C22E953F4C00FADEB8 /* FirebaseRemoteConfig */; };
 		8B7E7B092E8E89960093D8D4 /* SwiftUIViewRecorder in Frameworks */ = {isa = PBXBuildFile; productRef = 8B7E7B082E8E89960093D8D4 /* SwiftUIViewRecorder */; };
 		8B912D0C2E9145E600FE9AA1 /* Gifu in Frameworks */ = {isa = PBXBuildFile; productRef = 8B912D0B2E9145E600FE9AA1 /* Gifu */; };
 		8BDE7AEF2E8F9499006463DE /* FlipBook in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDE7AEE2E8F9499006463DE /* FlipBook */; };
@@ -14,6 +17,8 @@
 
 /* Begin PBXFileReference section */
 		8B1A1F502E83EDC2003CFA93 /* NeoLed.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NeoLed.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8B6AD4C12E94E4DF00FADEB8 /* NeoLed.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = NeoLed.xcodeproj; sourceTree = SOURCE_ROOT; };
+		8B6AD4CB2E953D9400FADEB8 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -44,7 +49,9 @@
 			files = (
 				8BDE7AEF2E8F9499006463DE /* FlipBook in Frameworks */,
 				8B7E7B092E8E89960093D8D4 /* SwiftUIViewRecorder in Frameworks */,
+				8B6AD4CF2E953DD200FADEB8 /* FirebaseAnalytics in Frameworks */,
 				8B912D0C2E9145E600FE9AA1 /* Gifu in Frameworks */,
+				8B6AD5C32E953F4C00FADEB8 /* FirebaseRemoteConfig in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -54,8 +61,11 @@
 		8B1A1F472E83EDC2003CFA93 = {
 			isa = PBXGroup;
 			children = (
-				8B1A1F522E83EDC2003CFA93 /* NeoLed */,
 				8B1A1F512E83EDC2003CFA93 /* Products */,
+				8B1A1F522E83EDC2003CFA93 /* NeoLed */,
+				8B6AD4C12E94E4DF00FADEB8 /* NeoLed.xcodeproj */,
+				8B6AD4CB2E953D9400FADEB8 /* GoogleService-Info.plist */,
+				8B6AD5C12E953F4C00FADEB8 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -65,6 +75,13 @@
 				8B1A1F502E83EDC2003CFA93 /* NeoLed.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		8B6AD5C12E953F4C00FADEB8 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -90,6 +107,8 @@
 				8B7E7B082E8E89960093D8D4 /* SwiftUIViewRecorder */,
 				8BDE7AEE2E8F9499006463DE /* FlipBook */,
 				8B912D0B2E9145E600FE9AA1 /* Gifu */,
+				8B6AD4CE2E953DD200FADEB8 /* FirebaseAnalytics */,
+				8B6AD5C22E953F4C00FADEB8 /* FirebaseRemoteConfig */,
 			);
 			productName = NeoLed;
 			productReference = 8B1A1F502E83EDC2003CFA93 /* NeoLed.app */;
@@ -123,6 +142,7 @@
 				8B7E7B072E8E89960093D8D4 /* XCRemoteSwiftPackageReference "SwiftUIViewRecorder" */,
 				8BDE7AED2E8F9499006463DE /* XCRemoteSwiftPackageReference "FlipBook" */,
 				8B912D0A2E9145E600FE9AA1 /* XCRemoteSwiftPackageReference "Gifu" */,
+				8B6AD4CD2E953DD200FADEB8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 8B1A1F512E83EDC2003CFA93 /* Products */;
@@ -139,6 +159,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8B6AD4CC2E953D9400FADEB8 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -379,6 +400,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		8B6AD4CD2E953DD200FADEB8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.3.0;
+			};
+		};
 		8B7E7B072E8E89960093D8D4 /* XCRemoteSwiftPackageReference "SwiftUIViewRecorder" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/frolovilya/SwiftUIViewRecorder";
@@ -406,6 +435,16 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		8B6AD4CE2E953DD200FADEB8 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8B6AD4CD2E953DD200FADEB8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		8B6AD5C22E953F4C00FADEB8 /* FirebaseRemoteConfig */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8B6AD4CD2E953DD200FADEB8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseRemoteConfig;
+		};
 		8B7E7B082E8E89960093D8D4 /* SwiftUIViewRecorder */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 8B7E7B072E8E89960093D8D4 /* XCRemoteSwiftPackageReference "SwiftUIViewRecorder" */;

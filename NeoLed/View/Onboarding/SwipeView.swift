@@ -85,6 +85,7 @@ struct SwipeView: View {
             currentOnboardingIndex = currentIndex
             print("SwipeView appeared, initialized currentOnboardingIndex to: \(currentOnboardingIndex)")
         }
+
     }
     
     // MARK: - Button Press Logic

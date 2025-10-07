@@ -88,6 +88,7 @@ struct PagingTabView<Content: View>: View {
             Image(.background)
                 .resizable()
                 .scaledToFill()
+                .ignoresSafeArea(.all)
         }
         .edgesIgnoringSafeArea(.all)
         

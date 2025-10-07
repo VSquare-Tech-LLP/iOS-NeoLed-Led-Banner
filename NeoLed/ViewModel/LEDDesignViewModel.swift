@@ -28,6 +28,8 @@ class LEDDesignViewModel: ObservableObject {
     
     // MARK: - Save Design
     func saveDesign(
+        backgroundResultImage: String,
+        backgroundImage: String,
         text: String,
         selectedFont: String,
         textSize: CGFloat,
@@ -49,6 +51,8 @@ class LEDDesignViewModel: ObservableObject {
         frameBg: String
     ) {
         let success = coreDataManager.saveDesign(
+            backgroundResultImage: backgroundResultImage,
+            backgroundImage: backgroundImage,
             text: text,
             selectedFont: selectedFont,
             textSize: textSize,

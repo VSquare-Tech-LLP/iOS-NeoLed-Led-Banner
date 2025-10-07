@@ -67,7 +67,7 @@ struct HistoryView: View {
             // Content
             if viewModel.designs.isEmpty {
                    EmptyView()
-                       .frame(maxHeight: .infinity)
+                     
                } else {
                    ScrollView {
                        
@@ -120,11 +120,13 @@ struct HistoryView: View {
         .navigationDestination(isPresented: $navigateToResult) {
             if let design = selectedDesign {
                 ResultView(
+                    backgroundResultImage: design.backgroundResultImage ?? "",
+                    backgroundImage: design.backgroundImage ?? "",
                     text: design.text ?? "",
                     selectedFont: design.selectedFont ?? FontManager.bricolageGrotesqueRegularFont,
                     textSize: design.textSize,
                     strokeSize: design.strokeSize,
-                    selectedColor: design.toColorOption(),
+                    selectedColor: design.toEffectiveTextColorOption(),
                     selectedOutlineColor: design.toOutlineColor(),
                     selectedBgColor: design.toBgColor(),
                     backgroundEnabled: design.backgroundEnabled,

@@ -213,7 +213,7 @@ extension ResultView {
         // Scale factor: increase significantly for better video coverage
         // Original design ~390x844, video is 1080x1920 - scale based on height for better vertical coverage
         let scaleFactor = videoHeight / 844.0 * 1.5 // Extra 1.5x to fill more space
-        let scaledTextSize = textSize * 100 * scaleFactor
+        let scaledTextSize = textSize * 50 * scaleFactor
         let scaledStrokeSize = strokeSize * scaleFactor
         
         ZStack {
@@ -358,7 +358,7 @@ extension ResultView {
     
     private func calculateAnimatedOffsetX(progress: Double, geoWidth: CGFloat, geoHeight: CGFloat, scaleFactor: CGFloat) -> CGFloat {
         // Estimate text width based on character count and font size
-        let estimatedTextWidth = CGFloat(text.count) * (textSize * 100 * scaleFactor) * 0.6
+        let estimatedTextWidth = CGFloat(text.count) * (textSize * 50 * scaleFactor) * 0.6
         
         switch selectedAlignment {
         case "up":
@@ -382,7 +382,7 @@ extension ResultView {
     }
     
     private func calculateAnimatedOffsetY(progress: Double, geoWidth: CGFloat, geoHeight: CGFloat, scaleFactor: CGFloat) -> CGFloat {
-        let estimatedTextWidth = CGFloat(text.count) * (textSize * 100 * scaleFactor) * 0.6
+        let estimatedTextWidth = CGFloat(text.count) * (textSize * 50 * scaleFactor) * 0.6
         
         switch selectedAlignment {
         case "left":

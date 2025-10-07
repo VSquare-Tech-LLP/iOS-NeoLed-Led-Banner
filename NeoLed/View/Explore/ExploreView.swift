@@ -11,6 +11,7 @@ import SwiftUI
 struct ExploreView: View {
     
     @State var selectedOption: String = "LED"
+    var onTemplateSelect: (LEDTemplate) -> Void  // Add callback
     
     // Function to get images based on selected filter
     private func getImagesForFilter(_ filter: String) -> [String] {
@@ -44,19 +45,25 @@ struct ExploreView: View {
             ScrollView {
                 
                 Spacer()
-                    .frame(height: ScaleUtility.scaledValue(20))
+                    .frame(height: ScaleUtility.scaledValue(15))
                 
                 LazyVStack(spacing: ScaleUtility.scaledSpacing(15)) {
                     ForEach(getImagesForFilter(selectedOption), id: \.self) { imageName in
-                        CardView(imageName: imageName)
+                        CardView(imageName: imageName) {
+                            // Get template and call callback
+                            let template = TemplateDataManager.shared.getTemplate(for: imageName)
+                            onTemplateSelect(template)
+                        }
                     }
                 }
                 .padding(.horizontal, ScaleUtility.scaledSpacing(20))
+              
                 
                 Spacer()
                     .frame(height: ScaleUtility.scaledValue(150))
                 
             }
+            .padding(.top, ScaleUtility.scaledSpacing(5))
             
             Spacer()
         }

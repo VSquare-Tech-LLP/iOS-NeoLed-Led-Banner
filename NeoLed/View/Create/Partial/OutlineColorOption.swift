@@ -34,7 +34,12 @@ extension OutlineColorOption {
         OutlineColorOption(id: "outlinePersian", name: "Persian", color: Color.appPersian),
         OutlineColorOption(id: "outlineOrange", name: "Orange", color: Color.appOrange),
         OutlineColorOption(id: "outlineDarkBlue", name: "Dark Blue", color: Color.appDarkBlue),
-        OutlineColorOption(id: "outlineRed", name: "Red", color: Color.appRed)
+        OutlineColorOption(id: "outlineRed", name: "Red", color: Color.appRed),
+        OutlineColorOption(id: "outlineDarkRed", name: "Dark Red", color: Color.darkRed),
+        OutlineColorOption(id: "outlineDarkPink", name: "Dark Pink", color: Color.darkPink),
+        OutlineColorOption(id: "outlineBabyPink", name: "Baby Pink", color: Color.babyPink),
+        OutlineColorOption(id: "outlineBlue", name: "Blue", color: Color.appBlue),
+        OutlineColorOption(id: "outlineWhite", name: "White", color: Color.primaryApp),
     ]
 }
 

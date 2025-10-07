@@ -7,7 +7,8 @@ import SwiftUI
 
 struct ResultView: View {
     @StateObject private var viewModel = LEDDesignViewModel()
-    
+    let backgroundResultImage: String
+    let backgroundImage: String
     let text: String
     let selectedFont: String
     let textSize: CGFloat
@@ -64,6 +65,18 @@ struct ResultView: View {
                 
                 ZStack {
                     
+                    if backgroundResultImage != "" {
+                        Image(backgroundResultImage)
+                            .resizable()
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .if(!isHD) { view in
+                                view.mask {
+                                    getShapeImage()
+                                        .frame(width: geo.size.width, height: geo.size.height)
+                                }
+                            }
+                    }
+                    
                     if selectedLiveBg != "None" {
                         GifuGIFView(name: selectedLiveBg)
                             .rotationEffect(.degrees(90))
@@ -95,7 +108,7 @@ struct ResultView: View {
                     // Blurred glow layers behind
                     if strokeSize > 0 {
                         Text(text)
-                            .font(.custom(selectedFont, size: textSize * 100))
+                            .font(.custom(selectedFont, size: textSize * 50))
                             .fontWeight(isBold ? .heavy : (isLight ? .light : .regular))
                             .italic(isItalic)
                             .modifier(ColorModifier(colorOption: selectedColor))
@@ -107,7 +120,7 @@ struct ResultView: View {
                             .opacity(isLight ? 0.5 : 1)
                     } else {
                         Text(text)
-                            .font(.custom(selectedFont, size: textSize * 100))
+                            .font(.custom(selectedFont, size: textSize * 50))
                             .fontWeight(isBold ? .heavy : (isLight ? .light : .regular))
                             .italic(isItalic)
                             .modifier(ColorModifier(colorOption: selectedColor))
@@ -119,7 +132,7 @@ struct ResultView: View {
                     if isLight {
                         if strokeSize > 0 {
                             Text(text)
-                                .font(.custom(selectedFont, size: textSize * 100))
+                                .font(.custom(selectedFont, size: textSize * 50))
                                 .fontWeight(isBold ? .heavy : .regular)
                                 .italic(isItalic)
                                 .modifier(ColorModifier(colorOption: selectedColor))
@@ -132,7 +145,7 @@ struct ResultView: View {
                                 .opacity(0.7)
                         } else {
                             Text(text)
-                                .font(.custom(selectedFont, size: textSize * 100))
+                                .font(.custom(selectedFont, size: textSize * 50))
                                 .kerning(0.4)
                                 .fontWeight(isBold ? .heavy : .regular)
                                 .italic(isItalic)
@@ -145,7 +158,7 @@ struct ResultView: View {
                     // Sharp text on top
                     if strokeSize > 0 {
                         Text(text)
-                            .font(.custom(selectedFont, size: textSize * 100))
+                            .font(.custom(selectedFont, size: textSize * 50))
                             .fontWeight(isBold ? .heavy : .regular)
                             .italic(isItalic)
                             .modifier(ColorModifier(colorOption: selectedColor))
@@ -157,7 +170,7 @@ struct ResultView: View {
                             .opacity(isFlash && blinkPhase ? 0.1 : 1.0)
                     } else {
                         Text(text)
-                            .font(.custom(selectedFont, size: textSize * 100))
+                            .font(.custom(selectedFont, size: textSize * 50))
                             .fontWeight(isBold ? .heavy : (isLight ? .light : .regular))
                             .italic(isItalic)
                             .modifier(ColorModifier(colorOption: selectedColor))
@@ -169,6 +182,7 @@ struct ResultView: View {
                 .frame(height: 200)
                 .fixedSize()
                 .padding(.all, strokeSize * 3)  // Add padding to prevent clipping
+                .clipped()  // ← Add this to hide overflow
                 .background { GeometryReader { textgeometry -> Color in
                     DispatchQueue.main.async {
                         self.textWidth = textgeometry.size.width
@@ -197,7 +211,7 @@ struct ResultView: View {
                         case "right":
                             offsety = -(geo.size.width + textWidth / 2)
                         default:
-                            offsetx = isMirror ? -500 : 1160
+                            offsetx = geo.size.height + textWidth / 2
                         }
                     }
                     
@@ -215,7 +229,7 @@ struct ResultView: View {
                             case "right":
                                 offsety = geo.size.width + textWidth / 2
                             default:
-                                offsetx = isMirror ? 1160 : -500
+                                offsetx = -textWidth / 2
                             }
                         }
                     }
@@ -410,6 +424,8 @@ struct ResultView: View {
 
     private func saveDesignToHistory() {
         viewModel.saveDesign(
+            backgroundResultImage: backgroundResultImage,
+            backgroundImage: backgroundImage,
             text: text,
             selectedFont: selectedFont,
             textSize: textSize,

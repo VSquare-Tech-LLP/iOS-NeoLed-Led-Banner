@@ -28,7 +28,7 @@ struct HistoryCardViewCoreData: View {
                 
                 GeometryReader { geo in
                     ZStack {
-         
+                        
                         if let liveBg = design.selectedLiveBg, liveBg != "None" {
                             GifuGIFView(name: liveBg)
                                 .frame(
@@ -36,6 +36,17 @@ struct HistoryCardViewCoreData: View {
                                     height: UIScreen.main.bounds.width
                                 )
                                 .position(x: geo.size.width / 2, y: geo.size.height / 2)  // Center it
+                                .if(!design.isHD) { view in
+                                    view.mask {
+                                        getShapeImage()
+                                            .frame(width: geo.size.width, height: geo.size.height)
+                                    }
+                                }
+                        }
+                        else if design.backgroundImage != "" {
+                            Image(design.backgroundImage ?? "LED1")
+                                .resizable()
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
                                 .if(!design.isHD) { view in
                                     view.mask {
                                         getShapeImage()
@@ -57,16 +68,16 @@ struct HistoryCardViewCoreData: View {
                                 .opacity(0.1)
                         }
                         
-                        
+      
                         
                         // Text Preview - Centered
                             if let text = design.text {
                                 if design.strokeSize > 0 {
                                     Text(text)
-                                        .font(.custom(design.selectedFont ?? FontManager.bricolageGrotesqueRegularFont, size: design.textSize * 100 / 2))
+                                        .font(.custom(design.selectedFont ?? FontManager.bricolageGrotesqueRegularFont, size: design.textSize * 30 / 2))
                                         .fontWeight(isBold ? .heavy : .regular)
                                         .italic(isItalic)
-                                        .modifier(ColorModifier(colorOption: design.toColorOption()))
+                                        .modifier(ColorModifier(colorOption: design.toEffectiveTextColorOption()))
                                         .stroke(
                                             color: design.outlineEnabled ? design.toOutlineColor().color : .white,
                                             width: design.strokeSize / 2
@@ -77,10 +88,10 @@ struct HistoryCardViewCoreData: View {
                                         .padding(.horizontal, 16)
                                 } else {
                                     Text(text)
-                                        .font(.custom(design.selectedFont ?? FontManager.bricolageGrotesqueRegularFont, size: design.textSize * 100 / 2))
+                                        .font(.custom(design.selectedFont ?? FontManager.bricolageGrotesqueRegularFont, size: design.textSize * 30 / 2))
                                         .fontWeight(isBold ? .heavy : .regular)
                                         .italic(isItalic)
-                                        .modifier(ColorModifier(colorOption: design.toColorOption()))
+                                        .modifier(ColorModifier(colorOption:  design.toEffectiveTextColorOption()))
                                         .lineLimit(2)
                                         .multilineTextAlignment(.center)
                                         .frame(maxWidth: .infinity)

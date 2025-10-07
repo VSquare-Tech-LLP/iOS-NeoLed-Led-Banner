@@ -6,15 +6,30 @@
 //
 
 import SwiftUI
+import Firebase
 
 @main
 struct NeoLedApp: App {
+    let persistenceController = PersistenceController.shared
+    @StateObject private var purchaseManager = PurchaseManager()
+    
     @StateObject private var userSettings = UserSettings()
+    
+    @StateObject var remoteConfigManager = RemoteConfigManager()
+    
+    
+    init() {
+          FirebaseApp.configure()
+        
+      }
     
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environment(\.managedObjectContext, persistenceController.container.viewContext)
+                .environmentObject(purchaseManager)
                 .environmentObject(userSettings)
+                .environmentObject(remoteConfigManager)
         }
     }
 }

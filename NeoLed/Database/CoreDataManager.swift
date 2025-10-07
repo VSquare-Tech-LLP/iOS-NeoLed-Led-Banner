@@ -19,6 +19,8 @@ final class CoreDataManager {
     
     // MARK: - Save Design
     func saveDesign(
+        backgroundResultImage: String,
+        backgroundImage: String,
         text: String,
         selectedFont: String,
         textSize: CGFloat,
@@ -41,6 +43,8 @@ final class CoreDataManager {
     ) -> Bool {
         let entity = LEDDesignEntity(context: ctx)
         entity.id = UUID()
+        entity.backgroundResultImage = backgroundResultImage
+        entity.backgroundImage = backgroundImage
         entity.text = text
         entity.selectedFont = selectedFont
         entity.textSize = textSize
@@ -152,5 +156,15 @@ extension LEDDesignEntity {
     
     func toBgColor() -> OutlineColorOption {
         OutlineColorOption.predefinedOutlineColors.first(where: { $0.id == selectedBgColorId }) ?? OutlineColorOption.predefinedOutlineColors[0]
+    }
+}
+// CoreDataManager.swift (or a separate extension file on LEDDesignEntity)
+extension LEDDesignEntity {
+    func toEffectiveTextColorOption() -> ColorOption {
+        if hasCustomTextColor, let ui = decodedCustomColor {
+            return ColorOption(id: "custom_text", name: "Custom", type: .solid(Color(ui)))
+        } else {
+            return toColorOption()
+        }
     }
 }
