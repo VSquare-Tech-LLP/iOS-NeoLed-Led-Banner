@@ -54,6 +54,9 @@ struct OutlineColorPickerView: View {
     @Binding var hasCustomColor: Bool
     @Binding var customColor: UIColor
     @Binding var outlineEnabled: Bool
+    @Binding var selectedLiveBg: String
+    var isBackground: Bool = false
+    @Binding var selectedBgColor: OutlineColorOption 
     
     var body: some View {
         VStack(spacing: ScaleUtility.scaledSpacing(15)) {
@@ -123,6 +126,7 @@ struct OutlineColorPickerView: View {
                     
                     Button(action: {
                         outlineEnabled = false
+                
                     }) {
                         Rectangle()
                             .foregroundColor(.white)
@@ -170,6 +174,9 @@ struct OutlineColorPickerView: View {
             Button(action: {
                 selectedOutlineColor = colorOption
                 outlineEnabled = true
+                if isBackground {
+                    selectedLiveBg = "None"
+                }
             }) {
                 colorOption.colorPreview(size: (outlineEnabled && selectedOutlineColor.id == colorOption.id) ? ScaleUtility.scaledValue(22) : ScaleUtility.scaledValue(28))
             }

@@ -8,22 +8,22 @@
 //    private let duration: Double
 //    private let size: CGSize
 //    private var viewBuilder: (Int) -> AnyView
-//    
+//
 //    init(frameRate: Int = 30, duration: Double, size: CGSize, viewBuilder: @escaping (Int) -> AnyView) {
 //        self.frameRate = frameRate
 //        self.duration = duration
 //        self.size = size
 //        self.viewBuilder = viewBuilder
 //    }
-//    
+//
 //    func generateVideo(progressHandler: @escaping (Double) -> Void, completion: @escaping (Result<URL, Error>) -> Void) {
 //        // Start on background thread
 //        Task(priority: .userInitiated) {
 //            let outputURL = FileManager.default.temporaryDirectory
 //                .appendingPathComponent("led_animation_\(UUID().uuidString).mp4")
-//            
+//
 //            try? FileManager.default.removeItem(at: outputURL)
-//            
+//
 //            guard let videoWriter = try? AVAssetWriter(outputURL: outputURL, fileType: .mp4) else {
 //                await MainActor.run {
 //                    completion(.failure(NSError(domain: "VideoGenerator", code: -1,
@@ -31,7 +31,7 @@
 //                }
 //                return
 //            }
-//            
+//
 //            // Define video settings
 //            let videoSettings: [String: Any] = [
 //                AVVideoCodecKey: AVVideoCodecType.h264,
@@ -42,10 +42,10 @@
 //                    AVVideoProfileLevelKey: AVVideoProfileLevelH264HighAutoLevel
 //                ]
 //            ]
-//            
+//
 //            let videoWriterInput = AVAssetWriterInput(mediaType: .video, outputSettings: videoSettings)
 //            videoWriterInput.expectsMediaDataInRealTime = false
-//            
+//
 //            let adaptor = AVAssetWriterInputPixelBufferAdaptor(
 //                assetWriterInput: videoWriterInput,
 //                sourcePixelBufferAttributes: [
@@ -55,28 +55,28 @@
 //                    kCVPixelBufferMetalCompatibilityKey as String: true
 //                ]
 //            )
-//            
+//
 //            videoWriter.add(videoWriterInput)
 //            videoWriter.startWriting()
 //            videoWriter.startSession(atSourceTime: .zero)
-//            
+//
 //            let totalFrames = Int(self.duration * Double(self.frameRate))
 //            var lastReportedProgress: Double = 0
-//            
+//
 //            for frameNumber in 0..<totalFrames {
 //                // Wait for writer to be ready
 //                while !videoWriterInput.isReadyForMoreMediaData {
 //                    try? await Task.sleep(nanoseconds: 10_000_000) // 10ms
 //                }
-//                
+//
 //                // Render frame on main thread but yield control frequently
 //                let pixelBuffer = await self.renderFrameWithYield(frameNumber: frameNumber)
-//                
+//
 //                if let pixelBuffer = pixelBuffer {
 //                    let presentationTime = CMTime(value: Int64(frameNumber), timescale: Int32(self.frameRate))
 //                    adaptor.append(pixelBuffer, withPresentationTime: presentationTime)
 //                }
-//                
+//
 //                // Update progress frequently
 //                let currentProgress = Double(frameNumber + 1) / Double(totalFrames)
 //                if currentProgress - lastReportedProgress >= 0.01 || frameNumber == totalFrames - 1 {
@@ -85,15 +85,15 @@
 //                        progressHandler(currentProgress)
 //                    }
 //                }
-//                
+//
 //                // CRITICAL: Yield control every frame to let UI update
 //                await Task.yield()
 //            }
-//            
+//
 //            // Finish writing
 //            videoWriterInput.markAsFinished()
 //            await videoWriter.finishWriting()
-//            
+//
 //            // Check completion status
 //            await MainActor.run {
 //                if videoWriter.status == .completed {
@@ -105,7 +105,7 @@
 //            }
 //        }
 //    }
-//    
+//
 //    // Render frame with explicit yielding
 //    private func renderFrameWithYield(frameNumber: Int) async -> CVPixelBuffer? {
 //        return await MainActor.run {
@@ -114,19 +114,19 @@
 //                let renderer = ImageRenderer(content: view)
 //                renderer.proposedSize = ProposedViewSize(self.size)
 //                renderer.scale = 2.0
-//                
+//
 //                guard let cgImage = renderer.cgImage else {
 //                    print("Failed to render frame \(frameNumber)")
 //                    return nil
 //                }
-//                
+//
 //                var pixelBuffer: CVPixelBuffer?
 //                let attrs = [
 //                    kCVPixelBufferCGImageCompatibilityKey: kCFBooleanTrue,
 //                    kCVPixelBufferCGBitmapContextCompatibilityKey: kCFBooleanTrue,
 //                    kCVPixelBufferMetalCompatibilityKey: kCFBooleanTrue
 //                ] as CFDictionary
-//                
+//
 //                let status = CVPixelBufferCreate(
 //                    kCFAllocatorDefault,
 //                    Int(self.size.width),
@@ -135,14 +135,14 @@
 //                    attrs,
 //                    &pixelBuffer
 //                )
-//                
+//
 //                guard status == kCVReturnSuccess, let buffer = pixelBuffer else {
 //                    return nil
 //                }
-//                
+//
 //                CVPixelBufferLockBaseAddress(buffer, [])
 //                defer { CVPixelBufferUnlockBaseAddress(buffer, []) }
-//                
+//
 //                guard let context = CGContext(
 //                    data: CVPixelBufferGetBaseAddress(buffer),
 //                    width: Int(self.size.width),
@@ -154,11 +154,11 @@
 //                ) else {
 //                    return nil
 //                }
-//                
+//
 //                context.interpolationQuality = .high
 //                context.setShouldAntialias(true)
 //                context.draw(cgImage, in: CGRect(origin: .zero, size: self.size))
-//                
+//
 //                return buffer
 //            }
 //        }
@@ -169,7 +169,7 @@
 //class VideoSaver: NSObject {
 //    var successHandler: (() -> Void)?
 //    var errorHandler: ((Error) -> Void)?
-//    
+//
 //    func saveVideo(_ url: URL) {
 //        PHPhotoLibrary.requestAuthorization { status in
 //            guard status == .authorized else {
@@ -179,7 +179,7 @@
 //                }
 //                return
 //            }
-//            
+//
 //            PHPhotoLibrary.shared().performChanges({
 //                PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: url)
 //            }) { success, error in
@@ -197,14 +197,14 @@
 //
 //// MARK: - ResultView Extension
 //extension ResultView {
-//    
+//
 //    func convertViewToVideo(autoDownload: Bool = false) {
 //        isProcessing = true
 //        progress = 0.0
-//        
+//
 //        let animationDuration = 10.0 / textSpeed
 //        let totalFrames = Int(videoDuration * Double(frameRate))
-//        
+//
 //        let videoGenerator = VideoGenerator(
 //            frameRate: frameRate,
 //            duration: videoDuration,
@@ -213,23 +213,23 @@
 //            let progress = Double(frameNumber) / Double(totalFrames)
 //            return AnyView(self.createVideoFrame(progress: progress, animationDuration: animationDuration))
 //        }
-//        
+//
 //        videoGenerator.generateVideo(progressHandler: { generationProgress in
 //            // Update progress on main thread
 //            self.progress = generationProgress
 //        }) { result in
 //            self.isProcessing = false
-//            
+//
 //            switch result {
 //            case .success(let url):
 //                self.videoURL = url
 //                self.progress = 1.0
-//                
+//
 //                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
 //                    self.isExporting = false
 //                    self.saveVideoToPhotos(url)
 //                }
-//                
+//
 //            case .failure(let error):
 //                self.isExporting = false
 //                self.progress = 0.0
@@ -238,7 +238,7 @@
 //            }
 //        }
 //    }
-//    
+//
 //    @ViewBuilder
 //    private func createVideoFrame(progress: Double, animationDuration: Double) -> some View {
 //        let videoWidth: CGFloat = 1080
@@ -246,7 +246,7 @@
 //        let scaleFactor = videoHeight / 844.0 * 1.5
 //        let scaledTextSize = textSize * 50 * scaleFactor
 //        let scaledStrokeSize = strokeSize * scaleFactor
-//        
+//
 //        ZStack {
 //            if !isHD {
 //                getShapeImageForVideo()
@@ -254,7 +254,7 @@
 //                    .clipped()
 //                    .opacity(0.1)
 //            }
-//            
+//
 //            let animatedOffsetX = calculateAnimatedOffsetX(
 //                progress: progress,
 //                geoWidth: videoWidth,
@@ -267,9 +267,9 @@
 //                geoHeight: videoHeight,
 //                scaleFactor: scaleFactor
 //            )
-//            
+//
 //            let isCurrentlyFlashing = isFlash && (Int(progress * videoDuration * 2) % 2 == 0)
-//            
+//
 //            ZStack {
 //                if strokeSize > 0 {
 //                    StrokeText(
@@ -290,7 +290,7 @@
 //                        .blur(radius: isLight ? 40 * scaleFactor : 0)
 //                        .opacity(isLight ? 0.5 : 1)
 //                }
-//                
+//
 //                if strokeSize > 0 {
 //                    StrokeText(
 //                        text: text,
@@ -312,7 +312,7 @@
 //                        .blur(radius: isLight ? 20 * scaleFactor : 0)
 //                        .opacity(isLight ? 0.7 : 1)
 //                }
-//                
+//
 //                if strokeSize > 0 {
 //                    StrokeText(
 //                        text: text,
@@ -349,7 +349,7 @@
 //        .frame(width: videoWidth, height: videoHeight)
 //        .background(Color.black)
 //    }
-//    
+//
 //    @ViewBuilder
 //    private func getShapeImageForVideo() -> some View {
 //        switch selectedShape {
@@ -367,10 +367,10 @@
 //            Image(.circle).resizable().aspectRatio(contentMode: .fill)
 //        }
 //    }
-//    
+//
 //    private func calculateAnimatedOffsetX(progress: Double, geoWidth: CGFloat, geoHeight: CGFloat, scaleFactor: CGFloat) -> CGFloat {
 //        let estimatedTextWidth = CGFloat(text.count) * (textSize * 50 * scaleFactor) * 0.6
-//        
+//
 //        switch selectedAlignment {
 //        case "up":
 //            let startPos = geoHeight + estimatedTextWidth / 2
@@ -388,10 +388,10 @@
 //            return startPos + (endPos - startPos) * progress
 //        }
 //    }
-//    
+//
 //    private func calculateAnimatedOffsetY(progress: Double, geoWidth: CGFloat, geoHeight: CGFloat, scaleFactor: CGFloat) -> CGFloat {
 //        let estimatedTextWidth = CGFloat(text.count) * (textSize * 50 * scaleFactor) * 0.6
-//        
+//
 //        switch selectedAlignment {
 //        case "left":
 //            let startPos = geoWidth + estimatedTextWidth / 2
@@ -410,11 +410,11 @@
 //// MARK: - Share Sheet
 //struct ShareSheet: UIViewControllerRepresentable {
 //    let items: [Any]
-//    
+//
 //    func makeUIViewController(context: Context) -> UIActivityViewController {
 //        UIActivityViewController(activityItems: items, applicationActivities: nil)
 //    }
-//    
+//
 //    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 //}
 
@@ -626,7 +626,7 @@ extension ResultView {
 //        let scaleFactor = videoHeight / 844.0 * 1.5
 //        let scaledTextSize = textSize * 50 * scaleFactor
 //        let scaledStrokeSize = strokeSize * scaleFactor
-//        
+//
 //        ZStack {
 //            if !isHD {
 //                getShapeImageForVideo()
@@ -634,7 +634,7 @@ extension ResultView {
 //                    .clipped()
 //                    .opacity(0.1)
 //            }
-//            
+//
 //            let animatedOffsetX = calculateAnimatedOffsetX(
 //                progress: progress,
 //                geoWidth: videoWidth,
@@ -647,9 +647,9 @@ extension ResultView {
 //                geoHeight: videoHeight,
 //                scaleFactor: scaleFactor
 //            )
-//            
+//
 //            let isCurrentlyFlashing = isFlash && (Int(progress * videoDuration * 2) % 2 == 0)
-//            
+//
 //            ZStack {
 //                if strokeSize > 0 {
 //                    StrokeText(
@@ -670,7 +670,7 @@ extension ResultView {
 //                        .blur(radius: isLight ? 40 * scaleFactor : 0)
 //                        .opacity(isLight ? 0.5 : 1)
 //                }
-//                
+//
 //                if strokeSize > 0 {
 //                    StrokeText(
 //                        text: text,
@@ -692,7 +692,7 @@ extension ResultView {
 //                        .blur(radius: isLight ? 20 * scaleFactor : 0)
 //                        .opacity(isLight ? 0.7 : 1)
 //                }
-//                
+//
 //                if strokeSize > 0 {
 //                    StrokeText(
 //                        text: text,

@@ -35,6 +35,8 @@ struct EditTextView: View {
        @Binding var customTextColor: UIColor
        @Binding var textSpeed: CGFloat
        @Binding var selectedAlignment: String
+       @Binding var selectedLiveBg: String
+       @Binding var selectedBgColor: OutlineColorOption
     
    var fontOptions: [Fonts] = [
       Fonts(fontDisplay: FontManager.bricolageGrotesqueRegularFont ,fontImageName: FontManager.bricolageGrotesqueBoldFont),
@@ -318,7 +320,10 @@ struct EditTextView: View {
                        showColorPicker: $showOutlineColorPicker,
                        hasCustomColor: $hasCustomOutlineColor,
                        customColor: $customOutlineColor,
-                       outlineEnabled: $outlineEnabled
+                       outlineEnabled: $outlineEnabled,
+                       selectedLiveBg: $selectedLiveBg,
+                       isBackground: false ,
+                       selectedBgColor: $selectedBgColor
                    )
                    .padding(.horizontal, ScaleUtility.scaledSpacing(30))
                }

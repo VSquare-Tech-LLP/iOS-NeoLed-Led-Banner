@@ -93,7 +93,10 @@ struct EditBackgroundView: View {
                             showColorPicker: $showBgColorPicker,
                             hasCustomColor: $hasCustomBgColor,
                             customColor: $customBgColor,
-                            outlineEnabled: $backgroundEnabled
+                            outlineEnabled: $backgroundEnabled,
+                            selectedLiveBg: $selectedLiveBg,
+                            isBackground: true,
+                            selectedBgColor: $selectedBgColor
                         )
                         .padding(.horizontal, ScaleUtility.scaledSpacing(30))
                     }
@@ -112,6 +115,7 @@ struct EditBackgroundView: View {
                                 
                                 Button {
                                     selectedLiveBg = wallpaper.wallpaperName
+                                    backgroundEnabled = false
                                 } label: {
                                     
                                     Image(wallpaper.wallpaperImage)
@@ -356,6 +360,7 @@ struct EditBackgroundView: View {
                     )
                     hasCustomBgColor = true
                     backgroundEnabled = true
+                    selectedLiveBg = "None"
                 }
             )
             .presentationDetents(isIPad ? [.large, .fraction(0.95)] : [.fraction(0.9)])

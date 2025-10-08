@@ -110,7 +110,9 @@ struct CreateView: View {
                         hasCustomTextColor: $hasCustomTextColor,
                         customTextColor: $customTextColor,
                         textSpeed: $textSpeed,
-                        selectedAlignment: $selectedAlignment)
+                        selectedAlignment: $selectedAlignment,
+                        selectedLiveBg: $selectedLiveBg,
+                        selectedBgColor: $selectedBgColor)
               
                 }
                 else {
