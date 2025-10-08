@@ -168,6 +168,7 @@ struct MainView: View {
     
             }
             .ignoresSafeArea(.all)
+            
         }
     }
     

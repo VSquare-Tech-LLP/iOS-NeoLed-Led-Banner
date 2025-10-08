@@ -25,6 +25,7 @@ struct CreateView: View {
      @FocusState private var inputFocused: Bool
    
     
+    
      @State var selectedEditOption: String = "Text"
       var editOptions = ["Text",
                        "Effect",
