@@ -136,9 +136,8 @@ struct TopView:View {
                         // Blurred glow layers behind
                         if strokeSize > 0.2 {
                             Text(previewText)
-                                .font(.custom(selectedFont, size: textSize * 30))
-                                .fontWeight(isBold ? .heavy : (isLight ? .light : .regular))
-                                .italic(isItalic)
+                                .font(.custom(FontManager.getFontWithEffects(baseFontName: selectedFont, isBold: isBold, isItalic: isItalic), size: textSize * 30))
+                                // Remove .fontWeight() and .italic() modifiers completely
                                 .modifier(ColorModifier(colorOption: selectedColor))
                                 .stroke(
                                     color: outlineEnabled ? selectedOutlineColor.color : .white,
@@ -148,9 +147,7 @@ struct TopView:View {
                                 .opacity(isLight ? 0.5 : 1)
                         } else {
                             Text(previewText)
-                                .font(.custom(selectedFont, size: textSize * 30))
-                                .fontWeight(isBold ? .heavy : (isLight ? .light : .regular))
-                                .italic(isItalic)
+                                .font(.custom(FontManager.getFontWithEffects(baseFontName: selectedFont, isBold: isBold, isItalic: isItalic), size: textSize * 30))
                                 .modifier(ColorModifier(colorOption: selectedColor))
                                 .blur(radius: isLight ? 40 : 0)
                                 .opacity(isLight ? 0.5 : 1)
@@ -159,9 +156,7 @@ struct TopView:View {
                         if isLight {
                             if strokeSize > 0.2 {
                                 Text(previewText)
-                                    .font(.custom(selectedFont, size: textSize * 30))
-                                    .fontWeight(isBold ? .heavy : .regular)
-                                    .italic(isItalic)
+                                    .font(.custom(FontManager.getFontWithEffects(baseFontName: selectedFont, isBold: isBold, isItalic: isItalic), size: textSize * 30))
                                     .kerning(0.6)
                                     .modifier(ColorModifier(colorOption: selectedColor))
                                     .stroke(
@@ -172,10 +167,8 @@ struct TopView:View {
                                     .opacity(0.7)
                             } else {
                                 Text(previewText)
-                                    .font(.custom(selectedFont, size: textSize * 30))
+                                    .font(.custom(FontManager.getFontWithEffects(baseFontName: selectedFont, isBold: isBold, isItalic: isItalic), size: textSize * 30))
                                     .kerning(0.4)
-                                    .fontWeight(isBold ? .heavy : .regular)
-                                    .italic(isItalic)
                                     .modifier(ColorModifier(colorOption: selectedColor))
                                     .blur(radius: 20)
                                     .opacity(0.7)
@@ -186,9 +179,7 @@ struct TopView:View {
                             // Sharp text on top
                             if strokeSize > 0.2 {
                                 Text(previewText)
-                                    .font(.custom(selectedFont, size: textSize * 30))
-                                    .fontWeight(isBold ? .heavy : .regular)
-                                    .italic(isItalic)
+                                    .font(.custom(FontManager.getFontWithEffects(baseFontName: selectedFont, isBold: isBold, isItalic: isItalic), size: textSize * 30))
                                     .modifier(ColorModifier(colorOption: selectedColor))
                                     .stroke(
                                         color: outlineEnabled ? selectedOutlineColor.color : .white,
@@ -198,9 +189,7 @@ struct TopView:View {
                                     .opacity(isFlash && blinkPhase ? 0.1 : 1.0)
                             } else {
                                 Text(previewText)
-                                    .font(.custom(selectedFont, size: textSize * 30))
-                                    .fontWeight(isBold ? .heavy : .regular)
-                                    .italic(isItalic)
+                                    .font(.custom(FontManager.getFontWithEffects(baseFontName: selectedFont, isBold: isBold, isItalic: isItalic), size: textSize * 30))
                                     .modifier(ColorModifier(colorOption: selectedColor))
                                     .brightness(0.1)
                                     .opacity(isFlash && blinkPhase ? 0.1 : 1.0)
@@ -527,32 +516,32 @@ struct TopView:View {
     private func getShapeImage() -> some View {
         switch selectedShape {
         case "circle":
-            Image(.circle2)
+            Image(.circle3)
                 .resizable()
                 .frame(width: ScaleUtility.scaledValue(335) ,height: ScaleUtility.scaledValue(167))
             
         case "square":
-            Image(.square2)
+            Image(.square3)
                 .resizable()
                 .frame(width: ScaleUtility.scaledValue(335) ,height: ScaleUtility.scaledValue(167))
              
         case "heart":
-            Image(.heart2)
+            Image(.heart3)
                 .resizable()
                 .frame(width: ScaleUtility.scaledValue(335) ,height: ScaleUtility.scaledValue(167))
                
         case "star":
-            Image(.star2)
+            Image(.star3)
                 .resizable()
                 .frame(width: ScaleUtility.scaledValue(335) ,height: ScaleUtility.scaledValue(167))
                
         case "ninjaStar":
-            Image(.ninjaStar2)
+            Image(.ninjaStar3)
                 .resizable()
                 .frame(width: ScaleUtility.scaledValue(335) ,height: ScaleUtility.scaledValue(167))
             
         default: // "None" or any other case
-            Image(.circle2)
+            Image(.circle3)
                 .resizable()
                 .frame(width: ScaleUtility.scaledValue(335) ,height: ScaleUtility.scaledValue(167))
        

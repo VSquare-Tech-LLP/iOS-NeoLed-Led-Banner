@@ -37,6 +37,7 @@ struct PaywallHeaderView: View {
                 .resizable()
                 .frame(width: ScaleUtility.scaledValue(173.88), height: ScaleUtility.scaledValue(150))
                 .padding(.top,ScaleUtility.scaledSpacing(87))
+                .offset(x: ScaleUtility.scaledSpacing(10))
           
                 HStack(spacing: 0) {
                     Button {

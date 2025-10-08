@@ -11,14 +11,14 @@ import Foundation
 import SwiftUI
 
 struct SettingsView: View {
-//    @EnvironmentObject var purchaseManager: PurchaseManager
-//    @EnvironmentObject var timerManager: TimerManager
-//    @EnvironmentObject var remoteConfigManager: RemoteConfigManager
+    @EnvironmentObject var purchaseManager: PurchaseManager
+    @EnvironmentObject var timerManager: TimerManager
+    @EnvironmentObject var remoteConfigManager: RemoteConfigManager
     var onBack: () -> Void
     
     var body: some View {
         VStack(spacing: 0) {
-            VStack(alignment: .leading,spacing: ScaleUtility.scaledSpacing(30)) {
+            VStack(alignment: .leading,spacing: ScaleUtility.scaledSpacing(20)) {
                 
                 HStack(spacing: ScaleUtility.scaledSpacing(13)) {
                     Button {
@@ -40,14 +40,19 @@ struct SettingsView: View {
                 .padding(.horizontal,ScaleUtility.scaledSpacing(15))
                 .padding(.top,ScaleUtility.scaledSpacing(15))
                 
-                //            if remoteConfigManager.giftAfterOnBoarding {
-                //                if !timerManager.isExpired && !purchaseManager.hasPro && !remoteConfigManager.showLifeTimeBannerAtHome {
-                //                    LifeTimeGiftOfferBannerView()
-                //
-                //                }
-                //            }
-                //
-                //                TryProContainerView()
+                if remoteConfigManager.giftAfterOnBoarding {
+                    if !timerManager.isExpired && !purchaseManager.hasPro && !remoteConfigManager.showLifeTimeBannerAtHome {
+                        LifeTimeGiftOfferBannerView()
+                        
+                    }
+                    
+                }
+                
+                if !purchaseManager.hasPro {
+                    
+                    TryProContainerView()
+                    
+                }
                 
                 
                 SettingsCardsView()

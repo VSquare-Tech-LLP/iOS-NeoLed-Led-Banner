@@ -43,7 +43,7 @@ struct EditTextView: View {
       Fonts(fontDisplay: FontManager.dmSerifDisplayRegularFont ,fontImageName: FontManager.dmSerifDisplayRegularFont),
       Fonts(fontDisplay: FontManager.dotoRegularFont ,fontImageName: FontManager.dotoBoldFont),
       Fonts(fontDisplay: FontManager.dynaPuffRegular ,fontImageName: FontManager.dynaPuffBold),
-      Fonts(fontDisplay: FontManager.lobsterTwoBoldFont ,fontImageName: FontManager.lobsterTwoBoldFont),
+      Fonts(fontDisplay: FontManager.lobsterTwoRegularFont ,fontImageName: FontManager.lobsterTwoBoldFont),
       Fonts(fontDisplay: FontManager.montserratRegularFont ,fontImageName: FontManager.montserratBoldFont),
       Fonts(fontDisplay: FontManager.nunitoRegularFont ,fontImageName: FontManager.nunitoBoldFont),
       Fonts(fontDisplay: FontManager.openSansRegularFont ,fontImageName: FontManager.openSansBoldFont),

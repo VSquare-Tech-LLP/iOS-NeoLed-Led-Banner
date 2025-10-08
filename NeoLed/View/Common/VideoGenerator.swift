@@ -17,7 +17,7 @@ class VideoGenerator {
     }
     
     @MainActor
-    func generateVideo(completion: @escaping (Result<URL, Error>) -> Void) {
+    func generateVideo(progressHandler: @escaping (Double) -> Void, completion: @escaping (Result<URL, Error>) -> Void) {
         Task {
             let outputURL = FileManager.default.temporaryDirectory
                 .appendingPathComponent("led_animation_\(UUID().uuidString).mp4")
@@ -30,6 +30,7 @@ class VideoGenerator {
                 return
             }
             
+            // Define video settings
             let videoSettings: [String: Any] = [
                 AVVideoCodecKey: AVVideoCodecType.h264,
                 AVVideoWidthKey: Int(size.width),
@@ -58,6 +59,7 @@ class VideoGenerator {
             videoWriter.startSession(atSourceTime: .zero)
             
             let totalFrames = Int(duration * Double(frameRate))
+            var lastReportedProgress: Double = 0
             
             for frameNumber in 0..<totalFrames {
                 while !videoWriterInput.isReadyForMoreMediaData {
@@ -70,12 +72,23 @@ class VideoGenerator {
                     if let pixelBuffer = self.renderFrame(frameNumber: frameNumber) {
                         adaptor.append(pixelBuffer, withPresentationTime: presentationTime)
                     }
+                    
+                    // Update progress every 3% to avoid too many UI updates
+                    let currentProgress = Double(frameNumber + 1) / Double(totalFrames)
+                    if currentProgress - lastReportedProgress >= 0.03 || frameNumber == totalFrames - 1 {
+                        lastReportedProgress = currentProgress
+                        Task { @MainActor in
+                            progressHandler(currentProgress)
+                        }
+                    }
                 }
             }
             
+            // Finish writing
             videoWriterInput.markAsFinished()
             await videoWriter.finishWriting()
             
+            // Check completion status
             if videoWriter.status == .completed {
                 completion(.success(outputURL))
             } else {
@@ -84,6 +97,77 @@ class VideoGenerator {
             }
         }
     }
+
+
+    
+//    @MainActor
+//    func generateVideo(completion: @escaping (Result<URL, Error>) -> Void) {
+//        Task {
+//            let outputURL = FileManager.default.temporaryDirectory
+//                .appendingPathComponent("led_animation_\(UUID().uuidString).mp4")
+//            
+//            try? FileManager.default.removeItem(at: outputURL)
+//            
+//            guard let videoWriter = try? AVAssetWriter(outputURL: outputURL, fileType: .mp4) else {
+//                completion(.failure(NSError(domain: "VideoGenerator", code: -1,
+//                    userInfo: [NSLocalizedDescriptionKey: "Failed to create video writer"])))
+//                return
+//            }
+//            
+//            let videoSettings: [String: Any] = [
+//                AVVideoCodecKey: AVVideoCodecType.h264,
+//                AVVideoWidthKey: Int(size.width),
+//                AVVideoHeightKey: Int(size.height),
+//                AVVideoCompressionPropertiesKey: [
+//                    AVVideoAverageBitRateKey: 8000000,
+//                    AVVideoProfileLevelKey: AVVideoProfileLevelH264HighAutoLevel
+//                ]
+//            ]
+//            
+//            let videoWriterInput = AVAssetWriterInput(mediaType: .video, outputSettings: videoSettings)
+//            videoWriterInput.expectsMediaDataInRealTime = false
+//            
+//            let adaptor = AVAssetWriterInputPixelBufferAdaptor(
+//                assetWriterInput: videoWriterInput,
+//                sourcePixelBufferAttributes: [
+//                    kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA,
+//                    kCVPixelBufferWidthKey as String: Int(size.width),
+//                    kCVPixelBufferHeightKey as String: Int(size.height),
+//                    kCVPixelBufferMetalCompatibilityKey as String: true
+//                ]
+//            )
+//            
+//            videoWriter.add(videoWriterInput)
+//            videoWriter.startWriting()
+//            videoWriter.startSession(atSourceTime: .zero)
+//            
+//            let totalFrames = Int(duration * Double(frameRate))
+//            
+//            for frameNumber in 0..<totalFrames {
+//                while !videoWriterInput.isReadyForMoreMediaData {
+//                    try? await Task.sleep(nanoseconds: 10_000_000) // 10ms
+//                }
+//                
+//                autoreleasepool {
+//                    let presentationTime = CMTime(value: Int64(frameNumber), timescale: Int32(frameRate))
+//                    
+//                    if let pixelBuffer = self.renderFrame(frameNumber: frameNumber) {
+//                        adaptor.append(pixelBuffer, withPresentationTime: presentationTime)
+//                    }
+//                }
+//            }
+//            
+//            videoWriterInput.markAsFinished()
+//            await videoWriter.finishWriting()
+//            
+//            if videoWriter.status == .completed {
+//                completion(.success(outputURL))
+//            } else {
+//                completion(.failure(videoWriter.error ?? NSError(domain: "VideoGenerator", code: -2,
+//                    userInfo: [NSLocalizedDescriptionKey: "Video writing failed"])))
+//            }
+//        }
+//    }
     
     @MainActor
     private func renderFrame(frameNumber: Int) -> CVPixelBuffer? {
@@ -173,8 +257,9 @@ class VideoSaver: NSObject {
 // MARK: - ResultView Extension
 extension ResultView {
     
-    func convertViewToVideo() {
+    func convertViewToVideo(autoDownload: Bool = false) {
         isProcessing = true
+        progress = 0.0 // Reset progress
         
         // Calculate animation parameters
         let animationDuration = 10.0 / textSpeed
@@ -190,13 +275,33 @@ extension ResultView {
         }
         
         Task { @MainActor in
-            videoGenerator.generateVideo { result in
+            videoGenerator.generateVideo(progressHandler: { generationProgress in
+                // Update progress directly on main thread
+                withAnimation(.linear(duration: 0.3)) {
+                    self.progress = generationProgress
+                }
+            }) { result in
                 DispatchQueue.main.async {
                     self.isProcessing = false
+                    
                     switch result {
                     case .success(let url):
                         self.videoURL = url
+                        
+                        // Animate to 100%
+                        withAnimation(.linear(duration: 0.3)) {
+                            self.progress = 1.0
+                        }
+                        
+                        // Small delay to show 100% before dismissing overlay
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                            self.isExporting = false
+                            self.saveVideoToPhotos(url)
+                        }
+                        
                     case .failure(let error):
+                        self.isExporting = false
+                        self.progress = 0.0
                         self.saveAlertMessage = "Failed to generate video: \(error.localizedDescription)"
                         self.showSaveAlert = true
                     }
@@ -204,6 +309,48 @@ extension ResultView {
             }
         }
     }
+
+//    func convertViewToVideo(autoDownload: Bool = false) {
+//            isProcessing = true
+//            
+//            // Calculate animation parameters
+//            let animationDuration = 10.0 / textSpeed
+//            let totalFrames = Int(videoDuration * Double(frameRate))
+//            
+//            let videoGenerator = VideoGenerator(
+//                frameRate: frameRate,
+//                duration: videoDuration,
+//                size: CGSize(width: 1080, height: 1920)
+//            ) { frameNumber in
+//                let progress = Double(frameNumber) / Double(totalFrames)
+//                return AnyView(self.createVideoFrame(progress: progress, animationDuration: animationDuration))
+//            }
+//            
+//            Task { @MainActor in
+//                videoGenerator.generateVideo { result in
+//                    DispatchQueue.main.async {
+//                        self.isProcessing = false
+//                        switch result {
+//                        case .success(let url):
+//                            self.videoURL = url
+//                            
+//                            // Auto-download if requested
+//                            if autoDownload {
+//                                self.saveVideoToPhotos(url)
+//                            } else {
+//                                // For share button, show share sheet immediately
+//                                self.saveVideoToPhotos(url)
+//                         
+//                            }
+//                            
+//                        case .failure(let error):
+//                            self.saveAlertMessage = "Failed to generate video: \(error.localizedDescription)"
+//                            self.showSaveAlert = true
+//                        }
+//                    }
+//                }
+//            }
+//        }
     
     @ViewBuilder
     private func createVideoFrame(progress: Double, animationDuration: Double) -> some View {

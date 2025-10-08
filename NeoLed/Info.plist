@@ -32,9 +32,9 @@
 		<string>LobsterTwo-Bold.ttf</string>
 		<string>LobsterTwo-Regular.ttf</string>
 		<string>LobsterTwo-Italic.ttf</string>
-		<string>Montserrat-Bold</string>
-		<string>Montserrat-Italic</string>
-		<string>Montserrat-Regular</string>
+		<string>Montserrat-Bold.ttf</string>
+		<string>Montserrat-Italic.ttf</string>
+		<string>Montserrat-Regular.ttf</string>
 		<string>Nunito-Bold.ttf</string>
 		<string>Nunito-Italic.ttf</string>
 		<string>Nunito-Regular.ttf</string>
@@ -56,6 +56,17 @@
 		<string>ZillaSlab-Regular.ttf</string>
 		<string>DynaPuff-Bold.ttf</string>
 		<string>DynaPuff-Regular.ttf</string>
+		<string>Arvo-BoldItalic.ttf</string>
+		<string>BalsamiqSans-BoldItalic.ttf</string>
+		<string>Economica-BoldItalic.ttf</string>
+		<string>LobsterTwo-BoldItalic.ttf</string>
+		<string>Montserrat-BoldItalic.ttf</string>
+		<string>Nunito-BoldItalic.ttf</string>
+		<string>OpenSans_Condensed-BoldItalic.ttf</string>
+		<string>Poppins-BoldItalic.ttf</string>
+		<string>Raleway-BoldItalic.ttf</string>
+		<string>Roboto-BoldItalic.ttf</string>
+		<string>ZillaSlab-BoldItalic.ttf</string>
 	</array>
 </dict>
 </plist>

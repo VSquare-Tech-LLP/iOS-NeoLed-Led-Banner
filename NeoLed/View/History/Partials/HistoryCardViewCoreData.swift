@@ -74,9 +74,9 @@ struct HistoryCardViewCoreData: View {
                             if let text = design.text {
                                 if design.strokeSize > 0 {
                                     Text(text)
-                                        .font(.custom(design.selectedFont ?? FontManager.bricolageGrotesqueRegularFont, size: design.textSize * 30 / 2))
-                                        .fontWeight(isBold ? .heavy : .regular)
-                                        .italic(isItalic)
+                                        .font(.custom(FontManager.getFontWithEffects(baseFontName: design.selectedFont ?? FontManager.bricolageGrotesqueRegularFont,
+                                                                                     isBold: isBold,
+                                                                                     isItalic: isItalic), size:design.textSize * 30 / 2))
                                         .modifier(ColorModifier(colorOption: design.toEffectiveTextColorOption()))
                                         .stroke(
                                             color: design.outlineEnabled ? design.toOutlineColor().color : .white,
@@ -88,9 +88,9 @@ struct HistoryCardViewCoreData: View {
                                         .padding(.horizontal, 16)
                                 } else {
                                     Text(text)
-                                        .font(.custom(design.selectedFont ?? FontManager.bricolageGrotesqueRegularFont, size: design.textSize * 30 / 2))
-                                        .fontWeight(isBold ? .heavy : .regular)
-                                        .italic(isItalic)
+                                        .font(.custom(FontManager.getFontWithEffects(baseFontName: design.selectedFont ?? FontManager.bricolageGrotesqueRegularFont,
+                                                                                     isBold: isBold,
+                                                                                     isItalic: isItalic), size:design.textSize * 30 / 2))
                                         .modifier(ColorModifier(colorOption:  design.toEffectiveTextColorOption()))
                                         .lineLimit(2)
                                         .multilineTextAlignment(.center)

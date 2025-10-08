@@ -14,7 +14,7 @@ struct NeoLedApp: App {
     @StateObject private var purchaseManager = PurchaseManager()
     
     @StateObject private var userSettings = UserSettings()
-    
+    @StateObject private var timerManager = TimerManager()
     @StateObject var remoteConfigManager = RemoteConfigManager()
     
     
@@ -30,6 +30,7 @@ struct NeoLedApp: App {
                 .environmentObject(purchaseManager)
                 .environmentObject(userSettings)
                 .environmentObject(remoteConfigManager)
+                .environmentObject(timerManager)
         }
     }
 }

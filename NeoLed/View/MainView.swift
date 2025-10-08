@@ -79,7 +79,7 @@ struct MainView: View {
                             selectedTab = .explore
                             backgroundImage = ""
                             text = ""
-                            textSize = 2.0
+                            textSize = 4.0
                             strokeSize = 0.0
                             selectedFont = FontManager.bricolageGrotesqueRegularFont
                             selectedColor = ColorOption.predefinedColors[1]
@@ -129,7 +129,7 @@ struct MainView: View {
                             selectedTab = .history
                             backgroundImage = ""
                             text = ""
-                            textSize = 2.0
+                            textSize = 4.0
                             strokeSize = 0.0
                             selectedFont = FontManager.bricolageGrotesqueRegularFont
                             selectedColor = ColorOption.predefinedColors[1]

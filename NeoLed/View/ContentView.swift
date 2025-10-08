@@ -13,11 +13,18 @@ struct ContentView: View {
     @EnvironmentObject var purchaseManager: PurchaseManager
     @EnvironmentObject var remoteConfigManager: RemoteConfigManager
 //    @EnvironmentObject var timerManager: TimerManager
-    
+    @State var isCollectGift: Bool = false
     var body: some View {
         ZStack {
             if userDefault.hasFinishedOnboarding {
                 MainView()
+            }
+            else if userDefault.hasShownGiftPaywall  {
+                GiftPaywallView(isCollectGift: $isCollectGift) {
+                    userDefault.hasFinishedOnboarding = true
+                } giftPurchaseComplete: {
+                    userDefault.hasFinishedOnboarding = true
+                }
             }
             else if userDefault.hasShownPaywall {
                 

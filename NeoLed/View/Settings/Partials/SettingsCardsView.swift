@@ -21,28 +21,28 @@ struct SettingsCardsView: View {
  
 
     var body: some View {
-        VStack(spacing: ScaleUtility.scaledSpacing(20)) {
+        VStack(spacing: ScaleUtility.scaledSpacing(30)) {
             //MARK: - SECOND CARD
             
             VStack(spacing: ScaleUtility.scaledSpacing(12)) {
-                
-                HStack {
-                    
-                    CommonRowView(rowText: "User ID", rowImage: "userIcon")
-                    
-                    Spacer()
-                    
-                    Text("XR" + userDefault.userId + "P")
-                        .font(FontManager.bricolageGrotesqueLightFont(size: .scaledFontSize(12)))
-                        .multilineTextAlignment(.center)
-                        .foregroundColor(Color.primaryApp.opacity(0.5))
-                }
-                .padding(.horizontal,ScaleUtility.scaledSpacing(14))
-                
-                Rectangle()
-                    .foregroundColor(Color.dividerBg)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: ScaleUtility.scaledValue(1.5))
+//                
+//                HStack {
+//                    
+//                    CommonRowView(rowText: "User ID", rowImage: "userIcon")
+//                    
+//                    Spacer()
+//                    
+//                    Text("XR" + userDefault.userId + "P")
+//                        .font(FontManager.bricolageGrotesqueLightFont(size: .scaledFontSize(12)))
+//                        .multilineTextAlignment(.center)
+//                        .foregroundColor(Color.primaryApp.opacity(0.5))
+//                }
+//                .padding(.horizontal,ScaleUtility.scaledSpacing(14))
+//                
+//                Rectangle()
+//                    .foregroundColor(Color.dividerBg)
+//                    .frame(maxWidth: .infinity)
+//                    .frame(height: ScaleUtility.scaledValue(1.5))
                 
                 
                 Button {

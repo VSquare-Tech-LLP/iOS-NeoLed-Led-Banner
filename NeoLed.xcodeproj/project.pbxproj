@@ -84,6 +84,11 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		8BC4981A2E9571F800F059B8 /* Products */ = {
+			isa = PBXGroup;
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -147,6 +152,12 @@
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 8B1A1F512E83EDC2003CFA93 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 8BC4981A2E9571F800F059B8 /* Products */;
+					ProjectRef = 8B6AD4C12E94E4DF00FADEB8 /* NeoLed.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				8B1A1F4F2E83EDC2003CFA93 /* NeoLed */,

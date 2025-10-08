@@ -20,7 +20,8 @@ struct CardView : View {
             Image(imageName)
             .resizable()
             .aspectRatio(contentMode: .fill)
-            .frame(width: 335, height: 130)
+            .frame(height: ScaleUtility.scaledValue(130))
+            .frame(maxWidth: .infinity)
             .clipped()
             .cornerRadius(10)
             .overlay(

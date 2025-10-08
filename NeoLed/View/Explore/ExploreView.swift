@@ -10,6 +10,10 @@ import SwiftUI
 
 struct ExploreView: View {
     
+    @EnvironmentObject var remoteConfigManager: RemoteConfigManager
+    @EnvironmentObject var purchaseManager: PurchaseManager
+    @EnvironmentObject var timerManager: TimerManager
+    
     @State var selectedOption: String = "LED"
     var onTemplateSelect: (LEDTemplate) -> Void  // Add callback
     
@@ -39,6 +43,12 @@ struct ExploreView: View {
                 HeaderView()
                 
                 BannerFilter(selectedOption: $selectedOption)
+                
+                if remoteConfigManager.giftAfterOnBoarding {
+                    if !timerManager.isExpired && !purchaseManager.hasPro && remoteConfigManager.showLifeTimeBannerAtHome {
+                        LifeTimeGiftOfferBannerView()
+                    }
+                }
                 
             }
             

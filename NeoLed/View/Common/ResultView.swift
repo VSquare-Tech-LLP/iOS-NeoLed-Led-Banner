@@ -58,6 +58,11 @@ struct ResultView: View {
     
     @State private var blinkPhase: Bool = false
     
+    @State  var progress: Double = 0.0 // Progress of video generation
+    @State  var isExporting: Bool = false // Flag to check if video is exporting
+    @State private var timer: Timer? = nil
+
+    
     var body: some View {
         ZStack(alignment: .top) {
             
@@ -108,9 +113,7 @@ struct ResultView: View {
                     // Blurred glow layers behind
                     if strokeSize > 0 {
                         Text(text)
-                            .font(.custom(selectedFont, size: textSize * 50))
-                            .fontWeight(isBold ? .heavy : (isLight ? .light : .regular))
-                            .italic(isItalic)
+                            .font(.custom(FontManager.getFontWithEffects(baseFontName: selectedFont, isBold: isBold, isItalic: isItalic), size: textSize * 50))
                             .modifier(ColorModifier(colorOption: selectedColor))
                             .stroke(
                                 color: outlineEnabled ? selectedOutlineColor.color : .white,
@@ -120,9 +123,7 @@ struct ResultView: View {
                             .opacity(isLight ? 0.5 : 1)
                     } else {
                         Text(text)
-                            .font(.custom(selectedFont, size: textSize * 50))
-                            .fontWeight(isBold ? .heavy : (isLight ? .light : .regular))
-                            .italic(isItalic)
+                            .font(.custom(FontManager.getFontWithEffects(baseFontName: selectedFont, isBold: isBold, isItalic: isItalic), size: textSize * 50))
                             .modifier(ColorModifier(colorOption: selectedColor))
                             .blur(radius: isLight ? 40 : 0)
                             .opacity(isLight ? 0.5 : 1)
@@ -132,9 +133,7 @@ struct ResultView: View {
                     if isLight {
                         if strokeSize > 0 {
                             Text(text)
-                                .font(.custom(selectedFont, size: textSize * 50))
-                                .fontWeight(isBold ? .heavy : .regular)
-                                .italic(isItalic)
+                                .font(.custom(FontManager.getFontWithEffects(baseFontName: selectedFont, isBold: isBold, isItalic: isItalic), size: textSize * 50))
                                 .modifier(ColorModifier(colorOption: selectedColor))
                                 .stroke(
                                     color: outlineEnabled ? selectedOutlineColor.color : .white,
@@ -145,10 +144,8 @@ struct ResultView: View {
                                 .opacity(0.7)
                         } else {
                             Text(text)
-                                .font(.custom(selectedFont, size: textSize * 50))
+                                .font(.custom(FontManager.getFontWithEffects(baseFontName: selectedFont, isBold: isBold, isItalic: isItalic), size: textSize * 50))
                                 .kerning(0.4)
-                                .fontWeight(isBold ? .heavy : .regular)
-                                .italic(isItalic)
                                 .modifier(ColorModifier(colorOption: selectedColor))
                                 .blur(radius: 20)
                                 .opacity(0.7)
@@ -158,9 +155,7 @@ struct ResultView: View {
                     // Sharp text on top
                     if strokeSize > 0 {
                         Text(text)
-                            .font(.custom(selectedFont, size: textSize * 50))
-                            .fontWeight(isBold ? .heavy : .regular)
-                            .italic(isItalic)
+                            .font(.custom(FontManager.getFontWithEffects(baseFontName: selectedFont, isBold: isBold, isItalic: isItalic), size: textSize * 50))
                             .modifier(ColorModifier(colorOption: selectedColor))
                             .stroke(
                                 color: outlineEnabled ? selectedOutlineColor.color : .white,
@@ -170,9 +165,7 @@ struct ResultView: View {
                             .opacity(isFlash && blinkPhase ? 0.1 : 1.0)
                     } else {
                         Text(text)
-                            .font(.custom(selectedFont, size: textSize * 50))
-                            .fontWeight(isBold ? .heavy : (isLight ? .light : .regular))
-                            .italic(isItalic)
+                            .font(.custom(FontManager.getFontWithEffects(baseFontName: selectedFont, isBold: isBold, isItalic: isItalic), size: textSize * 50))
                             .modifier(ColorModifier(colorOption: selectedColor))
                             .brightness(0.1)
                             .opacity(isFlash && blinkPhase ? 0.1 : 1.0)
@@ -297,6 +290,7 @@ struct ResultView: View {
                     
                     // Share Video Button
                     Button {
+                        isExporting = true
                         if let url = videoURL {
                             showShareSheet = true
                         } else {
@@ -332,6 +326,7 @@ struct ResultView: View {
                     
                     // Download Video Button
                     Button {
+                        isExporting = true
                         if let url = videoURL {
                             saveVideoToPhotos(url)
                         } else {
@@ -380,6 +375,53 @@ struct ResultView: View {
             .padding(.top,ScaleUtility.scaledSpacing(59))
             
         }
+        .overlay {
+            if isExporting {
+                ZStack {
+                    // Semi-transparent background
+                    Color.black.opacity(0.7)
+                        .ignoresSafeArea()
+                    
+                    VStack(spacing: 20) {
+                        // Text overlay
+                        Text("Exporting Video...")
+                            .font(.system(size: 20, weight: .semibold))
+                            .foregroundColor(.white)
+                        
+                        // Progress percentage
+                        Text("\(Int(progress * 100))%")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(.white.opacity(0.8))
+                        
+                        // Progress bar
+                        ZStack(alignment: .leading) {
+                            // Background capsule
+                            Capsule()
+                                .fill(Color.gray.opacity(0.3))
+                                .frame(width: 250, height: 8)
+                            
+                            // Progress capsule
+                            Capsule()
+                                .fill(
+                                    LinearGradient(
+                                        colors: [Color.blue, Color.cyan],
+                                        startPoint: .leading,
+                                        endPoint: .trailing
+                                    )
+                                )
+                                .frame(width: 250 * CGFloat(progress), height: 8)
+                                .animation(.linear(duration: 0.3), value: progress)
+                        }
+                    }
+                    .padding(40)
+                    .background(
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(Color.black.opacity(0.8))
+                            .shadow(radius: 10)
+                    )
+                }
+            }
+        }
         .onDisappear {
             // Auto-save when leaving the view
             if isSaved {
@@ -422,6 +464,21 @@ struct ResultView: View {
         }
     }
 
+    func startProgressTimer() {
+        // Start a timer to update the progress every second
+        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+            if self.progress < 1.0 {
+                self.progress += 0.1 // Adjust the increment based on your total duration
+            }
+        }
+    }
+
+    func stopProgressTimer() {
+        // Invalidate the timer when video is done
+        timer?.invalidate()
+        timer = nil
+    }
+    
     private func saveDesignToHistory() {
         viewModel.saveDesign(
             backgroundResultImage: backgroundResultImage,
@@ -546,3 +603,21 @@ struct ResultView: View {
 }
 
   
+struct ProgressBar: View {
+    @Binding var progress: Double
+
+    var body: some View {
+        GeometryReader { geometry in
+            ZStack(alignment: .leading) {
+                Capsule()
+                    .fill(Color.gray.opacity(0.3))
+                    .frame(height: 10)
+                
+                Capsule()
+                    .fill(Color.blue) // You can change the color of the progress bar
+                    .frame(width: geometry.size.width * CGFloat(progress), height: 10)
+                    .animation(.linear(duration: 0.5), value: progress) // Smooth animation
+            }
+        }
+    }
+}

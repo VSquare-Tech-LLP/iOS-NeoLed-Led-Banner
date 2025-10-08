@@ -20,10 +20,12 @@ struct FontManager {
     static var arvoBoldFont = "Arvo-Bold"
     static var arvoItalicFont = "Arvo-Italic"
     static var arvoRegularFont = "Arvo-Regular"
+    static var arvoBoldItalicFont = "Arvo-BoldItalic"
     
     static var balsamiqSansBoldFont = "BalsamiqSans-Bold"
     static var balsamiqSansItalicFont = "BalsamiqSans-Italic"
     static var balsamiqSansRegularFont = "BalsamiqSans-Regular"
+    static var balsamiqSansBoldItalicFont = "BalsamiqSans-BoldItalic"
     
     static var dmSerifDisplayRegularFont = "DMSerifDisplay-Regular"
     static var dmSerifDisplayItalicFont = "DMSerifDisplay-Italic"
@@ -37,40 +39,49 @@ struct FontManager {
     static var economicaBoldFont = "Economica-Bold"
     static var economicaItalicFont = "Economica-Italic"
     static var economicaRegularFont = "Economica-Regular"
+    static var economicaBoldItalicFont = "Economica-BoldItalic"
     
     static var lobsterTwoBoldFont = "LobsterTwo-Bold"
     static var lobsterTwoItalicFont = "LobsterTwo-Italic"
     static var lobsterTwoRegularFont = "LobsterTwo-Regular"
+    static var lobsterTwoBoldItalicFont = "LobsterTwo-BoldItalic"
     
     static var montserratBoldFont = "Montserrat-Bold"
     static var montserratItalicFont = "Montserrat-Italic"
     static var montserratRegularFont = "Montserrat-Regular"
+    static var montserratBoldItalicFont = "Montserrat-BoldItalic"
     
     static var nunitoBoldFont = "Nunito-Bold"
     static var nunitoItalicFont = "Nunito-Italic"
     static var nunitoRegularFont = "Nunito-Regular"
+    static var nunitoBoldItalicFont = "Nunito-BoldItalic"
     
     static var openSansBoldFont = "OpenSans-Bold"
     static var openSansItalicFont = "OpenSans-Italic"
     static var openSansRegularFont = "OpenSans-Regular"
+    static var openSansBoldItalicFont = "OpenSans-BoldItalic"
     
     static var poppinsBoldFont = "Poppins-Bold"
     static var poppinsItalicFont = "Poppins-Italic"
     static var poppinsRegularFont = "Poppins-Regular"
+    static var poppinsBoldItalicFont = "Poppins-BoldItalic"
     
     static var ralewayBoldFont = "Raleway-Bold"
     static var ralewayItalicFont = "Raleway-Italic"
     static var ralewayRegularFont = "Raleway-Regular"
+    static var ralewayBoldItalicFont = "Raleway-BoldItalic"
     
     static var ribeyeRegularFont = "Ribeye-Regular"
     
     static var robotoBoldFont = "Roboto-Bold"
     static var robotoItalicFont = "Roboto-Italic"
     static var robotoRegularFont = "Roboto-Regular"
+    static var robotoBoldItalicFont = "Roboto-BoldItalic"
     
     static var zillaSlabBoldFont = "ZillaSlab-Bold"
     static var zillaSlabItalicFont = "ZillaSlab-Italic"
     static var zillaSlabRegularFont = "ZillaSlab-Regular"
+    static var zillaSlabBoldItalicFont = "ZillaSlab-BoldItalic"
 
     // MARK: - BricolageGrotesque
     
@@ -90,10 +101,10 @@ struct FontManager {
     static func bricolageGrotesqueLightFont(size: CGFloat) -> Font {
         .custom(bricolageGrotesqueLightFont, size: size)
     }
+
     static func bricolageGrotesqueExtraBold(size: CGFloat) -> Font {
         .custom(bricolageGrotesqueExtraBold, size: size)
     }
-     
 
     // MARK: - Arvo
 
@@ -106,8 +117,9 @@ struct FontManager {
     static func arvoRegularFont(size: CGFloat) -> Font {
         .custom(arvoRegularFont, size: size)
     }
-     
-    
+    static func arvoBoldItalicFont(size: CGFloat) -> Font {
+        .custom(arvoBoldItalicFont, size: size)
+    }
     // MARK: - BalsamiqSans
     
     static func balsamiqSansBoldFont(size: CGFloat) -> Font {
@@ -119,7 +131,9 @@ struct FontManager {
     static func balsamiqSansRegularFont(size: CGFloat) -> Font {
         .custom(balsamiqSansRegularFont, size: size)
     }
-    
+    static func balsamiqSansBoldItalicFont(size: CGFloat) -> Font {
+        .custom(balsamiqSansBoldItalicFont, size: size)
+    }
     
     // MARK: - DMSerifDisplay
     
@@ -150,7 +164,9 @@ struct FontManager {
     static func economicaRegularFont(size: CGFloat) -> Font {
         .custom(economicaRegularFont, size: size)
     }
-    
+    static func economicaBoldItalicFont(size: CGFloat) -> Font {
+        .custom(economicaBoldItalicFont, size: size)
+    }
     
     // MARK: - LobsterTwo
     
@@ -162,6 +178,9 @@ struct FontManager {
     }
     static func lobsterTwoRegularFont(size: CGFloat) -> Font {
         .custom(lobsterTwoRegularFont, size: size)
+    }
+    static func lobsterTwoBoldItalicFont(size: CGFloat) -> Font {
+        .custom(lobsterTwoBoldItalicFont, size: size)
     }
     
     // MARK: - Montserrat
@@ -175,7 +194,9 @@ struct FontManager {
     static func montserratRegularFont(size: CGFloat) -> Font {
         .custom(montserratRegularFont, size: size)
     }
-    
+    static func montserratBoldItalicFont(size: CGFloat) -> Font {
+        .custom(montserratBoldItalicFont, size: size)
+    }
     // MARK: - Nunito
     
     static func nunitoBoldFont(size: CGFloat) -> Font {
@@ -187,7 +208,9 @@ struct FontManager {
     static func nunitoRegularFont(size: CGFloat) -> Font {
         .custom(nunitoRegularFont, size: size)
     }
-    
+    static func nunitoBoldItalicFont(size: CGFloat) -> Font {
+        .custom(nunitoBoldItalicFont, size: size)
+    }
     // MARK: - OpenSans
     
     static func openSansBoldFont(size: CGFloat) -> Font {
@@ -198,6 +221,9 @@ struct FontManager {
     }
     static func openSansRegularFont(size: CGFloat) -> Font {
         .custom(openSansRegularFont, size: size)
+    }
+    static func openSansBoldItalicFont(size: CGFloat) -> Font {
+        .custom(openSansBoldItalicFont, size: size)
     }
     
     // MARK: - Poppins
@@ -211,7 +237,9 @@ struct FontManager {
     static func poppinsRegularFont(size: CGFloat) -> Font {
         .custom(poppinsRegularFont, size: size)
     }
-    
+    static func poppinsBoldItalicFont(size: CGFloat) -> Font {
+        .custom(poppinsBoldItalicFont, size: size)
+    }
     // MARK: - Raleway
     
     static func ralewayBoldFont(size: CGFloat) -> Font {
@@ -223,7 +251,9 @@ struct FontManager {
     static func ralewayRegularFont(size: CGFloat) -> Font {
         .custom(ralewayRegularFont, size: size)
     }
-    
+    static func ralewayBoldItalicFont(size: CGFloat) -> Font {
+        .custom(ralewayBoldItalicFont, size: size)
+    }
     // MARK: - Ribeye
     
     static func ribeyeRegularFont(size: CGFloat) -> Font {
@@ -241,7 +271,9 @@ struct FontManager {
     static func robotoRegularFont(size: CGFloat) -> Font {
         .custom(robotoRegularFont, size: size)
     }
-    
+    static func robotoBoldItalicFont(size: CGFloat) -> Font {
+        .custom(robotoBoldItalicFont, size: size)
+    }
     // MARK: - ZillaSlab
     
     static func zillaSlabBoldFont(size: CGFloat) -> Font {
@@ -254,6 +286,10 @@ struct FontManager {
         .custom(zillaSlabRegularFont, size: size)
     }
 
+    static func zillaSlabBoldItalicFont(size: CGFloat) -> Font {
+        .custom(zillaSlabBoldItalicFont, size: size)
+    }
+    
     
     struct FontCapabilities {
          let hasBold: Bool
@@ -324,6 +360,36 @@ struct FontManager {
          }
      }
     
+    // Add this method to FontManager struct
+    static func getFontWithEffects(baseFontName: String, isBold: Bool, isItalic: Bool) -> String {
+        let capabilities = getFontCapabilities(for: baseFontName)
+        
+        // If both effects are requested but font doesn't support both, prioritize based on availability
+        if isBold && isItalic {
+            // Check if BoldItalic variant exists
+            if capabilities.hasBold && capabilities.hasItalic {
+                return baseFontName
+                    .replacingOccurrences(of: "-Regular", with: "-BoldItalic")
+            }
+            // If no BoldItalic, fall back to just Bold or just Italic
+            else if capabilities.hasBold {
+                return baseFontName.replacingOccurrences(of: "-Regular", with: "-Bold")
+            } else if capabilities.hasItalic {
+                return baseFontName.replacingOccurrences(of: "-Regular", with: "-Italic")
+            }
+        }
+        // Only bold requested
+        else if isBold && capabilities.hasBold {
+            return baseFontName.replacingOccurrences(of: "-Regular", with: "-Bold")
+        }
+        // Only italic requested
+        else if isItalic && capabilities.hasItalic {
+            return baseFontName.replacingOccurrences(of: "-Regular", with: "-Italic")
+        }
+        
+        // Default to regular
+        return baseFontName
+    }
     
 }
 
