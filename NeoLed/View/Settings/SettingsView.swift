@@ -11,6 +11,12 @@ import Foundation
 import SwiftUI
 
 struct SettingsView: View {
+    
+    let notificationFeedback = UINotificationFeedbackGenerator()
+    let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+    let selectionFeedback = UISelectionFeedbackGenerator()
+    
+    
     @EnvironmentObject var purchaseManager: PurchaseManager
     @EnvironmentObject var timerManager: TimerManager
     @EnvironmentObject var remoteConfigManager: RemoteConfigManager
@@ -22,6 +28,7 @@ struct SettingsView: View {
                 
                 HStack(spacing: ScaleUtility.scaledSpacing(13)) {
                     Button {
+                        impactFeedback.impactOccurred()
                         onBack()
                     } label: {
                         Image(.backIcon)
@@ -65,7 +72,7 @@ struct SettingsView: View {
         .background {
             Image(.background)
                 .resizable()
-                .scaledToFill()
+                .frame(maxWidth: .infinity,maxHeight: .infinity)
                 .ignoresSafeArea(.all)
         }
         

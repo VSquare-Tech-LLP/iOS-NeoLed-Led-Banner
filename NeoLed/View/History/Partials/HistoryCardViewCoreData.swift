@@ -9,6 +9,11 @@
 import SwiftUI
 
 struct HistoryCardViewCoreData: View {
+    
+    let notificationFeedback = UINotificationFeedbackGenerator()
+    let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+    let selectionFeedback = UISelectionFeedbackGenerator()
+    
     let design: LEDDesignEntity
     let onTap: () -> Void
     let onDelete: () -> Void
@@ -23,7 +28,10 @@ struct HistoryCardViewCoreData: View {
     var isMirror: Bool { design.effectsArray.contains("Mirror") }
     
     var body: some View {
-        Button(action: onTap) {
+        Button(action: {
+            impactFeedback.impactOccurred()
+            onTap()
+        }) {
             ZStack(alignment: .topTrailing) {
                 
                 GeometryReader { geo in
@@ -76,7 +84,7 @@ struct HistoryCardViewCoreData: View {
                                     Text(text)
                                         .font(.custom(FontManager.getFontWithEffects(baseFontName: design.selectedFont ?? FontManager.bricolageGrotesqueRegularFont,
                                                                                      isBold: isBold,
-                                                                                     isItalic: isItalic), size:design.textSize * 30 / 2))
+                                                                                     isItalic: isItalic), size: .scaledFontSize(design.textSize * 30 / 2)))
                                         .modifier(ColorModifier(colorOption: design.toEffectiveTextColorOption()))
                                         .stroke(
                                             color: design.outlineEnabled ? design.toOutlineColor().color : .white,
@@ -85,17 +93,17 @@ struct HistoryCardViewCoreData: View {
                                         .lineLimit(2)
                                         .multilineTextAlignment(.center)
                                         .frame(maxWidth: .infinity)
-                                        .padding(.horizontal, 16)
+                                        .padding(.horizontal, ScaleUtility.scaledSpacing(16))
                                 } else {
                                     Text(text)
                                         .font(.custom(FontManager.getFontWithEffects(baseFontName: design.selectedFont ?? FontManager.bricolageGrotesqueRegularFont,
                                                                                      isBold: isBold,
-                                                                                     isItalic: isItalic), size:design.textSize * 30 / 2))
+                                                                                     isItalic: isItalic), size: .scaledFontSize(design.textSize * 30 / 2)))
                                         .modifier(ColorModifier(colorOption:  design.toEffectiveTextColorOption()))
                                         .lineLimit(2)
                                         .multilineTextAlignment(.center)
                                         .frame(maxWidth: .infinity)
-                                        .padding(.horizontal, 16)
+                                        .padding(.horizontal, ScaleUtility.scaledSpacing(16))
                                 }
                            
                         }
@@ -123,16 +131,18 @@ struct HistoryCardViewCoreData: View {
           
                 }
                 .frame(maxWidth: .infinity)
-                .frame(height: ScaleUtility.scaledValue(130))
+                .frame(height: isIPad ? ScaleUtility.scaledValue(185) : ScaleUtility.scaledValue(130))
                 .clipShape(RoundedRectangle(cornerRadius: 10))
                 
                 // Delete Button
                 Button(action: {
+                    notificationFeedback.notificationOccurred(.warning)
                     showDeleteAlert = true
                 }) {
                     Image(.deleteIcon)
                         .resizable()
-                        .frame(width: ScaleUtility.scaledValue(12), height: ScaleUtility.scaledValue(12))
+                        .frame(width: isIPad ?  ScaleUtility.scaledValue(18) : ScaleUtility.scaledValue(12),
+                               height: isIPad ? ScaleUtility.scaledValue(18) : ScaleUtility.scaledValue(12))
                         .padding(.all, ScaleUtility.scaledSpacing(6))
                         .background{
                             Circle()
@@ -147,11 +157,14 @@ struct HistoryCardViewCoreData: View {
                 .alert("Delete Design", isPresented: $showDeleteAlert) {
                     Button("Cancel", role: .cancel) { }
                     Button("Delete", role: .destructive) {
+                        impactFeedback.impactOccurred()
                         onDelete()
+                        AnalyticsManager.shared.log(.deleted)
                     }
                 } message: {
                     Text("Are you sure you want to delete this design?")
                 }
+                .tint(.blue)
             }
             .overlay(
                 RoundedRectangle(cornerRadius: 10)

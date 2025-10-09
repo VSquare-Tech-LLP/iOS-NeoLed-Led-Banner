@@ -83,7 +83,9 @@ struct EditTextView: View {
    @State private var customOutlineColor: UIColor = .blue
    @State private var hasCustomOutlineColor = false
     
-
+    let notificationFeedback = UINotificationFeedbackGenerator()
+    let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+    let selectionFeedback = UISelectionFeedbackGenerator()
 
     
    var body: some View {
@@ -110,7 +112,7 @@ struct EditTextView: View {
                                    let isEffectAvailable = FontManager.isEffectAvailable(effect.effectName, for: selectedFont)
                                    
                                    Button {
-                                       
+                                       impactFeedback.impactOccurred()
                                        // Only allow interaction if effect is available
                                        guard isEffectAvailable else { return }
                                        
@@ -118,6 +120,7 @@ struct EditTextView: View {
                                        if effect.effectName == "None" {
                                            selectedEffect.removeAll()
                                            selectedEffect.insert("None")
+                                           AnalyticsManager.shared.log(.effectApplied(effectName: "None"))
                                        }
                                        // If any other effect is clicked
                                        else {
@@ -133,6 +136,7 @@ struct EditTextView: View {
                                                }
                                            } else {
                                                selectedEffect.insert(effect.effectName)
+                                               AnalyticsManager.shared.log(.effectApplied(effectName: effect.effectName))
                                            }
                                        }
                                        
@@ -140,8 +144,8 @@ struct EditTextView: View {
                                        
                                        Image(effect.effectImage)
                                            .resizable()
-                                           .frame(width: ScaleUtility.scaledValue(16),
-                                                  height: ScaleUtility.scaledValue(16))
+                                           .frame(width:  isIPad ? ScaleUtility.scaledValue(24) :  ScaleUtility.scaledValue(16),
+                                                  height:  isIPad ? ScaleUtility.scaledValue(24) : ScaleUtility.scaledValue(16))
                                            .padding(.all, ScaleUtility.scaledSpacing(13))
                                            .background {
                                                if isSelected {
@@ -166,7 +170,8 @@ struct EditTextView: View {
                                            .opacity(isEffectAvailable ? 1.0 : 0.3)
                                    }
                                    .disabled(!isEffectAvailable)
-                                   .frame(width: ScaleUtility.scaledValue(44), height: ScaleUtility.scaledValue(44))
+                                   .frame(width: isIPad ? ScaleUtility.scaledValue(66) : ScaleUtility.scaledValue(44),
+                                          height:isIPad ?  ScaleUtility.scaledValue(66) :  ScaleUtility.scaledValue(44))
                                        
                                    Text(effect.effectName)
                                        .font(FontManager.bricolageGrotesqueRegularFont(size: .scaledFontSize(12)))
@@ -196,12 +201,14 @@ struct EditTextView: View {
                        HStack(spacing: ScaleUtility.scaledSpacing(10)) {
                            ForEach(Array(fontOptions.enumerated()), id: \.offset) { index, font in
                                Button(action: {
+                                   impactFeedback.impactOccurred()
                                    selectedFont = font.fontDisplay
+                                   AnalyticsManager.shared.log(.fontSelected(fontName: font.fontDisplay))
                                }) {
                                    Text("Aa")
                                        .font(.custom(font.fontImageName, size: .scaledFontSize(14)))
                                        .foregroundColor(Color.primaryApp)
-                                       .padding(ScaleUtility.scaledSpacing(11))
+                                       .padding( isIPad ? ScaleUtility.scaledSpacing(13) : ScaleUtility.scaledSpacing(11))
                                        .background {
                                            if selectedFont == font.fontDisplay {
                                                EllipticalGradient(
@@ -222,7 +229,8 @@ struct EditTextView: View {
                                        }
                                        .cornerRadius(5)
                                }
-                               .frame(width: ScaleUtility.scaledValue(44), height: ScaleUtility.scaledValue(44))
+                               .frame(width: isIPad ? ScaleUtility.scaledValue(66) : ScaleUtility.scaledValue(44),
+                                      height:isIPad ?  ScaleUtility.scaledValue(66) :  ScaleUtility.scaledValue(44))
                            }
                        }
                        .padding(.horizontal, ScaleUtility.scaledSpacing(30))
@@ -296,7 +304,7 @@ struct EditTextView: View {
                            HStack(spacing: ScaleUtility.scaledSpacing(10)) {
                                ForEach(0..<10) { index in
                                    colorButton(ColorOption.predefinedColors[index])
-                                       .frame(height: ScaleUtility.scaledValue(30))
+                                       .frame(height:  isIPad ? ScaleUtility.scaledValue(45) : ScaleUtility.scaledValue(30))
                                }
                            }
                            .padding(.horizontal, ScaleUtility.scaledSpacing(30))
@@ -305,7 +313,7 @@ struct EditTextView: View {
                            HStack(spacing: ScaleUtility.scaledSpacing(10)) {
                                ForEach(10..<20) { index in
                                    colorButton(ColorOption.predefinedColors[index])
-                                       .frame(height: ScaleUtility.scaledValue(30))
+                                       .frame(height:  isIPad ? ScaleUtility.scaledValue(45) : ScaleUtility.scaledValue(30))
                                }
                            }
                            .padding(.horizontal, ScaleUtility.scaledSpacing(30))
@@ -357,14 +365,17 @@ struct EditTextView: View {
                            ForEach(Array(alignmentOptions.enumerated()), id: \.offset) { index, align in
                                
                                Button {
+                                   AnalyticsManager.shared.log(.scrollDirectionChanged(direction: align.alignmentName))
                                    DispatchQueue.main.async {
+                                       impactFeedback.impactOccurred()
                                        selectedAlignment = ""
                                        selectedAlignment = align.alignmentName
                                    }
                                } label: {
                                    Image(align.alignmentImage)
                                        .resizable()
-                                       .frame(width: ScaleUtility.scaledValue(16), height: ScaleUtility.scaledValue(16))
+                                       .frame(width:  isIPad ? ScaleUtility.scaledValue(24) : ScaleUtility.scaledValue(16),
+                                              height:  isIPad ? ScaleUtility.scaledValue(24) : ScaleUtility.scaledValue(16))
                                        .padding(.all, ScaleUtility.scaledSpacing(13))
                                        .background {
                                            if selectedAlignment == align.alignmentName {
@@ -377,7 +388,7 @@ struct EditTextView: View {
                                                )
                                            }
                                            else {
-                                               Color.appGrey
+                                               Color.clear
                                            }
                                        }
                                        .cornerRadius(5)
@@ -387,7 +398,8 @@ struct EditTextView: View {
                                            
                                        }
                                }
-                               .frame(width: ScaleUtility.scaledValue(44), height: ScaleUtility.scaledValue(44))
+                               .frame(width:  isIPad ? ScaleUtility.scaledValue(66) : ScaleUtility.scaledValue(44),
+                                      height:  isIPad ? ScaleUtility.scaledValue(66) : ScaleUtility.scaledValue(44))
                                
                            }
                        }
@@ -430,6 +442,7 @@ struct EditTextView: View {
                        type: .solid(Color(color))
                    )
                    hasCustomTextColor = true
+                   AnalyticsManager.shared.log(.textColorSelected(colorName: "Custom"))
                }
            )
            .presentationDetents(isIPad ? [.large, .fraction(0.95)] : [.fraction(0.9)])
@@ -447,6 +460,8 @@ struct EditTextView: View {
                    )
                    hasCustomOutlineColor = true
                    outlineEnabled = true
+                   
+                   AnalyticsManager.shared.log(.strokeColorSelected(colorName: "Custom"))
                }
            )
            .presentationDetents(isIPad ? [.large, .fraction(0.95)] : [.fraction(0.9)])
@@ -456,17 +471,20 @@ struct EditTextView: View {
    @ViewBuilder
    private func colorButton(_ colorOption: ColorOption) -> some View {
        Button(action: {
+           impactFeedback.impactOccurred()
            if colorOption.id == "white" {
                showTextColorPicker = true
            } else {
                selectedColor = colorOption
                hasCustomTextColor = false  // Deselect custom color
+               AnalyticsManager.shared.log(.textColorSelected(colorName: colorOption.name))
            }
        }) {
            ZStack {
                Rectangle()
                    .foregroundColor(.clear)
-                   .frame(width: ScaleUtility.scaledValue(28), height: ScaleUtility.scaledValue(28))
+                   .frame(width: isIPad ? ScaleUtility.scaledValue(42) :  ScaleUtility.scaledValue(28),
+                          height:  isIPad ? ScaleUtility.scaledValue(42) : ScaleUtility.scaledValue(28))
                    .cornerRadius(5.83333)
                    .overlay {
                        RoundedRectangle(cornerRadius: 5)
@@ -483,20 +501,22 @@ struct EditTextView: View {
                    Rectangle()
                        .fill(Color(customTextColor))
                        .frame(
-                           width: ScaleUtility.scaledValue(22),
-                           height: ScaleUtility.scaledValue(22)
+                        width:  isIPad ? ScaleUtility.scaledValue(33) : ScaleUtility.scaledValue(22),
+                        height:  isIPad ? ScaleUtility.scaledValue(33) : ScaleUtility.scaledValue(22)
                        )
                        .cornerRadius(5)
                } else {
                    colorOption.colorPreview(
-                       size: (selectedColor.id == colorOption.id && !hasCustomTextColor) ?
-                           ScaleUtility.scaledValue(22) : ScaleUtility.scaledValue(28)
+                       size: (selectedColor.id == colorOption.id && !hasCustomTextColor)
+                       ?  isIPad ? ScaleUtility.scaledValue(33) : ScaleUtility.scaledValue(22)
+                       :  isIPad ? ScaleUtility.scaledValue(42) : ScaleUtility.scaledValue(28)
                    )
                    .overlay {
                        if colorOption.id == "white" && !hasCustomTextColor {
                            Image(.plusIcon)
                                .resizable()
-                               .frame(width: ScaleUtility.scaledValue(14), height: ScaleUtility.scaledValue(14))
+                               .frame(width:  isIPad ? ScaleUtility.scaledValue(21) : ScaleUtility.scaledValue(14),
+                                      height:  isIPad ? ScaleUtility.scaledValue(21) : ScaleUtility.scaledValue(14))
                        }
                    }
                }

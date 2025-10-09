@@ -10,9 +10,9 @@ import Firebase
 
 @main
 struct NeoLedApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     let persistenceController = PersistenceController.shared
     @StateObject private var purchaseManager = PurchaseManager()
-    
     @StateObject private var userSettings = UserSettings()
     @StateObject private var timerManager = TimerManager()
     @StateObject var remoteConfigManager = RemoteConfigManager()

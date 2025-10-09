@@ -34,7 +34,7 @@ struct PaywallView: View {
                     isDisable: $purchaseManager.isInProgress,
                     restoreAction: {
                         purchaseManager.isInProgress = false
-                        //                            AnalyticsManager.shared.log(isInternalOpen ? .internalPaywallRestoreClicked : .firstPaywallRestoreClicked)
+                                AnalyticsManager.shared.log(isInternalOpen ? .internalPaywallRestoreClicked : .firstPaywallRestoreClicked)
                         Task {
                             defer {
                                 purchaseManager.isInProgress = false
@@ -44,7 +44,7 @@ struct PaywallView: View {
                                 purchaseManager.isInProgress = true
                                 try await AppStore.sync()
                                 await purchaseManager.updatePurchaseProducts(isRestore: true)
-                                //                                    AnalyticsManager.shared.log(isInternalOpen ? .internalPaywallPlanRestore(PlanDetails(planName: userSettings.planType)) : .firstPaywallPlanRestore(PlanDetails(planName: userSettings.planType)))
+                                AnalyticsManager.shared.log(isInternalOpen ? .internalPaywallPlanRestore(PlanDetails(planName: userSettings.planType)) : .firstPaywallPlanRestore(PlanDetails(planName: userSettings.planType)))
                                 if purchaseManager.hasPro {
                                     purchaseCompletSuccessfullyAction()
                                 }
@@ -59,10 +59,10 @@ struct PaywallView: View {
                     }, closeAction: {
                         closePayAll()
                         if isInternalOpen {
-                            //                                AnalyticsManager.shared.log(.internalPaywallXClicked)
+                                                            AnalyticsManager.shared.log(.internalPaywallXClicked)
                         }
                         else {
-                            //                                AnalyticsManager.shared.log(.firstPaywallXClicked)
+                                                            AnalyticsManager.shared.log(.firstPaywallXClicked)
                         }
                     },
                     delayCloseButton: remoteConfigManager.isShowDelayPaywallCloseButton,
@@ -80,7 +80,7 @@ struct PaywallView: View {
                     PaywallBottmView(isProcess: purchaseManager.isInProgress,purchaseManager: _purchaseManager,
                                      selectedPlan: $selectedPlan,
                                      tryForFreeAction: {
-                        //                            AnalyticsManager.shared.log(isInternalOpen ? .internalPaywallPayButtonClicked(PlanDetails(planName: userSettings.planType)) : .firstPaywallPayButtonClicked(PlanDetails(planName: userSettings.planType)) )
+                                                    AnalyticsManager.shared.log(isInternalOpen ? .internalPaywallPayButtonClicked(PlanDetails(planName: userSettings.planType)) : .firstPaywallPayButtonClicked(PlanDetails(planName: userSettings.planType)) )
                         
                         Task {
                             do {
@@ -91,7 +91,7 @@ struct PaywallView: View {
                                     if purchaseManager.hasPro {
                                         purchaseCompletSuccessfullyAction()
                                         notificationfeedback.notificationOccurred(.success)
-                                        //                                            AnalyticsManager.shared.log(isInternalOpen ? .internalPaywallPlanPurchase(PlanDetails(planName: userSettings.planType)) : .firstPaywallPlanPurchase(PlanDetails(planName: userSettings.planType)) )
+                                        AnalyticsManager.shared.log(isInternalOpen ? .internalPaywallPlanPurchase(PlanDetails(planName: userSettings.planType)) : .firstPaywallPlanPurchase(PlanDetails(planName: userSettings.planType)) )
                                     }
                                 } else {
                                     print("No product")

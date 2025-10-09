@@ -16,38 +16,43 @@ struct ContentView: View {
     @State var isCollectGift: Bool = false
     var body: some View {
         ZStack {
-            if userDefault.hasFinishedOnboarding {
-                MainView()
-            }
-            else if userDefault.hasShownGiftPaywall  {
-                GiftPaywallView(isCollectGift: $isCollectGift) {
-                    userDefault.hasFinishedOnboarding = true
-                } giftPurchaseComplete: {
-                    userDefault.hasFinishedOnboarding = true
-                }
-            }
-            else if userDefault.hasShownPaywall {
-                
-                PaywallView(closePayAll: {
-                    if purchaseManager.hasPro || !remoteConfigManager.giftAfterOnBoarding {
-                        userDefault.hasFinishedOnboarding = true
-                    }
-                    else {
-                        userDefault.hasShownGiftPaywall = true
-                    }
-                }, purchaseCompletSuccessfullyAction: {
-                    userDefault.hasFinishedOnboarding = true
-                })
+            if remoteConfigManager.showForceUpdateAlert {
+                ForceUpdateAlertView()
             }
             else {
-                SwipeView(showPaywall: {
-                    if !purchaseManager.hasPro && remoteConfigManager.isShowOnboardingPaywall {
-                        userDefault.hasShownPaywall = true
-                    }
-                    else {
+                
+                if userDefault.hasFinishedOnboarding {
+                    MainView()
+                }
+                else if userDefault.hasShownGiftPaywall  {
+                    GiftPaywallView(isCollectGift: $isCollectGift) {
+                        userDefault.hasFinishedOnboarding = true
+                    } giftPurchaseComplete: {
                         userDefault.hasFinishedOnboarding = true
                     }
-                })
+                }
+                else if userDefault.hasShownPaywall {
+                    PaywallView(closePayAll: {
+                        if purchaseManager.hasPro || !remoteConfigManager.giftAfterOnBoarding {
+                            userDefault.hasFinishedOnboarding = true
+                        }
+                        else {
+                            userDefault.hasShownGiftPaywall = true
+                        }
+                    }, purchaseCompletSuccessfullyAction: {
+                        userDefault.hasFinishedOnboarding = true
+                    })
+                }
+                else {
+                    SwipeView(showPaywall: {
+                        if !purchaseManager.hasPro && remoteConfigManager.isShowOnboardingPaywall {
+                            userDefault.hasShownPaywall = true
+                        }
+                        else {
+                            userDefault.hasFinishedOnboarding = true
+                        }
+                    })
+                }
             }
         }
         

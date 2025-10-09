@@ -58,6 +58,10 @@ struct OutlineColorPickerView: View {
     var isBackground: Bool = false
     @Binding var selectedBgColor: OutlineColorOption 
     
+    let notificationFeedback = UINotificationFeedbackGenerator()
+    let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+    let selectionFeedback = UISelectionFeedbackGenerator()
+    
     var body: some View {
         VStack(spacing: ScaleUtility.scaledSpacing(15)) {
             
@@ -71,12 +75,14 @@ struct OutlineColorPickerView: View {
                 
                 // Add Custom Color Button
                 Button(action: {
+                    impactFeedback.impactOccurred()
                     showColorPicker.toggle()
                 }) {
                     ZStack {
                         Rectangle()
                             .foregroundColor(.clear)
-                            .frame(width: ScaleUtility.scaledValue(28), height: ScaleUtility.scaledValue(28))
+                            .frame(width: isIPad ? ScaleUtility.scaledValue(42) : ScaleUtility.scaledValue(28),
+                                   height:  isIPad ? ScaleUtility.scaledValue(42) :ScaleUtility.scaledValue(28))
                             .cornerRadius(5)
                             .overlay {
                                 RoundedRectangle(cornerRadius: 5)
@@ -91,19 +97,21 @@ struct OutlineColorPickerView: View {
                             Rectangle()
                                 .fill(Color(customColor))
                                 .frame(
-                                    width: ScaleUtility.scaledValue(22),
-                                    height: ScaleUtility.scaledValue(22)
+                                    width:  isIPad ? ScaleUtility.scaledValue(33) : ScaleUtility.scaledValue(22),
+                                    height:  isIPad ? ScaleUtility.scaledValue(33) : ScaleUtility.scaledValue(22)
                                 )
                                 .cornerRadius(5)
                         } else {
                             Rectangle()
                                 .foregroundColor(.white)
-                                .frame(width: ScaleUtility.scaledValue(28), height: ScaleUtility.scaledValue(28))
+                                .frame(width: isIPad ? ScaleUtility.scaledValue(42) :  ScaleUtility.scaledValue(28),
+                                       height:  isIPad ? ScaleUtility.scaledValue(42) : ScaleUtility.scaledValue(28))
                                 .cornerRadius(5)
                                 .overlay {
                                     Image(.plusIcon)
                                         .resizable()
-                                        .frame(width: ScaleUtility.scaledValue(14), height: ScaleUtility.scaledValue(14))
+                                        .frame(width:  isIPad ? ScaleUtility.scaledValue(21) : ScaleUtility.scaledValue(14),
+                                               height:  isIPad ? ScaleUtility.scaledValue(21) : ScaleUtility.scaledValue(14))
                                 }
                         }
                     }
@@ -115,7 +123,8 @@ struct OutlineColorPickerView: View {
                     
                     Rectangle()
                     .foregroundColor(.clear)
-                    .frame(width: ScaleUtility.scaledValue(28), height: ScaleUtility.scaledValue(28))
+                    .frame(width:  isIPad ? ScaleUtility.scaledValue(42) : ScaleUtility.scaledValue(28),
+                           height:  isIPad ? ScaleUtility.scaledValue(42) : ScaleUtility.scaledValue(28))
                     .foregroundColor(Color.clear)
                     .background(Color.clear)
                     .cornerRadius(5.83333)
@@ -125,18 +134,29 @@ struct OutlineColorPickerView: View {
                     }
                     
                     Button(action: {
+                        impactFeedback.impactOccurred()
                         outlineEnabled = false
-                
+                        
+                        // Log analytics based on context (stroke or background)
+                        if isBackground {
+                            AnalyticsManager.shared.log(.backgroundColorSelected(colorName: "None"))
+                        } else {
+                            AnalyticsManager.shared.log(.strokeColorSelected(colorName: "None"))
+                        }
+                        
                     }) {
                         Rectangle()
                             .foregroundColor(.white)
-                            .frame(width: !outlineEnabled ? ScaleUtility.scaledValue(22) : ScaleUtility.scaledValue(28),
-                                   height: !outlineEnabled ? ScaleUtility.scaledValue(22) : ScaleUtility.scaledValue(28))
+                            .frame(width: !outlineEnabled ?  isIPad ? ScaleUtility.scaledValue(33) : ScaleUtility.scaledValue(22)
+                                                          :  isIPad ? ScaleUtility.scaledValue(42) : ScaleUtility.scaledValue(28),
+                                   height: !outlineEnabled ? isIPad ? ScaleUtility.scaledValue(33) : ScaleUtility.scaledValue(22)
+                                                           : isIPad ? ScaleUtility.scaledValue(42) : ScaleUtility.scaledValue(28))
                             .cornerRadius(5)
                             .overlay {
                                 Image(.skipIcon)
                                     .resizable()
-                                    .frame(width: ScaleUtility.scaledValue(14), height: ScaleUtility.scaledValue(14))
+                                    .frame(width: isIPad ? ScaleUtility.scaledValue(21) : ScaleUtility.scaledValue(14),
+                                           height: isIPad ? ScaleUtility.scaledValue(21) : ScaleUtility.scaledValue(14))
                                     .foregroundColor(.black)
                             }
                     
@@ -148,7 +168,7 @@ struct OutlineColorPickerView: View {
                     outlineColorButton(colorOption)
                 }
             }
-            .frame(height: ScaleUtility.scaledValue(30))
+            .frame(height:  isIPad ? ScaleUtility.scaledValue(45) : ScaleUtility.scaledValue(30))
         }
     }
     
@@ -159,7 +179,8 @@ struct OutlineColorPickerView: View {
             
             Rectangle()
             .foregroundColor(.clear)
-            .frame(width: ScaleUtility.scaledValue(28), height: ScaleUtility.scaledValue(28))
+            .frame(width:   isIPad ? ScaleUtility.scaledValue(42) : ScaleUtility.scaledValue(28),
+                   height:  isIPad ? ScaleUtility.scaledValue(42) : ScaleUtility.scaledValue(28))
             .foregroundColor(Color.clear)
             .background(Color.clear)
             .cornerRadius(5.83333)
@@ -172,13 +193,23 @@ struct OutlineColorPickerView: View {
             }
             
             Button(action: {
+                impactFeedback.impactOccurred()
                 selectedOutlineColor = colorOption
                 outlineEnabled = true
                 if isBackground {
                     selectedLiveBg = "None"
                 }
+                // Log analytics based on context (stroke or background)
+                if isBackground {
+                    AnalyticsManager.shared.log(.backgroundColorSelected(colorName: colorOption.name))
+                } else {
+                    AnalyticsManager.shared.log(.strokeColorSelected(colorName: colorOption.name))
+                }
+                
             }) {
-                colorOption.colorPreview(size: (outlineEnabled && selectedOutlineColor.id == colorOption.id) ? ScaleUtility.scaledValue(22) : ScaleUtility.scaledValue(28))
+                colorOption.colorPreview(size: (outlineEnabled && selectedOutlineColor.id == colorOption.id)
+                                         ?  isIPad ? ScaleUtility.scaledValue(33) : ScaleUtility.scaledValue(22)
+                                         :  isIPad ? ScaleUtility.scaledValue(42) : ScaleUtility.scaledValue(28))
             }
         }
     }

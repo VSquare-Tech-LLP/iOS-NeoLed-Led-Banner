@@ -74,16 +74,23 @@ extension ColorOption {
         ),
         
         ColorOption(
+            id: "White",
+            name: "white",
+            type: .solid(Color.white)
+        ),
+        
+        
+        ColorOption(
             id: "yellow",
             name: "Yellow",
             type: .solid(Color.appYellow)
         ),
         
-        ColorOption(
-            id: "lightRed",
-            name: "Light Red",
-            type: .solid(Color.appLightRed)
-        ),
+//        ColorOption(
+//            id: "lightRed",
+//            name: "Light Red",
+//            type: .solid(Color.appLightRed)
+//        ),
         
         ColorOption(
             id: "cyan",

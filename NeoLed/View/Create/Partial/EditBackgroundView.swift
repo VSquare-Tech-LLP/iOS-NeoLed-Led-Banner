@@ -28,6 +28,10 @@ struct FrameBackground {
 
 struct EditBackgroundView: View {
     
+    let notificationFeedback = UINotificationFeedbackGenerator()
+    let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+    let selectionFeedback = UISelectionFeedbackGenerator()
+    
     @Binding var isHD: Bool
     @Binding var selectedShape: String
     @Binding var selectedBgColor: OutlineColorOption
@@ -114,14 +118,20 @@ struct EditBackgroundView: View {
                             ForEach(Array(wallpaperOption.enumerated()), id: \.offset) { index, wallpaper in
                                 
                                 Button {
+                                    impactFeedback.impactOccurred()
                                     selectedLiveBg = wallpaper.wallpaperName
                                     backgroundEnabled = false
+                                    AnalyticsManager.shared.log(.liveBackgroundSelected(backgroundName: wallpaper.wallpaperName))
                                 } label: {
                                     
                                     Image(wallpaper.wallpaperImage)
                                         .resizable()
-                                        .frame(width: wallpaper.wallpaperName == "None" ? ScaleUtility.scaledValue(16) : ScaleUtility.scaledValue(42),
-                                               height: wallpaper.wallpaperName == "None" ? ScaleUtility.scaledValue(16) :  ScaleUtility.scaledValue(42))
+                                        .frame(width: wallpaper.wallpaperName == "None"
+                                               ?  isIPad ? ScaleUtility.scaledValue(36) : ScaleUtility.scaledValue(16)
+                                               :  isIPad ? ScaleUtility.scaledValue(63) : ScaleUtility.scaledValue(42),
+                                               height: wallpaper.wallpaperName == "None"
+                                               ?  isIPad ? ScaleUtility.scaledValue(36) : ScaleUtility.scaledValue(16)
+                                               :  isIPad ? ScaleUtility.scaledValue(63) : ScaleUtility.scaledValue(42))
                                         .padding(.all,wallpaper.wallpaperName == "None" ? ScaleUtility.scaledSpacing(13) : 0 )
                                         .background {
                                             if selectedLiveBg == wallpaper.wallpaperName {
@@ -146,7 +156,8 @@ struct EditBackgroundView: View {
                                             
                                         }
                                 }
-                                .frame(width: ScaleUtility.scaledValue(44), height: ScaleUtility.scaledValue(44))
+                                .frame(width: isIPad ? ScaleUtility.scaledValue(66) : ScaleUtility.scaledValue(44),
+                                       height: isIPad ? ScaleUtility.scaledValue(66) :  ScaleUtility.scaledValue(44))
                             }
                             
                         }
@@ -168,14 +179,20 @@ struct EditBackgroundView: View {
                             ForEach(Array(frameOption.enumerated()), id: \.offset) { index, frame in
                                 
                                 Button {
+                                    impactFeedback.impactOccurred()
                                     frameBg = frame.frameName
                                     frameResultBg = frame.framResult
+                                    AnalyticsManager.shared.log(.frameBackgroundSelected(frameName: frame.frameName))
                                 } label: {
                                     
                                     Image(frame.frameImage)
                                         .resizable()
-                                        .frame(width: frame.frameName == "None" ? ScaleUtility.scaledValue(16) : ScaleUtility.scaledValue(42),
-                                               height: frame.frameName == "None" ? ScaleUtility.scaledValue(16) :  ScaleUtility.scaledValue(42))
+                                        .frame(width: frame.frameName == "None"
+                                               ?  isIPad ? ScaleUtility.scaledValue(36) : ScaleUtility.scaledValue(16)
+                                               :  isIPad ? ScaleUtility.scaledValue(63) : ScaleUtility.scaledValue(42),
+                                               height: frame.frameName == "None"
+                                               ?  isIPad ? ScaleUtility.scaledValue(36) : ScaleUtility.scaledValue(16)
+                                               :  isIPad ? ScaleUtility.scaledValue(63) : ScaleUtility.scaledValue(42))
                                         .padding(.all,frame.frameName == "None" ? ScaleUtility.scaledSpacing(13) : 0 )
                                         .background {
                                             if frameBg == frame.frameName {
@@ -198,7 +215,8 @@ struct EditBackgroundView: View {
                                             
                                         }
                                 }
-                                .frame(width: ScaleUtility.scaledValue(44), height: ScaleUtility.scaledValue(44))
+                                .frame(width: isIPad ? ScaleUtility.scaledValue(66) : ScaleUtility.scaledValue(44),
+                                       height: isIPad ? ScaleUtility.scaledValue(66) :  ScaleUtility.scaledValue(44))
                             }
                             
                         }
@@ -209,7 +227,7 @@ struct EditBackgroundView: View {
                 
                 VStack(spacing: ScaleUtility.scaledSpacing(15)) {
                     Text("Banner Type")
-                       .font(FontManager.bricolageGrotesqueMediumFont(size: 13.5942))
+                        .font(FontManager.bricolageGrotesqueMediumFont(size: .scaledFontSize(13.5942)))
                       .kerning(0.40783)
                       .foregroundColor(Color.primaryApp.opacity(0.5))
                       .frame(maxWidth: .infinity, alignment: .topLeading)
@@ -218,10 +236,13 @@ struct EditBackgroundView: View {
                     HStack(spacing: ScaleUtility.scaledSpacing(10)) {
                         
                         Button {
+                            impactFeedback.impactOccurred()
                             isHD = false
+                            AnalyticsManager.shared.log(.bannerTypeChanged(bannerType: "LED"))
                         } label: {
                             RoundedRectangle(cornerRadius: 5)
-                                .frame(width: ScaleUtility.scaledValue(102), height: ScaleUtility.scaledValue(34))
+                                .frame(width: isIPad ? ScaleUtility.scaledValue(154) : ScaleUtility.scaledValue(102),
+                                       height: isIPad ? ScaleUtility.scaledValue(51) : ScaleUtility.scaledValue(34))
                                 .foregroundColor(Color.clear)
                                 .background {
                                     if !isHD {
@@ -234,14 +255,14 @@ struct EditBackgroundView: View {
                                         )
                                     }
                                     else {
-                                        
                                         Color(red: 0.26, green: 0.25, blue: 0.25).opacity(0.5)
+                                    
                                     }
                                 }
                                 .cornerRadius(5)
                                 .overlay {
                                     Text("LED")
-                                        .font(FontManager.bricolageGrotesqueRegularFont(size: 14))
+                                        .font(FontManager.bricolageGrotesqueRegularFont(size: .scaledFontSize(14)))
                                         .kerning(0.42)
                                         .multilineTextAlignment(.center)
                                         .foregroundColor(.white)
@@ -254,10 +275,14 @@ struct EditBackgroundView: View {
 
                         
                         Button {
+                            impactFeedback.impactOccurred()
                             isHD = true
+                            AnalyticsManager.shared.log(.bannerTypeChanged(bannerType: "HD"))
+
                         } label: {
                             RoundedRectangle(cornerRadius: 5)
-                                .frame(width: ScaleUtility.scaledValue(102), height: ScaleUtility.scaledValue(34))
+                                .frame(width: isIPad ? ScaleUtility.scaledValue(154) : ScaleUtility.scaledValue(102),
+                                       height: isIPad ? ScaleUtility.scaledValue(51) : ScaleUtility.scaledValue(34))
                                 .foregroundColor(Color.clear)
                                 .background {
                                     if isHD {
@@ -277,7 +302,7 @@ struct EditBackgroundView: View {
                                 .cornerRadius(5)
                                 .overlay {
                                     Text("HD")
-                                        .font(FontManager.bricolageGrotesqueRegularFont(size: 14))
+                                        .font(FontManager.bricolageGrotesqueRegularFont(size: .scaledFontSize(14)))
                                         .kerning(0.42)
                                         .multilineTextAlignment(.center)
                                         .foregroundColor(.white)
@@ -307,12 +332,15 @@ struct EditBackgroundView: View {
                             ForEach(Array(shapeOption.enumerated()), id: \.offset) { index, shape in
                                 
                                 Button {
+                                    impactFeedback.impactOccurred()
                                     selectedShape = shape.shapeName
+                                    AnalyticsManager.shared.log(.ledShapeSelected(shapeName: shape.shapeName))
                                 } label: {
                                     
                                     Image(shape.shapeIcon)
                                         .resizable()
-                                        .frame(width: ScaleUtility.scaledValue(16), height: ScaleUtility.scaledValue(16))
+                                        .frame(width: isIPad ? ScaleUtility.scaledValue(24) : ScaleUtility.scaledValue(16),
+                                               height:  isIPad ?  ScaleUtility.scaledValue(24) : ScaleUtility.scaledValue(16))
                                         .padding(.all, ScaleUtility.scaledSpacing(13))
                                         .background {
                                             if selectedShape == shape.shapeName {
@@ -325,7 +353,7 @@ struct EditBackgroundView: View {
                                                 )
                                             }
                                             else {
-                                                Color.appGrey
+                                                Color.clear
                                             }
                                         }
                                         .cornerRadius(5)
@@ -335,7 +363,8 @@ struct EditBackgroundView: View {
                                             
                                         }
                                 }
-                                .frame(width: ScaleUtility.scaledValue(44), height: ScaleUtility.scaledValue(44))
+                                .frame(width: isIPad ?  ScaleUtility.scaledValue(66) : ScaleUtility.scaledValue(44),
+                                       height: isIPad ?  ScaleUtility.scaledValue(66) :  ScaleUtility.scaledValue(44))
                             }
                             
                         }
@@ -361,6 +390,7 @@ struct EditBackgroundView: View {
                     hasCustomBgColor = true
                     backgroundEnabled = true
                     selectedLiveBg = "None"
+                    AnalyticsManager.shared.log(.backgroundColorSelected(colorName: "Custom"))
                 }
             )
             .presentationDetents(isIPad ? [.large, .fraction(0.95)] : [.fraction(0.9)])

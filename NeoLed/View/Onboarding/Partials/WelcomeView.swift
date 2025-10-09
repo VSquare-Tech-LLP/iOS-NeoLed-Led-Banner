@@ -37,6 +37,6 @@ struct WelcomeView: View {
             }
             .offset(y: ScaleUtility.scaledSpacing(-7))
         }
-  
+
     }
 }

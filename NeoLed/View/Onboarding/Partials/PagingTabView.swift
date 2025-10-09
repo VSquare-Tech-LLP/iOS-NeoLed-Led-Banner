@@ -17,6 +17,10 @@ struct PagingTabView<Content: View>: View {
     let content: () -> Content
     var buttonAction: () -> Void
 
+    let notificationFeedback = UINotificationFeedbackGenerator()
+    let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+    let selectionFeedback = UISelectionFeedbackGenerator()
+    
     
     var body: some View {
         ZStack(alignment:.top) {
@@ -63,6 +67,7 @@ struct PagingTabView<Content: View>: View {
         }
         .overlay(alignment: .bottom) {
                 Button(action: {
+                    impactFeedback.impactOccurred()
                     buttonAction()
                 }) {
                     Rectangle()
@@ -85,10 +90,11 @@ struct PagingTabView<Content: View>: View {
             
         }
         .background {
-            Image(.background)
-                .resizable()
-                .scaledToFill()
-                .ignoresSafeArea(.all)
+          
+                Image(.background)
+                    .resizable()
+                    .frame(maxWidth: .infinity,maxHeight: .infinity)
+            
         }
         .edgesIgnoringSafeArea(.all)
         

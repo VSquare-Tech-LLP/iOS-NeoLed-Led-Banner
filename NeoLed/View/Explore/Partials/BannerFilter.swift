@@ -54,6 +54,7 @@ struct BannerFilter: View {
                             )
                         
                     }
+                    .frame(height: isIPad ? ScaleUtility.scaledValue(54) :  ScaleUtility.scaledValue(40))
                 }
             }
             .padding(.horizontal, ScaleUtility.scaledSpacing(20))

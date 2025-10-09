@@ -13,6 +13,8 @@
 		8B7E7B092E8E89960093D8D4 /* SwiftUIViewRecorder in Frameworks */ = {isa = PBXBuildFile; productRef = 8B7E7B082E8E89960093D8D4 /* SwiftUIViewRecorder */; };
 		8B912D0C2E9145E600FE9AA1 /* Gifu in Frameworks */ = {isa = PBXBuildFile; productRef = 8B912D0B2E9145E600FE9AA1 /* Gifu */; };
 		8BDE7AEF2E8F9499006463DE /* FlipBook in Frameworks */ = {isa = PBXBuildFile; productRef = 8BDE7AEE2E8F9499006463DE /* FlipBook */; };
+		8BFF8F232E97B2C7003F778F /* IQKeyboardManagerSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 8BFF8F222E97B2C7003F778F /* IQKeyboardManagerSwift */; };
+		8BFF90002E97BE83003F778F /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 8BFF8FFF2E97BE83003F778F /* FirebaseCrashlytics */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -50,8 +52,10 @@
 				8BDE7AEF2E8F9499006463DE /* FlipBook in Frameworks */,
 				8B7E7B092E8E89960093D8D4 /* SwiftUIViewRecorder in Frameworks */,
 				8B6AD4CF2E953DD200FADEB8 /* FirebaseAnalytics in Frameworks */,
+				8BFF90002E97BE83003F778F /* FirebaseCrashlytics in Frameworks */,
 				8B912D0C2E9145E600FE9AA1 /* Gifu in Frameworks */,
 				8B6AD5C32E953F4C00FADEB8 /* FirebaseRemoteConfig in Frameworks */,
+				8BFF8F232E97B2C7003F778F /* IQKeyboardManagerSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -99,6 +103,7 @@
 				8B1A1F4C2E83EDC2003CFA93 /* Sources */,
 				8B1A1F4D2E83EDC2003CFA93 /* Frameworks */,
 				8B1A1F4E2E83EDC2003CFA93 /* Resources */,
+				8BFF90012E97BED0003F778F /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -114,6 +119,8 @@
 				8B912D0B2E9145E600FE9AA1 /* Gifu */,
 				8B6AD4CE2E953DD200FADEB8 /* FirebaseAnalytics */,
 				8B6AD5C22E953F4C00FADEB8 /* FirebaseRemoteConfig */,
+				8BFF8F222E97B2C7003F778F /* IQKeyboardManagerSwift */,
+				8BFF8FFF2E97BE83003F778F /* FirebaseCrashlytics */,
 			);
 			productName = NeoLed;
 			productReference = 8B1A1F502E83EDC2003CFA93 /* NeoLed.app */;
@@ -148,6 +155,7 @@
 				8BDE7AED2E8F9499006463DE /* XCRemoteSwiftPackageReference "FlipBook" */,
 				8B912D0A2E9145E600FE9AA1 /* XCRemoteSwiftPackageReference "Gifu" */,
 				8B6AD4CD2E953DD200FADEB8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				8BFF8F212E97B2C7003F778F /* XCRemoteSwiftPackageReference "IQKeyboardManager" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 8B1A1F512E83EDC2003CFA93 /* Products */;
@@ -175,6 +183,31 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		8BFF90012E97BED0003F778F /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist",
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/GoogleService-Info.plist",
+				"$(TARGET_BUILD_DIR)/$(EXECUTABLE_PATH)",
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		8B1A1F4C2E83EDC2003CFA93 /* Sources */ = {
@@ -311,6 +344,7 @@
 				CODE_SIGN_ENTITLEMENTS = NeoLed/NeoLed.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = WC89S43PM2;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -332,6 +366,7 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 15.5;
 				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.neoled.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
@@ -353,6 +388,7 @@
 				CODE_SIGN_ENTITLEMENTS = NeoLed/NeoLed.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = WC89S43PM2;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -374,6 +410,7 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 15.5;
 				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = com.neoled.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
@@ -443,6 +480,14 @@
 				minimumVersion = 1.5.10;
 			};
 		};
+		8BFF8F212E97B2C7003F778F /* XCRemoteSwiftPackageReference "IQKeyboardManager" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/hackiftekhar/IQKeyboardManager.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.0.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -470,6 +515,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 8BDE7AED2E8F9499006463DE /* XCRemoteSwiftPackageReference "FlipBook" */;
 			productName = FlipBook;
+		};
+		8BFF8F222E97B2C7003F778F /* IQKeyboardManagerSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8BFF8F212E97B2C7003F778F /* XCRemoteSwiftPackageReference "IQKeyboardManager" */;
+			productName = IQKeyboardManagerSwift;
+		};
+		8BFF8FFF2E97BE83003F778F /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8B6AD4CD2E953DD200FADEB8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -49,7 +49,8 @@ struct GiftPaywallView: View {
                                   .resizable()
                                   .frame(width: ScaleUtility.scaledValue(23), height: ScaleUtility.scaledValue(23))
                                   .onTapGesture {
-//                                      AnalyticsManager.shared.log(.giftScreenXClicked)
+                                      impactfeedback.impactOccurred()
+                                      AnalyticsManager.shared.log(.giftScreenXClicked)
                                       withAnimation(.easeOut(duration: 0.1)) {
                                           closeGift()
                                           
@@ -96,7 +97,7 @@ struct GiftPaywallView: View {
                                       .kerning(0.14)
                                       .foregroundColor(Color.secondaryApp)
                                       .frame(maxWidth: .infinity)
-                                      .frame(height: 42)
+                                      .frame(height: ScaleUtility.scaledValue(42))
                                       .background(Color.accent)
                                       .cornerRadius(10)
                      
@@ -123,7 +124,7 @@ struct GiftPaywallView: View {
                 GiftPaywallCollectView(
                     closeGiftSheet: {
                         self.isCollectGift = false
-//                        AnalyticsManager.shared.log(.giftBottomSheetXClicked)
+                        AnalyticsManager.shared.log(.giftBottomSheetXClicked)
                     }, purchaseConfirm: giftPurchaseComplete)
                 .frame(height: isIPad ? ScaleUtility.scaledValue(750) : ScaleUtility.scaledValue(520) )
                 .background(Color.secondaryApp)

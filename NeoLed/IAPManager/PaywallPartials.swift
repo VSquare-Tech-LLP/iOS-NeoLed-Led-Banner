@@ -332,7 +332,7 @@ struct PaywallBottmView: View{
                 }
                 else {
                     Text("Continue")
-                        .font(FontManager.bricolageGrotesqueSemiBoldFont(size: .scaledFontSize(14)))
+                        .font(FontManager.bricolageGrotesqueBoldFont(size: .scaledFontSize(14)))
                         .foregroundColor(Color.secondaryApp)
                         .frame(maxWidth: .infinity)
                 }
@@ -343,15 +343,7 @@ struct PaywallBottmView: View{
             .cornerRadius(10)
             .padding(.horizontal,ScaleUtility.scaledSpacing(20))
 
-            if let product = purchaseManager.products.first(where: { $0.id == selectedPlan.productId }) {
-                Text(displayPriceText(for: selectedPlan, product: product))
-                    .font(FontManager.bricolageGrotesqueMediumFont(size: .scaledFontSize(16)))
-                    .multilineTextAlignment(.center)
-                    .foregroundColor(Color.primaryApp)
-                    .frame(maxWidth: .infinity, alignment: .top)
-            }
             
-
             HStack {
                 
                 HStack(spacing: ScaleUtility.scaledSpacing(8)) {
@@ -374,7 +366,7 @@ struct PaywallBottmView: View{
                         impactFeedback.impactOccurred()
                         openURL(URL(string: AppConstant.termsAndConditionURL)!)
                     } label: {
-                        Text("Terms of use")
+                        Text("Terms of Use")
                             .font(FontManager.bricolageGrotesqueMediumFont(size: .scaledFontSize(10)))
                             .foregroundColor(Color.primaryApp.opacity(0.6))
                     }

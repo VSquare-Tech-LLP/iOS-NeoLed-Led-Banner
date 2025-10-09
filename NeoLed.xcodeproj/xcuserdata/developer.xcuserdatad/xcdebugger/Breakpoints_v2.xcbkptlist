@@ -7,16 +7,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "1964F97D-5E49-463E-8487-7D1D50F51DEE"
+            uuid = "B020BADA-E5D4-47C9-804D-725DFAEE0FA6"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "NeoLed/View/Common/ResultView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "685"
-            endingLineNumber = "685"
-            landmarkName = "createVideoFrame(progress:videoWidth:videoHeight:)"
+            startingLineNumber = "1065"
+            endingLineNumber = "1065"
+            landmarkName = "calculateAnimatedOffsetX(progress:geoWidth:geoHeight:scaleFactor:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

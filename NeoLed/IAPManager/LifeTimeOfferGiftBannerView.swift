@@ -78,7 +78,7 @@ struct LifeTimeGiftOfferBannerView: View {
                         Task {
                             do {
                                 try await purchaseManager.purchase(product)
-//                                AnalyticsManager.shared.log(.giftBannerPlanPurchase)
+                                AnalyticsManager.shared.log(.giftBannerPlanPurchase)
                                 
                             } catch {
                                 print("Purchase failed: \(error)")

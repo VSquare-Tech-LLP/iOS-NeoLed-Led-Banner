@@ -790,9 +790,37 @@ extension ResultView {
 // MARK: - Share Sheet
 struct ShareSheet: UIViewControllerRepresentable {
     let items: [Any]
+    let filename: String?
+    
+    init(items: [Any], filename: String? = nil) {
+        self.items = items
+        self.filename = filename
+    }
     
     func makeUIViewController(context: Context) -> UIActivityViewController {
-        UIActivityViewController(activityItems: items, applicationActivities: nil)
+        var itemsToShare: [Any] = []
+        
+        // If we have a URL and a custom filename, create a temporary file with that name
+        if let url = items.first as? URL, let filename = filename {
+            let fileExtension = url.pathExtension
+            let newFilename = filename + "." + fileExtension
+            
+            // Create a temporary URL with the custom name
+            let tempDir = FileManager.default.temporaryDirectory
+            let newURL = tempDir.appendingPathComponent(newFilename)
+            
+            // Copy the file to the new location
+            try? FileManager.default.removeItem(at: newURL) // Remove if exists
+            try? FileManager.default.copyItem(at: url, to: newURL)
+            
+            itemsToShare = [newURL]
+        } else {
+            itemsToShare = items
+        }
+        
+        let activityVC = UIActivityViewController(activityItems: itemsToShare, applicationActivities: nil)
+        
+        return activityVC
     }
     
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}

@@ -9,15 +9,22 @@ import Foundation
 import SwiftUI
 
 struct HistoryView: View {
+    @EnvironmentObject var purchaseManager: PurchaseManager
     @State var navToSettings: Bool = false
     @StateObject private var viewModel = LEDDesignViewModel()
     @State private var selectedDesign: LEDDesignEntity?
     @State private var navigateToResult = false
     
+    let notificationFeedback = UINotificationFeedbackGenerator()
+    let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+    let selectionFeedback = UISelectionFeedbackGenerator()
+    
     let columns = [
         GridItem(.flexible(), spacing: ScaleUtility.scaledSpacing(15)),
         GridItem(.flexible(), spacing: ScaleUtility.scaledSpacing(15))
     ]
+    
+    @State var isShowPayWall: Bool = false
     
     var body: some View {
         VStack(spacing: 0) {
@@ -34,22 +41,32 @@ struct HistoryView: View {
                 
                 HStack(spacing: ScaleUtility.scaledSpacing(12)) {
                     
-                    Image(.crownIcon)
-                        .resizable()
-                        .frame(width: ScaleUtility.scaledValue(20.45455), height: ScaleUtility.scaledValue(20.45455))
-                        .padding(.all, ScaleUtility.scaledSpacing(6.77))
-                        .background(Color.clear)
-                        .overlay(
-                            Circle()
-                                .stroke(Color.accent, lineWidth: 1)
-                        )
+                    Button {
+                        impactFeedback.impactOccurred()
+                        isShowPayWall = true
+                    } label: {
+                        
+                        Image(.crownIcon)
+                            .resizable()
+                            .frame(width: isIPad ? ScaleUtility.scaledValue(30.45455) : ScaleUtility.scaledValue(20.45455),
+                                   height: isIPad ? ScaleUtility.scaledValue(30.45455) : ScaleUtility.scaledValue(20.45455))
+                            .padding(.all, ScaleUtility.scaledSpacing(6.77))
+                            .background(Color.clear)
+                            .overlay(
+                                Circle()
+                                    .stroke(Color.accent, lineWidth: 1)
+                            )
+                    }
+                    .opacity(purchaseManager.hasPro ? 0 : 1)
                     
                     Button {
+                        impactFeedback.impactOccurred()
                         navToSettings = true
                     } label: {
                         Image(.settingIcon)
                             .resizable()
-                            .frame(width: ScaleUtility.scaledValue(19.57641), height: ScaleUtility.scaledValue(20))
+                            .frame(width: isIPad ? ScaleUtility.scaledValue(28.57641) : ScaleUtility.scaledValue(19.57641),
+                                   height: isIPad ? ScaleUtility.scaledValue(30) : ScaleUtility.scaledValue(20))
                             .padding(.all, ScaleUtility.scaledSpacing(8))
                             .background{
                                 Circle()
@@ -101,7 +118,7 @@ struct HistoryView: View {
         .background {
             Image(.background)
                 .resizable()
-                .scaledToFill()
+                .frame(maxWidth: .infinity,maxHeight: .infinity)
         }
         .onAppear {
             viewModel.fetchDesigns()
@@ -147,6 +164,20 @@ struct HistoryView: View {
                         selectedDesign = nil
                     }
                 )
+            }
+        }
+        .fullScreenCover(isPresented: $isShowPayWall) {
+            
+            PaywallView(isInternalOpen: true) {
+                isShowPayWall = false
+            } purchaseCompletSuccessfullyAction: {
+                isShowPayWall = false
+            }
+            .background {
+                Image(.background)
+                    .resizable()
+                    .scaledToFill()
+                    .ignoresSafeArea(.all)
             }
         }
     }

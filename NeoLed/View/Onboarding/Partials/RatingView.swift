@@ -14,7 +14,7 @@ struct RatingView: View {
     {
         VStack(spacing: 0) {
             
-            VStack(spacing: ScaleUtility.scaledSpacing(68)) {
+            VStack(spacing: isIPad ? ScaleUtility.scaledSpacing(168) : ScaleUtility.scaledSpacing(68)) {
                 
                 VStack(spacing: ScaleUtility.scaledSpacing(20)) {
                     

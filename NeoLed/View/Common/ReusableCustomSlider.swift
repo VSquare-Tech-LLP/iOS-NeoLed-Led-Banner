@@ -15,11 +15,12 @@ struct ReusableCustomSlider: View {
     @Binding var value: CGFloat
     let range: ClosedRange<CGFloat>
 
-    let sliderWidth: CGFloat = ScaleUtility.scaledValue(ScaleUtility.isPad() ? 700 : 310)
+    let sliderWidth: CGFloat = ScaleUtility.scaledValue(ScaleUtility.isPad() ? 680 : 310)
     let trackHeight: CGFloat = 10
     let thumbSize: CGFloat = 32
     let innerDotSize: CGFloat = 8
     let selectionFeedback = UISelectionFeedbackGenerator()
+    
     
     var body: some View {
         let progress = CGFloat((value - range.lowerBound) / (range.upperBound - range.lowerBound))

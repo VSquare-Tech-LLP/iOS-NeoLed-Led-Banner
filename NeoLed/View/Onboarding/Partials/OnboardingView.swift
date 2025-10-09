@@ -30,8 +30,8 @@ struct OnboardingView: View {
             .overlay {
                 Image(imageName)
                     .resizable(size: CGSize(
-                        width: isIPad ? 750 * ipadWidthRatio : ScaleUtility.scaledValue(375) ,
-                        height: isIPad ? 966 * ipadHeightRatio : ScaleUtility.scaledValue(604) ))
+                        width: isIPad ? 850 * ipadWidthRatio : ScaleUtility.scaledValue(375) ,
+                        height: isIPad ? 1066 * ipadHeightRatio : ScaleUtility.scaledValue(604) ))
                     .offset(y: ScaleUtility.scaledSpacing(59))
             }
             .padding(.top, ScaleUtility.scaledSpacing(40))

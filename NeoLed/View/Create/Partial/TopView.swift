@@ -50,16 +50,21 @@ struct TopView:View {
     
     @State private var blinkPhase: Bool = false
     @State private var animationID = UUID() // Add this
+    
+    let notificationFeedback = UINotificationFeedbackGenerator()
+    let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+    let selectionFeedback = UISelectionFeedbackGenerator()
+    
     var body: some View {
         
         VStack(spacing: ScaleUtility.scaledSpacing(30)) {
             
             ZStack {
                 
-                Rectangle()
+               RoundedRectangle(cornerRadius: 10)
                     .foregroundColor(.clear)
-                    .frame(width: ScaleUtility.scaledValue(335) ,height: ScaleUtility.scaledValue(167))
                     .frame(maxWidth: .infinity)
+                    .frame(height:  isIPad ? ScaleUtility.scaledValue(247) : ScaleUtility.scaledValue(167))
                     .background {
             
                             if backgroundEnabled {
@@ -71,6 +76,7 @@ struct TopView:View {
                         
                     }
                     .cornerRadius(10)
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
                     .padding(.horizontal, ScaleUtility.scaledSpacing(20))
                     .overlay {
                         if text == "" {
@@ -90,6 +96,8 @@ struct TopView:View {
                             Image(backgroundImage)
                                 .resizable()
                                 .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                .cornerRadius(10)
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
                                 .if(!isHD) { view in
                                     view.mask {
                                         getShapeImage()
@@ -105,9 +113,13 @@ struct TopView:View {
                                     height: UIScreen.main.bounds.width
                                 )
                                 .position(x: geo.size.width / 2, y: geo.size.height / 2)  // Center it
+                                .cornerRadius(10)
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
                                 .if(!isHD) { view in
                                     view.mask {
                                         getShapeImage()
+                                            .cornerRadius(10)
+                                            .clipped()
                                             .frame(width: geo.size.width, height: geo.size.height)
                                     }
                                 }
@@ -126,6 +138,8 @@ struct TopView:View {
                      
                         if !isHD {
                             getShapeImage()
+                                .cornerRadius(10)
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
                                 .frame(width: geo.size.width, height: geo.size.height)
                                 .opacity(0.1)
                         }
@@ -212,6 +226,7 @@ struct TopView:View {
                     .if(!isHD) { view in
                         view.mask {
                             getShapeImage()
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
                                 .frame(width: geo.size.width, height: geo.size.height)
                         }
                     }
@@ -310,6 +325,8 @@ struct TopView:View {
                                     .if(!isHD) { view in
                                         view.mask {
                                             getShapeImage()
+                                                .cornerRadius(10)
+                                                .clipShape(RoundedRectangle(cornerRadius: 10))
                                                 .frame(width: geo.size.width, height: geo.size.height)
                                         }
                                     }
@@ -319,7 +336,8 @@ struct TopView:View {
                     }
       
                 }
-                .frame(width: ScaleUtility.scaledValue(335), height: ScaleUtility.scaledValue(167))
+                .frame(maxWidth: .infinity)
+                .frame(height: isIPad ? ScaleUtility.scaledValue(247) : ScaleUtility.scaledValue(167))
                 .clipped()
                 .padding(.horizontal, ScaleUtility.scaledSpacing(20))
             }
@@ -368,6 +386,7 @@ struct TopView:View {
                 }
                 
                 Button {
+                    impactFeedback.impactOccurred()
                     showPreview()
                 } label: {
                     
@@ -415,15 +434,15 @@ struct TopView:View {
             withAnimation(.linear(duration: 0)) {
                 switch selectedAlignment {
                 case "left", "None":
-                    offsetx = geo.size.height + textWidth / 2
+                    offsetx = isIPad ? geo.size.width / 2 + textWidth / 2 :  geo.size.height + textWidth / 2
                 case "up":
-                    offsety = geo.size.height + textWidth / 2
+                    offsety = isIPad ?  geo.size.height / 2 + textWidth / 2 : geo.size.height + textWidth / 2
                 case "down":
-                    offsety = -(geo.size.height + textWidth / 2)
+                    offsety = isIPad ? -(geo.size.height / 2 + textWidth / 2) : -(geo.size.height + textWidth / 2)
                 case "right":
-                    offsetx = -(geo.size.height + textWidth / 2)
+                    offsetx = isIPad ? -(geo.size.width / 2 + textWidth / 2) :  -(geo.size.height + textWidth / 2)
                 default:
-                    offsetx = geo.size.height + textWidth / 2
+                    offsetx = isIPad ?  geo.size.width / 2 + textWidth / 2 : geo.size.height + textWidth / 2
                 }
             }
         }
@@ -435,15 +454,15 @@ struct TopView:View {
             withAnimation(.linear(duration: animationDuration).repeatForever(autoreverses: false)) {
                 switch selectedAlignment {
                 case "left", "None":
-                    offsetx = -textWidth / 1.2
+                    offsetx = isIPad ? -(geo.size.width / 2 + textWidth / 2) :  -textWidth / 1.2
                 case "up":
-                    offsety = -textWidth / 2
+                    offsety = isIPad ? -(geo.size.height / 2 + textWidth / 2) :  -textWidth / 2
                 case "down":
-                    offsety = geo.size.height + textWidth / 2
+                    offsety = isIPad ? geo.size.height / 2 + textWidth / 2 :  geo.size.height + textWidth / 2
                 case "right":
-                    offsetx = geo.size.height + textWidth / 2
+                    offsetx = isIPad ? geo.size.width / 2 + textWidth / 2 :  geo.size.height + textWidth / 2
                 default:
-                    offsetx = -textWidth / 2
+                    offsetx = isIPad ?  -(geo.size.width / 2 + textWidth / 2) :  -textWidth / 2
                 }
             }
         }
@@ -468,15 +487,15 @@ struct TopView:View {
         withAnimation(.linear(duration: 0)) {
             switch selectedAlignment {
             case "left", "None":
-                offsetx = geo.size.height + textWidth / 2
+                offsetx = isIPad ? geo.size.width / 2 + textWidth / 2 :  geo.size.height + textWidth / 2
             case "up":
-                offsety = geo.size.height + textWidth / 2
+                offsety = isIPad ? geo.size.height / 2 + textWidth / 2 : geo.size.height + textWidth / 2
             case "down":
-                offsety = -(geo.size.height + textWidth / 2)
+                offsety = isIPad ?  -(geo.size.height / 2 + textWidth / 2) :  -(geo.size.height + textWidth / 2)
             case "right":
-                offsetx = -(geo.size.height + textWidth / 2)
+                offsetx = isIPad ? -(geo.size.width / 2 + textWidth / 2)  :  -(geo.size.height + textWidth / 2)
             default:
-                offsetx = geo.size.height + textWidth / 2
+                offsetx = isIPad ? geo.size.width / 2 + textWidth / 2 :  geo.size.height + textWidth / 2
             }
         }
         
@@ -487,15 +506,15 @@ struct TopView:View {
             withAnimation(.linear(duration: animationDuration).repeatForever(autoreverses: false)) {
                 switch selectedAlignment {
                 case "left", "None":
-                    offsetx = -textWidth / 1.2
+                    offsetx = isIPad ? -(geo.size.width / 2 + textWidth / 2) : -textWidth / 1.2
                 case "up":
-                    offsety = -textWidth / 2
+                    offsety = isIPad ? -(geo.size.height / 2 + textWidth / 2) :  -textWidth / 2
                 case "down":
-                    offsety = geo.size.height + textWidth / 2
+                    offsety = isIPad ? geo.size.height / 2 + textWidth / 2 :  geo.size.height + textWidth / 2
                 case "right":
-                    offsetx = geo.size.height + textWidth / 2
+                    offsetx = isIPad ?  geo.size.width / 2 + textWidth / 2 : geo.size.height + textWidth / 2
                 default:
-                    offsetx = -textWidth / 2
+                    offsetx = isIPad ? -(geo.size.width / 2 + textWidth / 2) :  -textWidth / 2
                 }
             }
         }
@@ -518,39 +537,45 @@ struct TopView:View {
         case "circle":
             Image(.circle3)
                 .resizable()
-                .frame(width: ScaleUtility.scaledValue(335) ,height: ScaleUtility.scaledValue(167))
+                .frame(maxWidth: .infinity)
+                .frame(height:  isIPad ? ScaleUtility.scaledValue(247) : ScaleUtility.scaledValue(167))
             
         case "square":
             Image(.square3)
                 .resizable()
-                .frame(width: ScaleUtility.scaledValue(335) ,height: ScaleUtility.scaledValue(167))
+                .frame(maxWidth: .infinity)
+                .frame(height:  isIPad ? ScaleUtility.scaledValue(247) :  ScaleUtility.scaledValue(167))
              
         case "heart":
             Image(.heart3)
                 .resizable()
-                .frame(width: ScaleUtility.scaledValue(335) ,height: ScaleUtility.scaledValue(167))
+                .frame(maxWidth: .infinity)
+                .frame(height:  isIPad ? ScaleUtility.scaledValue(247) : ScaleUtility.scaledValue(167))
                
         case "star":
             Image(.star3)
                 .resizable()
-                .frame(width: ScaleUtility.scaledValue(335) ,height: ScaleUtility.scaledValue(167))
+                .frame(maxWidth: .infinity)
+                .frame(height:  isIPad ? ScaleUtility.scaledValue(247) : ScaleUtility.scaledValue(167))
                
         case "ninjaStar":
             Image(.ninjaStar3)
                 .resizable()
-                .frame(width: ScaleUtility.scaledValue(335) ,height: ScaleUtility.scaledValue(167))
+                .frame(maxWidth: .infinity)
+                .frame(height:  isIPad ? ScaleUtility.scaledValue(247) : ScaleUtility.scaledValue(167))
             
         default: // "None" or any other case
             Image(.circle3)
                 .resizable()
-                .frame(width: ScaleUtility.scaledValue(335) ,height: ScaleUtility.scaledValue(167))
+                .frame(maxWidth: .infinity)
+                .frame(height:  isIPad ? ScaleUtility.scaledValue(247) : ScaleUtility.scaledValue(167))
        
         }
     }
     private func getPreviewOffsetX(geo: GeometryProxy) -> CGFloat {
         switch selectedAlignment {
         case "up", "down":
-            return 5
+            return ScaleUtility.scaledValue(5)
         case "left", "right":
             return offsetx // Centered for horizontal scroll
         default:
@@ -561,11 +586,11 @@ struct TopView:View {
     private func getPreviewOffsetY() -> CGFloat {
         switch selectedAlignment {
         case "left", "right":
-            return 80 // Position for horizontal scroll
+            return isIPad ? ScaleUtility.scaledValue(120) : ScaleUtility.scaledValue(80) // Position for horizontal scroll
         case "up", "down":
             return offsety // Use offsety for vertical movement
         default:
-            return 80
+            return isIPad ? ScaleUtility.scaledValue(120) : ScaleUtility.scaledValue(80)
         }
     }
     

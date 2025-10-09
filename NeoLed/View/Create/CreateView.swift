@@ -91,6 +91,30 @@ struct CreateView: View {
 
             }
             
+            HStack(spacing: ScaleUtility.scaledSpacing(10)) {
+                
+                Spacer()
+                
+                Button {
+                    
+                } label: {
+                    Text("Share")
+                        .font(FontManager.bricolageGrotesqueBoldFont(size: .scaledFontSize(14)))
+                        .foregroundColor(Color.white)
+                }
+                
+                Button {
+                    
+                } label: {
+                    Text("Download")
+                        .font(FontManager.bricolageGrotesqueBoldFont(size: .scaledFontSize(14)))
+                        .foregroundColor(Color.white)
+                }
+
+                
+            }
+            .padding(.horizontal, ScaleUtility.scaledSpacing(30))
+            
             ScrollView {
                 
                 Spacer()
@@ -142,7 +166,7 @@ struct CreateView: View {
         .background {
             Image(.background)
                 .resizable()
-                .scaledToFill()
+                .frame(maxWidth: .infinity,maxHeight: .infinity)
         }
         .navigationDestination(isPresented: $showPreview) {
             ResultView(

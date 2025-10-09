@@ -16,6 +16,9 @@ enum TabSelection: Hashable {
 
 
 struct MainView: View {
+    
+    let impactFeedback = UIImpactFeedbackGenerator(style: .light)
+    
     @State var backgroundImage: String = ""
     @State var backgroundResultImage: String = ""
     @State private var selectedTab: TabSelection = .explore
@@ -76,8 +79,11 @@ struct MainView: View {
                     HStack {
                         
                         Button {
+                            impactFeedback.impactOccurred()
                             selectedTab = .explore
+                            
                             backgroundImage = ""
+                            backgroundResultImage = ""
                             text = ""
                             textSize = 4.0
                             strokeSize = 0.0
@@ -107,6 +113,7 @@ struct MainView: View {
                         Spacer()
                         
                         Button {
+                            impactFeedback.impactOccurred()
                             selectedTab = .create
                         } label: {
                             VStack(spacing: ScaleUtility.scaledSpacing(4.88)) {
@@ -126,8 +133,11 @@ struct MainView: View {
                         Spacer()
                         
                         Button {
+                            impactFeedback.impactOccurred()
                             selectedTab = .history
+                            
                             backgroundImage = ""
+                            backgroundResultImage = ""
                             text = ""
                             textSize = 4.0
                             strokeSize = 0.0
@@ -154,7 +164,7 @@ struct MainView: View {
                             .opacity(selectedTab != .history ? 0.5 : 1)
                         }
                     }
-                    .padding(.horizontal, ScaleUtility.scaledSpacing(34))
+                    .padding(.horizontal, isIPad ? ScaleUtility.scaledSpacing(84) : ScaleUtility.scaledSpacing(34))
                     .padding(.bottom, ScaleUtility.scaledSpacing(10))
                     .frame(height: ScaleUtility.scaledValue(97))
                     .background {

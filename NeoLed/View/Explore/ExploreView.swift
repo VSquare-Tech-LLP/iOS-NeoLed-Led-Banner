@@ -80,7 +80,7 @@ struct ExploreView: View {
         .background {
             Image(.background)
                 .resizable()
-                .scaledToFill()
+                .frame(maxWidth: .infinity,maxHeight: .infinity)
         }
     }
 }

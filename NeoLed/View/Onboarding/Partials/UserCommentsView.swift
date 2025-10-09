@@ -13,7 +13,9 @@ struct UserCommentsView: View {
         VStack {
             Image(.userCommentVew)
                 .resizable()
-                .scaledToFill()
+                .frame(maxWidth: .infinity,maxHeight: .infinity)
+//                .frame(width: ScaleUtility.scaledValue(375), height: ScaleUtility.scaledValue(812))
+                
         }
     }
 }

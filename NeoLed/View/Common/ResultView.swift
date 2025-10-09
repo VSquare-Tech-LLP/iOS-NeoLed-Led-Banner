@@ -6,6 +6,11 @@
 import SwiftUI
 
 struct ResultView: View {
+    
+    let notificationFeedback = UINotificationFeedbackGenerator()
+    let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+    let selectionFeedback = UISelectionFeedbackGenerator()
+    
     @StateObject private var viewModel = LEDDesignViewModel()
     let backgroundResultImage: String
     let backgroundImage: String
@@ -68,6 +73,7 @@ struct ResultView: View {
     
     @State private var gifFrames: [UIImage] = []
     @State private var gifTotalDuration: Double = 2.0  // Default
+    @State var actualMeasuredTextWidth: CGFloat = 0
     
     var body: some View {
         ZStack(alignment: .top) {
@@ -116,7 +122,8 @@ struct ResultView: View {
                     // Blurred glow layers behind
                     if strokeSize > 0 {
                         Text(text)
-                            .font(.custom(FontManager.getFontWithEffects(baseFontName: selectedFont, isBold: isBold, isItalic: isItalic), size: textSize * 50))
+                            .font(.custom(FontManager.getFontWithEffects(baseFontName: selectedFont, isBold: isBold, isItalic: isItalic),
+                                          size:  .scaledFontSize(textSize * 50)))
                             .modifier(ColorModifier(colorOption: selectedColor))
                             .stroke(
                                 color: outlineEnabled ? selectedOutlineColor.color : .white,
@@ -126,7 +133,8 @@ struct ResultView: View {
                             .opacity(isLight ? 0.5 : 1)
                     } else {
                         Text(text)
-                            .font(.custom(FontManager.getFontWithEffects(baseFontName: selectedFont, isBold: isBold, isItalic: isItalic), size: textSize * 50))
+                            .font(.custom(FontManager.getFontWithEffects(baseFontName: selectedFont, isBold: isBold, isItalic: isItalic),
+                                          size:  .scaledFontSize(textSize * 50)))
                             .modifier(ColorModifier(colorOption: selectedColor))
                             .blur(radius: isLight ? 40 : 0)
                             .opacity(isLight ? 0.5 : 1)
@@ -136,7 +144,8 @@ struct ResultView: View {
                     if isLight {
                         if strokeSize > 0 {
                             Text(text)
-                                .font(.custom(FontManager.getFontWithEffects(baseFontName: selectedFont, isBold: isBold, isItalic: isItalic), size: textSize * 50))
+                                .font(.custom(FontManager.getFontWithEffects(baseFontName: selectedFont, isBold: isBold, isItalic: isItalic),
+                                              size:  .scaledFontSize(textSize * 50)))
                                 .modifier(ColorModifier(colorOption: selectedColor))
                                 .stroke(
                                     color: outlineEnabled ? selectedOutlineColor.color : .white,
@@ -147,7 +156,8 @@ struct ResultView: View {
                                 .opacity(0.7)
                         } else {
                             Text(text)
-                                .font(.custom(FontManager.getFontWithEffects(baseFontName: selectedFont, isBold: isBold, isItalic: isItalic), size: textSize * 50))
+                                .font(.custom(FontManager.getFontWithEffects(baseFontName: selectedFont, isBold: isBold, isItalic: isItalic),
+                                              size:  .scaledFontSize(textSize * 50)))
                                 .kerning(0.4)
                                 .modifier(ColorModifier(colorOption: selectedColor))
                                 .blur(radius: 20)
@@ -158,7 +168,8 @@ struct ResultView: View {
                     // Sharp text on top
                     if strokeSize > 0 {
                         Text(text)
-                            .font(.custom(FontManager.getFontWithEffects(baseFontName: selectedFont, isBold: isBold, isItalic: isItalic), size: textSize * 50))
+                            .font(.custom(FontManager.getFontWithEffects(baseFontName: selectedFont, isBold: isBold, isItalic: isItalic),
+                                          size:  .scaledFontSize(textSize * 50)))
                             .modifier(ColorModifier(colorOption: selectedColor))
                             .stroke(
                                 color: outlineEnabled ? selectedOutlineColor.color : .white,
@@ -168,20 +179,22 @@ struct ResultView: View {
                             .opacity(isFlash && blinkPhase ? 0.1 : 1.0)
                     } else {
                         Text(text)
-                            .font(.custom(FontManager.getFontWithEffects(baseFontName: selectedFont, isBold: isBold, isItalic: isItalic), size: textSize * 50))
+                            .font(.custom(FontManager.getFontWithEffects(baseFontName: selectedFont, isBold: isBold, isItalic: isItalic),
+                                          size:  .scaledFontSize(textSize * 50)))
                             .modifier(ColorModifier(colorOption: selectedColor))
                             .brightness(0.1)
                             .opacity(isFlash && blinkPhase ? 0.1 : 1.0)
                     }
                 }
                 .scaleEffect(x: isMirror ? -1 : 1, y: 1)
-                .frame(height: 200)
+                .frame(height: isIPad ? ScaleUtility.scaledValue(500) : ScaleUtility.scaledValue(200))
                 .fixedSize()
                 .padding(.all, strokeSize * 3)
                 .clipped()
                 .background { GeometryReader { textgeometry -> Color in
                     DispatchQueue.main.async {
                         self.textWidth = textgeometry.size.width
+                        self.actualMeasuredTextWidth = textgeometry.size.width
                     }
                     return Color.clear
                 }
@@ -263,9 +276,9 @@ struct ResultView: View {
                 }
                 .ignoresSafeArea(.all)
                 .onAppear(){
-                           // Calculate video duration dynamically when the view appears
-                           calculateVideoDuration(geoWidth: UIScreen.main.bounds.width, geoHeight: UIScreen.main.bounds.height)
-                       }
+                    // Calculate video duration dynamically when the view appears
+                    calculateVideoDuration(geoWidth: UIScreen.main.bounds.width, geoHeight: UIScreen.main.bounds.height)
+                }
                 
                 
             }
@@ -274,11 +287,13 @@ struct ResultView: View {
             HStack {
                 
                 Button {
+                    impactFeedback.impactOccurred()
                     onBack()
                 } label: {
                     Image(.backIcon)
                         .resizable()
-                        .frame(width: ScaleUtility.scaledValue(34), height: ScaleUtility.scaledValue(34))
+                        .frame(width: isIPad ?  ScaleUtility.scaledValue(51) : ScaleUtility.scaledValue(34),
+                               height: isIPad ?  ScaleUtility.scaledValue(51) : ScaleUtility.scaledValue(34))
                         .background {
                             EllipticalGradient(
                                 stops: [
@@ -302,6 +317,8 @@ struct ResultView: View {
                     
                     // Share Video Button
                     Button {
+                        AnalyticsManager.shared.log(.shared)
+                        impactFeedback.impactOccurred()
                         if let url = videoURL {
                             // Video already exists, just show share sheet
                             showShareSheet = true
@@ -311,15 +328,12 @@ struct ResultView: View {
                             convertViewToVideo(isShare: true, geoWidth: geoWidth, geoHeight: geoHeight)
                         }
                     } label: {
-                        if isProcessing {
-                            ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle(tint: .accent))
-                                .frame(width: ScaleUtility.scaledValue(19.42857), height: ScaleUtility.scaledValue(19.42857))
-                        } else {
+
                             Image(.shareIcon1)
                                 .resizable()
-                                .frame(width: ScaleUtility.scaledValue(19.42857), height: ScaleUtility.scaledValue(19.42857))
-                        }
+                                .frame(width: isIPad ?  ScaleUtility.scaledValue(28.42857) : ScaleUtility.scaledValue(19.42857),
+                                       height: isIPad ?  ScaleUtility.scaledValue(28.42857) : ScaleUtility.scaledValue(19.42857))
+                        
                     }
                     .padding(.all, ScaleUtility.scaledSpacing(7.29))
                     .background {
@@ -339,25 +353,34 @@ struct ResultView: View {
                     .disabled(isProcessing)
                     
                     // Download Video Button
+                    // Download Video Button
                     Button {
-                        if let url = videoURL {
-                            // Video already exists, just save it again
-                            saveVideoToPhotos(url)
+                        AnalyticsManager.shared.log(.downloaded)
+                        impactFeedback.impactOccurred()
+                        // Make sure text width is measured first
+                        if actualMeasuredTextWidth == 0 {
+                            // Wait a moment for measurement
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                if let url = videoURL {
+                                    saveVideoToPhotos(url)
+                                } else {
+                                    isExporting = true
+                                    convertViewToVideo(isShare: false, geoWidth: geoWidth, geoHeight: geoHeight)
+                                }
+                            }
                         } else {
-                            // Need to generate video first
-                            isExporting = true
-                            convertViewToVideo(isShare: false, geoWidth: geoWidth, geoHeight: geoHeight)
+                            if let url = videoURL {
+                                saveVideoToPhotos(url)
+                            } else {
+                                isExporting = true
+                                convertViewToVideo(isShare: false, geoWidth: geoWidth, geoHeight: geoHeight)
+                            }
                         }
                     } label: {
-                        if isProcessing {
-                            ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle(tint: .accent))
-                                .frame(width: ScaleUtility.scaledValue(19.42857), height: ScaleUtility.scaledValue(19.42857))
-                        } else {
                             Image(.downloadIcon)
                                 .resizable()
-                                .frame(width: ScaleUtility.scaledValue(19.42857), height: ScaleUtility.scaledValue(19.42857))
-                        }
+                                .frame(width: isIPad ?  ScaleUtility.scaledValue(28.42857) : ScaleUtility.scaledValue(19.42857),
+                                       height: isIPad ?  ScaleUtility.scaledValue(28.42857) : ScaleUtility.scaledValue(19.42857))
                     }
                     .padding(.all, ScaleUtility.scaledSpacing(7.29))
                     .background {
@@ -378,7 +401,7 @@ struct ResultView: View {
                 }
                 .sheet(isPresented: $showShareSheet) {
                     if let url = videoURL {
-                        ShareSheet(items: [url])
+                        ShareSheet(items: [url], filename: "NeoLed Video")
                     }
                 }
                 .alert("Video Status", isPresented: $showSaveAlert) {
@@ -386,6 +409,7 @@ struct ResultView: View {
                 } message: {
                     Text(saveAlertMessage)
                 }
+                .tint(.blue)
             }
             .padding(.horizontal,ScaleUtility.scaledSpacing(28))
             .padding(.top,ScaleUtility.scaledSpacing(59))
@@ -398,15 +422,15 @@ struct ResultView: View {
                     Color.black.opacity(0.7)
                         .ignoresSafeArea()
                     
-                    VStack(spacing: 20) {
+                    VStack(spacing: ScaleUtility.scaledSpacing(20)) {
                         // Text overlay
                         Text("Exporting Video...")
-                            .font(.system(size: 20, weight: .semibold))
+                            .font(.system(size: .scaledFontSize(20), weight: .semibold))
                             .foregroundColor(.white)
                         
                         // Progress percentage
                         Text("\(Int(progress * 100))%")
-                            .font(.system(size: 16, weight: .medium))
+                            .font(.system(size: .scaledFontSize(16), weight: .medium))
                             .foregroundColor(.white.opacity(0.8))
                         
                         // Progress bar
@@ -414,7 +438,7 @@ struct ResultView: View {
                             // Background capsule
                             Capsule()
                                 .fill(Color.gray.opacity(0.3))
-                                .frame(width: 250, height: 8)
+                                .frame(width: ScaleUtility.scaledValue(250), height: ScaleUtility.scaledValue(8))
                             
                             // Progress capsule
                             Capsule()
@@ -425,11 +449,11 @@ struct ResultView: View {
                                         endPoint: .trailing
                                     )
                                 )
-                                .frame(width: 250 * CGFloat(progress), height: 8)
+                                .frame(width: ScaleUtility.scaledValue(250) * CGFloat(progress), height: ScaleUtility.scaledValue(8))
                                 .animation(.linear(duration: 0.3), value: progress)
                         }
                     }
-                    .padding(40)
+                    .padding( ScaleUtility.scaledSpacing(40))
                     .background(
                         RoundedRectangle(cornerRadius: 20)
                             .fill(Color.black.opacity(0.8))
@@ -478,9 +502,6 @@ struct ResultView: View {
         }
     }
     
-    
-
-
     
     private func saveDesignToHistory() {
         viewModel.saveDesign(
@@ -535,25 +556,48 @@ struct ResultView: View {
     }
     
     func calculateVideoDuration(geoWidth: CGFloat, geoHeight: CGFloat) {
-        let estimatedTextWidth = CGFloat(text.count) * (textSize * 50) * 0.6  // Calculate text width
-        let totalDistance: CGFloat
+        // MATCH THE LIVE PREVIEW EXACTLY
+        // The live preview uses: animationDuration = 10.0 / textSpeed
+        // This is NOT distance-based, it's a fixed formula
+        let animationDuration = 10.0 / textSpeed
         
-        // Calculate the total distance based on the scroll direction
-        switch selectedAlignment {
-        case "left", "right":
-            totalDistance = geoWidth + estimatedTextWidth  // Horizontal scroll
-        case "up", "down":
-            totalDistance = geoHeight + estimatedTextWidth  // Vertical scroll
-        default:
-            totalDistance = geoHeight + estimatedTextWidth  // Default alignment
-        }
-
-        // Adjust the animation duration for a more controlled video length
-        let animationDuration = totalDistance / (textSpeed * 100) // Match duration with the total scroll distance and speed
-
-        // Ensure that video duration has reasonable bounds (3 to 30 seconds)
-        videoDuration = max(3.0, min(30.0, animationDuration))  // Clamp between 3 and 30 seconds
+        // Ensure reasonable bounds
+        videoDuration = max(3.0, min(30.0, animationDuration))
+        
+        print("Video Duration Calculation:")
+        print("- Text Speed: \(textSpeed)")
+        print("- Animation Duration: \(animationDuration)s")
+        print("- Final Duration: \(videoDuration)s")
     }
+    
+    
+    // Calculate actual text width using UIFont metrics OR measured width
+    private func calculateActualTextWidth(scaleFactor: CGFloat) -> CGFloat {
+        // If we have a measured width from the live preview, scale it and use it
+        if actualMeasuredTextWidth > 0 {
+            // The measured width is from the live preview with its scale
+            // We need to adjust it for the video's scale factor
+            let livePreviewScaleFactor = geoHeight / 844.0
+            let widthRatio = scaleFactor / livePreviewScaleFactor
+            return actualMeasuredTextWidth * widthRatio
+        }
+        
+        // Fallback: calculate using UIFont metrics
+        let scaledTextSize = textSize * 50 * scaleFactor
+        
+        let fontName = FontManager.getFontWithEffects(baseFontName: selectedFont, isBold: isBold, isItalic: isItalic)
+        let font = UIFont(name: fontName, size: scaledTextSize) ?? UIFont.systemFont(ofSize: scaledTextSize)
+        
+        let attributes: [NSAttributedString.Key: Any] = [.font: font]
+        let calculatedSize = (text as NSString).size(withAttributes: attributes)
+        
+        // Add generous padding
+        let strokePadding = (strokeSize * scaleFactor) * 6
+        let safetyBuffer = scaledTextSize * 0.5
+        
+        return calculatedSize.width + strokePadding + safetyBuffer
+    }
+    
     func convertViewToVideo(isShare: Bool, geoWidth: CGFloat, geoHeight: CGFloat) {
         isProcessing = true
         progress = 0.0
@@ -608,9 +652,6 @@ struct ResultView: View {
         }
     }
     
-    
-
-
     
     @ViewBuilder
     func getShapeImage() -> some View {
@@ -681,7 +722,6 @@ struct ResultView: View {
             return isMirror ? 90 : -270
         }
     }
-    
     @ViewBuilder
     private func createVideoFrame(progress: Double, videoWidth: CGFloat, videoHeight: CGFloat) -> some View {
         let referenceDimension = max(videoWidth, videoHeight)
@@ -690,33 +730,52 @@ struct ResultView: View {
         let scaledTextSize = textSize * 50 * scaleFactor
         let scaledStrokeSize = strokeSize * scaleFactor
         
-        let estimatedTextWidth = CGFloat(text.count) * scaledTextSize * 0.6
-        
         ZStack {
             // FIXED: Show EITHER background image OR GIF, not both
             if selectedLiveBg != "None" && !gifFrames.isEmpty {
-                // Live background (GIF) - Full screen size
+                // Live background (GIF) - Full screen size with iPad-specific handling
                 let currentTime = progress * videoDuration
                 let gifProgress = (currentTime / gifTotalDuration).truncatingRemainder(dividingBy: 1.0)
                 let frameIndex = Int(gifProgress * Double(gifFrames.count))
                 let safeFrameIndex = min(max(frameIndex, 0), gifFrames.count - 1)
                 
-                Image(uiImage: gifFrames[safeFrameIndex])
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .rotationEffect(.degrees(90))
-                    .frame(
-                        width: videoHeight,
-                        height: videoWidth
-                    )
-                    .position(x: videoWidth / 2, y: videoHeight / 2)
-                    .clipped()
-                    .if(!isHD) { view in
-                        view.mask {
-                            getShapeImageForVideo()
-                                .frame(width: videoWidth, height: videoHeight)
+                if isIPad {
+                    // iPad: Use proper rotation and sizing
+                    Image(uiImage: gifFrames[safeFrameIndex])
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(
+                            width: videoHeight,  // Swap dimensions before rotation
+                            height: videoWidth
+                        )
+                        .rotationEffect(.degrees(90))
+                        .frame(width: videoWidth, height: videoHeight)  // Final frame size
+                        .clipped()
+                        .if(!isHD) { view in
+                            view.mask {
+                                getShapeImageForVideo()
+                                    .frame(width: videoWidth, height: videoHeight)
+                            }
                         }
-                    }
+                } else {
+                    // iPhone: Keep original logic
+                    Image(uiImage: gifFrames[safeFrameIndex])
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .rotationEffect(.degrees(90))
+                        .frame(
+                            width: videoHeight,
+                            height: videoWidth
+                        )
+                        .position(x: videoWidth / 2, y: videoHeight / 2)
+                        .clipped()
+                        .if(!isHD) { view in
+                            view.mask {
+                                getShapeImageForVideo()
+                                    .frame(width: videoWidth, height: videoHeight)
+                            }
+                        }
+                }
             } else if backgroundResultImage != "" {
                 // Background result image (only if no GIF)
                 Image(backgroundResultImage)
@@ -840,64 +899,210 @@ struct ResultView: View {
         .frame(width: videoWidth, height: videoHeight)
         .background(backgroundEnabled ? selectedBgColor.color : Color.secondaryApp)
     }
-
-
+//
+//    @ViewBuilder
+//    private func createVideoFrame(progress: Double, videoWidth: CGFloat, videoHeight: CGFloat) -> some View {
+//        let referenceDimension = max(videoWidth, videoHeight)
+//        let scaleFactor = referenceDimension / 844.0
+//        
+//        let scaledTextSize = textSize * 50 * scaleFactor
+//        let scaledStrokeSize = strokeSize * scaleFactor
+//        
+//        ZStack {
+//            // FIXED: Show EITHER background image OR GIF, not both
+//            if selectedLiveBg != "None" && !gifFrames.isEmpty {
+//                // Live background (GIF) - Full screen size
+//                let currentTime = progress * videoDuration
+//                let gifProgress = (currentTime / gifTotalDuration).truncatingRemainder(dividingBy: 1.0)
+//                let frameIndex = Int(gifProgress * Double(gifFrames.count))
+//                let safeFrameIndex = min(max(frameIndex, 0), gifFrames.count - 1)
+//                
+//                Image(uiImage: gifFrames[safeFrameIndex])
+//                    .resizable()
+//                    .aspectRatio(contentMode: .fill)
+//                    .rotationEffect(.degrees(90))
+//                    .frame(
+//                        width: videoHeight,
+//                        height: videoWidth
+//                    )
+//                    .position(x: videoWidth / 2, y: videoHeight / 2)
+//                    .clipped()
+//                    .if(!isHD) { view in
+//                        view.mask {
+//                            getShapeImageForVideo()
+//                                .frame(width: videoWidth, height: videoHeight)
+//                        }
+//                    }
+//            } else if backgroundResultImage != "" {
+//                // Background result image (only if no GIF)
+//                Image(backgroundResultImage)
+//                    .resizable()
+//                    .aspectRatio(contentMode: .fill)
+//                    .frame(width: videoWidth, height: videoHeight)
+//                    .clipped()
+//                    .if(!isHD) { view in
+//                        view.mask {
+//                            getShapeImageForVideo()
+//                                .frame(width: videoWidth, height: videoHeight)
+//                        }
+//                    }
+//            }
+//            
+//            // Background shape (if not HD)
+//            if !isHD {
+//                getShapeImageForVideo()
+//                    .frame(width: videoWidth, height: videoHeight)
+//                    .clipped()
+//                    .opacity(0.1)
+//            }
+//            
+//            let animatedOffsetX = calculateAnimatedOffsetX(progress: progress, geoWidth: videoWidth, geoHeight: videoHeight, scaleFactor: scaleFactor)
+//            let animatedOffsetY = calculateAnimatedOffsetY(progress: progress, geoWidth: videoWidth, geoHeight: videoHeight, scaleFactor: scaleFactor)
+//            
+//            let isCurrentlyFlashing = isFlash && (Int(progress * videoDuration * 2) % 2 == 0)
+//            
+//            ZStack {
+//                // Layer 1: Blurred glow
+//                if strokeSize > 0 {
+//                    StrokeText(
+//                        text: text,
+//                        width: scaledStrokeSize,
+//                        color: outlineEnabled ? selectedOutlineColor.color : .white,
+//                        font: .custom(selectedFont, size: scaledTextSize),
+//                        fontWeight: isBold ? .heavy : (isLight ? .light : .regular)
+//                    )
+//                    .modifier(ColorModifier(colorOption: selectedColor))
+//                    .blur(radius: isLight ? (40 * scaleFactor) : 0)
+//                    .opacity(isLight ? 0.5 : 1)
+//                } else {
+//                    Text(text)
+//                        .font(.custom(selectedFont, size: scaledTextSize))
+//                        .fontWeight(isBold ? .heavy : (isLight ? .light : .regular))
+//                        .modifier(ColorModifier(colorOption: selectedColor))
+//                        .blur(radius: isLight ? (40 * scaleFactor) : 0)
+//                        .opacity(isLight ? 0.5 : 1)
+//                }
+//                
+//                // Layer 2: Middle glow
+//                if isLight {
+//                    if strokeSize > 0 {
+//                        StrokeText(
+//                            text: text,
+//                            width: scaledStrokeSize,
+//                            color: outlineEnabled ? selectedOutlineColor.color : .white,
+//                            font: .custom(selectedFont, size: scaledTextSize),
+//                            fontWeight: isBold ? .heavy : (isLight ? .light : .regular)
+//                        )
+//                        .kerning(0.6 * scaleFactor)
+//                        .modifier(ColorModifier(colorOption: selectedColor))
+//                        .blur(radius: 20 * scaleFactor)
+//                        .opacity(0.7)
+//                    } else {
+//                        Text(text)
+//                            .font(.custom(selectedFont, size: scaledTextSize))
+//                            .kerning(0.4 * scaleFactor)
+//                            .fontWeight(isBold ? .heavy : (isLight ? .light : .regular))
+//                            .modifier(ColorModifier(colorOption: selectedColor))
+//                            .blur(radius: 20 * scaleFactor)
+//                            .opacity(0.7)
+//                    }
+//                }
+//                
+//                // Layer 3: Sharp text
+//                if strokeSize > 0 {
+//                    StrokeText(
+//                        text: text,
+//                        width: scaledStrokeSize,
+//                        color: outlineEnabled ? selectedOutlineColor.color : .white,
+//                        font: .custom(selectedFont, size: scaledTextSize),
+//                        fontWeight: isBold ? .heavy : (isLight ? .light : .regular)
+//                    )
+//                    .modifier(ColorModifier(colorOption: selectedColor))
+//                    .brightness(0.1)
+//                    .opacity(isCurrentlyFlashing ? 0.3 : 1.0)
+//                } else {
+//                    Text(text)
+//                        .font(.custom(selectedFont, size: scaledTextSize))
+//                        .fontWeight(isBold ? .heavy : (isLight ? .light : .regular))
+//                        .modifier(ColorModifier(colorOption: selectedColor))
+//                        .brightness(0.1)
+//                        .opacity(isCurrentlyFlashing ? 0.3 : 1.0)
+//                }
+//            }
+//            .scaleEffect(x: isMirror ? -1 : 1, y: 1)
+//            .fixedSize()
+//            .offset(x: animatedOffsetX, y: animatedOffsetY)
+//            .rotationEffect(.degrees(getRotation()))
+//            .frame(maxWidth: .infinity, maxHeight: .infinity)
+//            .if(!isHD) { view in
+//                view.mask {
+//                    getShapeImageForVideo()
+//                        .frame(width: videoWidth, height: videoHeight)
+//                        .clipped()
+//                }
+//            }
+//        }
+//        .overlay {
+//            Image(frameResultBg)
+//                .resizable()
+//                .frame(width: videoWidth, height: videoHeight)
+//                .if(!isHD) { view in
+//                    view.mask {
+//                        getShapeImageForVideo()
+//                            .frame(width: videoWidth, height: videoHeight)
+//                    }
+//                }
+//        }
+//        .frame(width: videoWidth, height: videoHeight)
+//        .background(backgroundEnabled ? selectedBgColor.color : Color.secondaryApp)
+//    }
     
-    private func calculateTotalDistance(videoWidth: CGFloat, videoHeight: CGFloat, estimatedTextWidth: CGFloat) -> CGFloat {
-        switch selectedAlignment {
-        case "left", "right":
-            return videoWidth + estimatedTextWidth  // Horizontal scroll
-        case "up", "down":
-            return videoHeight + estimatedTextWidth  // Vertical scroll
-        default:
-            return videoHeight + estimatedTextWidth  // Default alignment
-        }
-    }
-
-
-
-    // FIXED: Update offset calculations to match the speed
     private func calculateAnimatedOffsetX(progress: Double, geoWidth: CGFloat, geoHeight: CGFloat, scaleFactor: CGFloat) -> CGFloat {
-        let estimatedTextWidth = CGFloat(text.count) * (textSize * 50 * scaleFactor) * 0.6
+        let actualTextWidth = calculateActualTextWidth(scaleFactor: scaleFactor)
+        let scaledTextSize = textSize * 50 * scaleFactor
+        let extraBuffer = scaledTextSize * 3  // Extra buffer proportional to text size
         
         switch selectedAlignment {
         case "up":
             // Text moves from bottom to top (rotated -270°)
-            let startPos = geoHeight + estimatedTextWidth / 2
-            let endPos = -estimatedTextWidth / 2
+            let startPos = geoHeight + actualTextWidth / 2
+            let endPos = -(actualTextWidth / 2) - extraBuffer
             return startPos + (endPos - startPos) * progress
             
         case "down":
             // Text moves from top to bottom (rotated -270°)
-            let startPos = -(geoHeight + estimatedTextWidth / 2)
-            let endPos = geoHeight + estimatedTextWidth / 2
+            let startPos = -(geoHeight + actualTextWidth / 2)
+            let endPos = (geoHeight + actualTextWidth / 2) + extraBuffer
             return startPos + (endPos - startPos) * progress
             
         case "left", "right":
             // Center horizontally for vertical scrolling
-            return geoWidth / 2
+            return geoWidth / 2 - 200
             
         default: // Horizontal scrolling (None or default)
-            let startPos: CGFloat = isMirror ? (-estimatedTextWidth / 2) : (geoWidth + estimatedTextWidth / 2)
-            let endPos: CGFloat = isMirror ? (geoWidth + estimatedTextWidth / 2) : (-estimatedTextWidth / 2)
+            let startPos: CGFloat = isMirror ? (-(actualTextWidth / 2) - extraBuffer) : (geoWidth + actualTextWidth / 2)
+            let endPos: CGFloat = isMirror ? (geoWidth + actualTextWidth / 2) : (-(actualTextWidth / 2) - extraBuffer)
             return startPos + (endPos - startPos) * progress
         }
     }
 
     private func calculateAnimatedOffsetY(progress: Double, geoWidth: CGFloat, geoHeight: CGFloat, scaleFactor: CGFloat) -> CGFloat {
-        let estimatedTextWidth = CGFloat(text.count) * (textSize * 50 * scaleFactor) * 0.6
+        let actualTextWidth = calculateActualTextWidth(scaleFactor: scaleFactor)
+        let scaledTextSize = textSize * 50 * scaleFactor
+        let extraBuffer = scaledTextSize * 3  // Extra buffer proportional to text size
         
         switch selectedAlignment {
         case "left":
             // Text moves from right to left (rotated -270°)
-            let startPos = geoWidth + estimatedTextWidth / 2
-            let endPos = -estimatedTextWidth / 2
+            let startPos = -(geoWidth + actualTextWidth / 2)
+            let endPos = (geoWidth + actualTextWidth / 2) + extraBuffer
             return startPos + (endPos - startPos) * progress
+          
             
         case "right":
             // Text moves from left to right (rotated 90°)
-            let startPos = -(geoWidth + estimatedTextWidth / 2)
-            let endPos = geoWidth + estimatedTextWidth / 2
+            let startPos = geoWidth + actualTextWidth / 2
+            let endPos = -(actualTextWidth / 2) - extraBuffer
             return startPos + (endPos - startPos) * progress
             
         case "up", "down":
@@ -908,7 +1113,6 @@ struct ResultView: View {
             return 0
         }
     }
-
 
     @ViewBuilder
     private func getShapeImageForVideo() -> some View {
@@ -927,9 +1131,4 @@ struct ResultView: View {
             Image(.circle).resizable().aspectRatio(contentMode: .fill)
         }
     }
-    
-
 }
-
-  
-

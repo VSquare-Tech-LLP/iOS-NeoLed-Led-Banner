@@ -12,10 +12,15 @@ struct CardView : View {
     
     var imageName: String
     var onTap: () -> Void  // Add callback
+    let notificationFeedback = UINotificationFeedbackGenerator()
+    let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+    let selectionFeedback = UISelectionFeedbackGenerator()
     
     var body: some View {
         Button {
+            impactFeedback.impactOccurred()
             onTap()
+            AnalyticsManager.shared.log(.templateSelected(templateName: imageName))
         } label: {
             Image(imageName)
             .resizable()

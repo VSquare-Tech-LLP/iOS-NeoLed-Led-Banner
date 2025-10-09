@@ -147,7 +147,7 @@ struct GiftPaywallCollectView: View {
                                 if purchaseManager.hasPro {
                                     purchaseConfirm()
                                     notificationfeedback.notificationOccurred(.success)
-//                                    AnalyticsManager.shared.log(.giftScreenPlanPurchase)
+                                    AnalyticsManager.shared.log(.giftScreenPlanPurchase)
                                 }
                             } catch {
                                 notificationfeedback.notificationOccurred(.error)
