@@ -57,6 +57,7 @@ struct OutlineColorPickerView: View {
     @Binding var selectedLiveBg: String
     var isBackground: Bool = false
     @Binding var selectedBgColor: OutlineColorOption 
+    var onValueChange: (() -> Void)? = nil
     
     let notificationFeedback = UINotificationFeedbackGenerator()
     let impactFeedback = UIImpactFeedbackGenerator(style: .medium)

@@ -17,6 +17,7 @@ struct SettingsView: View {
     let selectionFeedback = UISelectionFeedbackGenerator()
     
     
+    
     @EnvironmentObject var purchaseManager: PurchaseManager
     @EnvironmentObject var timerManager: TimerManager
     @EnvironmentObject var remoteConfigManager: RemoteConfigManager

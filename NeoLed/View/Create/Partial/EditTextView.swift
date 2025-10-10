@@ -37,7 +37,7 @@ struct EditTextView: View {
        @Binding var selectedAlignment: String
        @Binding var selectedLiveBg: String
        @Binding var selectedBgColor: OutlineColorOption
-    
+      var onValueChange: (() -> Void)? = nil
    var fontOptions: [Fonts] = [
       Fonts(fontDisplay: FontManager.bricolageGrotesqueRegularFont ,fontImageName: FontManager.bricolageGrotesqueBoldFont),
       Fonts(fontDisplay: FontManager.arvoRegularFont ,fontImageName: FontManager.arvoBoldFont),
@@ -100,7 +100,7 @@ struct EditTextView: View {
                        .frame(maxWidth: .infinity,alignment: .leading)
                        .padding(.leading, ScaleUtility.scaledSpacing(30))
                    
-                   ScrollView(.horizontal) {
+                   ScrollView(.horizontal,showsIndicators: false) {
                        
                        HStack(spacing: ScaleUtility.scaledSpacing(10)) {
                            
@@ -139,6 +139,8 @@ struct EditTextView: View {
                                                AnalyticsManager.shared.log(.effectApplied(effectName: effect.effectName))
                                            }
                                        }
+                                       
+                                       onValueChange?()
                                        
                                    } label: {
                                        
@@ -197,13 +199,14 @@ struct EditTextView: View {
                        .frame(maxWidth: .infinity, alignment: .topLeading)
                        .padding(.horizontal, ScaleUtility.scaledSpacing(30))
                    
-                   ScrollView(.horizontal) {
+                   ScrollView(.horizontal,showsIndicators: false) {
                        HStack(spacing: ScaleUtility.scaledSpacing(10)) {
                            ForEach(Array(fontOptions.enumerated()), id: \.offset) { index, font in
                                Button(action: {
                                    impactFeedback.impactOccurred()
                                    selectedFont = font.fontDisplay
                                    AnalyticsManager.shared.log(.fontSelected(fontName: font.fontDisplay))
+                                   onValueChange?()
                                }) {
                                    Text("Aa")
                                        .font(.custom(font.fontImageName, size: .scaledFontSize(14)))
@@ -250,6 +253,9 @@ struct EditTextView: View {
                            .foregroundColor(.white)
                        
                        sizeCustomSlider(value: $textSize, range: 2.0...8.0)
+                           .onChange(of: textSize) { _, _ in
+                                                onValueChange?()  // ✅ ADD THIS
+                                            }
                        
                        Text("A")
                            .font(FontManager.bricolageGrotesqueRegularFont(size: .scaledFontSize(16)))
@@ -275,7 +281,9 @@ struct EditTextView: View {
                        
                        
                        sizeCustomSlider(value: $strokeSize, range: 0...7)
-                       
+                           .onChange(of: strokeSize) { _, _ in
+                                                onValueChange?()  // ✅ ADD THIS
+                                            }
                        
                        StrokeText(text: "A",
                                   width: 1.0,
@@ -303,7 +311,9 @@ struct EditTextView: View {
                            // First Row - 10 colors
                            HStack(spacing: ScaleUtility.scaledSpacing(10)) {
                                ForEach(0..<10) { index in
-                                   colorButton(ColorOption.predefinedColors[index])
+                                   colorButton(ColorOption.predefinedColors[index],onValueChange: {
+                                       onValueChange?()
+                                   })
                                        .frame(height:  isIPad ? ScaleUtility.scaledValue(45) : ScaleUtility.scaledValue(30))
                                }
                            }
@@ -312,7 +322,9 @@ struct EditTextView: View {
                            // Second Row - 10 colors
                            HStack(spacing: ScaleUtility.scaledSpacing(10)) {
                                ForEach(10..<20) { index in
-                                   colorButton(ColorOption.predefinedColors[index])
+                                   colorButton(ColorOption.predefinedColors[index],onValueChange: {
+                                       onValueChange?()
+                                   })
                                        .frame(height:  isIPad ? ScaleUtility.scaledValue(45) : ScaleUtility.scaledValue(30))
                                }
                            }
@@ -331,7 +343,10 @@ struct EditTextView: View {
                        outlineEnabled: $outlineEnabled,
                        selectedLiveBg: $selectedLiveBg,
                        isBackground: false ,
-                       selectedBgColor: $selectedBgColor
+                       selectedBgColor: $selectedBgColor,
+                       onValueChange: {
+                           onValueChange!()
+                       }
                    )
                    .padding(.horizontal, ScaleUtility.scaledSpacing(30))
                }
@@ -346,7 +361,9 @@ struct EditTextView: View {
                        .padding(.leading, ScaleUtility.scaledSpacing(30))
                    
                    ReusableCustomSlider(value: $textSpeed, range: 0.5...5.0)
-                     
+                       .onChange(of: textSpeed) { _, _ in
+                                         onValueChange?()  // ✅ ADD THIS
+                                     }
               
                }
                
@@ -359,7 +376,7 @@ struct EditTextView: View {
                        .frame(maxWidth: .infinity, alignment: .topLeading)
                        .padding(.horizontal, ScaleUtility.scaledSpacing(30))
                    
-                   ScrollView(.horizontal) {
+                   ScrollView(.horizontal,showsIndicators: false) {
                        
                        HStack(spacing: ScaleUtility.scaledSpacing(10)) {
                            ForEach(Array(alignmentOptions.enumerated()), id: \.offset) { index, align in
@@ -370,6 +387,7 @@ struct EditTextView: View {
                                        impactFeedback.impactOccurred()
                                        selectedAlignment = ""
                                        selectedAlignment = align.alignmentName
+                                       onValueChange?()
                                    }
                                } label: {
                                    Image(align.alignmentImage)
@@ -469,7 +487,7 @@ struct EditTextView: View {
    }
    
    @ViewBuilder
-   private func colorButton(_ colorOption: ColorOption) -> some View {
+   private func colorButton(_ colorOption: ColorOption,onValueChange: (() -> Void)) -> some View {
        Button(action: {
            impactFeedback.impactOccurred()
            if colorOption.id == "white" {

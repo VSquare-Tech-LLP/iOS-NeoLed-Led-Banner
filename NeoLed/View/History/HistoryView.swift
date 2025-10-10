@@ -33,7 +33,7 @@ struct HistoryView: View {
             
             HStack {
               
-                Text("History")
+                Text("Saved")
                     .font(FontManager.bricolageGrotesqueBoldFont(size: .scaledFontSize(25.56818)))
                     .foregroundColor(Color.primaryApp)
                 

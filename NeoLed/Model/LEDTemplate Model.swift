@@ -221,7 +221,7 @@ class TemplateDataManager {
                 imageName: "holiday2",
                 backgroundImage: "h2",
                 selectedFont: FontManager.arvoRegularFont,
-                text: "Thank You",
+                text: "Spring",
                 textSize: 3.5,
                 customTextColorHex: "#4B725F",
                 strokeSize: nil,

@@ -31,7 +31,7 @@ struct CustomTabPicker: View {
              
 
                 RoundedRectangle(cornerRadius: 50)
-                    .fill(isInside ? Color.secondaryBG : Color.accent )
+                    .fill(isInside ? Color.secondaryBG : Color.primaryApp )
                     .frame(width: tabWidth - 2 * activeRectanglePadding)
                     .scaledFrame(baseHeight: ScaleUtility.scaledValue(38))
                 // reducing width

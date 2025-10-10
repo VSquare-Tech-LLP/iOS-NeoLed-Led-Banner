@@ -12,7 +12,7 @@ struct ContentView: View {
     @EnvironmentObject var userDefault: UserSettings
     @EnvironmentObject var purchaseManager: PurchaseManager
     @EnvironmentObject var remoteConfigManager: RemoteConfigManager
-//    @EnvironmentObject var timerManager: TimerManager
+    @EnvironmentObject var timerManager: TimerManager
     @State var isCollectGift: Bool = false
     var body: some View {
         ZStack {
@@ -64,7 +64,7 @@ struct ContentView: View {
                     print("RemoteConfigManager failed to load initial data")
                 }
             }
-//            timerManager.setupCountdown()
+            timerManager.setupCountdown()
         }
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
             Task {

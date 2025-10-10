@@ -44,7 +44,7 @@ struct ResultView: View {
     var onBack: () -> Void
    
     @State var isFlashing = false
-    
+    @State var isSavedToLibrary = false
     @State var offsetx: CGFloat = 0
     @State var offsety: CGFloat = 0
     @State var textWidth: CGFloat = 0
@@ -56,24 +56,10 @@ struct ResultView: View {
     @State var saveAlertMessage: String = ""
     @State var isProcessing: Bool = false
     
-    @State var videoDuration: Double = 5.0
-    @State var frameRate: Int = 30
-    
     @State private var blinkPhase: Bool = false
     
     @State var progress: Double = 0.0
     @State var isExporting: Bool = false
-    @State private var timer: Timer? = nil
-    
-    @State var scaledTextSize: CGFloat = 50
-    @State var scaledTextSpeed: CGFloat = 1.0
-    
-    @State var geoWidth: CGFloat = 0
-    @State var geoHeight: CGFloat = 0
-    
-    @State private var gifFrames: [UIImage] = []
-    @State private var gifTotalDuration: Double = 2.0  // Default
-    @State var actualMeasuredTextWidth: CGFloat = 0
     
     var body: some View {
         ZStack(alignment: .top) {
@@ -194,7 +180,6 @@ struct ResultView: View {
                 .background { GeometryReader { textgeometry -> Color in
                     DispatchQueue.main.async {
                         self.textWidth = textgeometry.size.width
-                        self.actualMeasuredTextWidth = textgeometry.size.width
                     }
                     return Color.clear
                 }
@@ -243,7 +228,6 @@ struct ResultView: View {
                         }
                     }
                     
-                    
                     // Flash effect - reset and restart
                     if isFlash {
                         withAnimation(
@@ -253,16 +237,8 @@ struct ResultView: View {
                             blinkPhase = true
                         }
                     }
-                    
-                    
-                    self.geoWidth = geo.size.width
-                    self.geoHeight = geo.size.height
-                    let scaleFactor = min(max(geo.size.height / 800.0, 1.0), 2.0) // Adjust scale factor (between 1x and 2x)
-                    scaledTextSize = textSize * scaleFactor
-                    scaledTextSpeed = textSpeed * scaleFactor
                 }
                 .overlay {
-                    
                     Image(frameResultBg)
                         .resizable()
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -275,12 +251,6 @@ struct ResultView: View {
                         }
                 }
                 .ignoresSafeArea(.all)
-                .onAppear(){
-                    // Calculate video duration dynamically when the view appears
-                    calculateVideoDuration(geoWidth: UIScreen.main.bounds.width, geoHeight: UIScreen.main.bounds.height)
-                }
-                
-                
             }
             
             
@@ -294,21 +264,22 @@ struct ResultView: View {
                         .resizable()
                         .frame(width: isIPad ?  ScaleUtility.scaledValue(51) : ScaleUtility.scaledValue(34),
                                height: isIPad ?  ScaleUtility.scaledValue(51) : ScaleUtility.scaledValue(34))
-                        .background {
-                            EllipticalGradient(
-                                stops: [
-                                    Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.4), location: 0.00),
-                                    Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.2), location: 0.78),
-                                ],
-                                center: UnitPoint(x: 0.36, y: 0.34)
-                            )
-                        }
-                        .cornerRadius(4.04762)
-                        .overlay {
-                            RoundedRectangle(cornerRadius: 4.04762)
-                                .stroke(Color.accent, lineWidth: 1)
-                        }
+//                        .background {
+//                            EllipticalGradient(
+//                                stops: [
+//                                    Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.4), location: 0.00),
+//                                    Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.2), location: 0.78),
+//                                ],
+//                                center: UnitPoint(x: 0.36, y: 0.34)
+//                            )
+//                        }
+//                        .cornerRadius(4.04762)
+//                        .overlay {
+//                            RoundedRectangle(cornerRadius: 4.04762)
+//                                .stroke(Color.accent, lineWidth: 1)
+//                        }
                 }
+                .padding(.leading,ScaleUtility.scaledSpacing(8))
 
         
                 Spacer()
@@ -320,20 +291,16 @@ struct ResultView: View {
                         AnalyticsManager.shared.log(.shared)
                         impactFeedback.impactOccurred()
                         if let url = videoURL {
-                            // Video already exists, just show share sheet
                             showShareSheet = true
                         } else {
-                            // Need to generate video first
                             isExporting = true
-                            convertViewToVideo(isShare: true, geoWidth: geoWidth, geoHeight: geoHeight)
+                            convertViewToVideo(isShare: true)
                         }
                     } label: {
-
-                            Image(.shareIcon1)
-                                .resizable()
-                                .frame(width: isIPad ?  ScaleUtility.scaledValue(28.42857) : ScaleUtility.scaledValue(19.42857),
-                                       height: isIPad ?  ScaleUtility.scaledValue(28.42857) : ScaleUtility.scaledValue(19.42857))
-                        
+                        Image(.shareIcon1)
+                            .resizable()
+                            .frame(width: isIPad ?  ScaleUtility.scaledValue(28.42857) : ScaleUtility.scaledValue(19.42857),
+                                   height: isIPad ?  ScaleUtility.scaledValue(28.42857) : ScaleUtility.scaledValue(19.42857))
                     }
                     .padding(.all, ScaleUtility.scaledSpacing(7.29))
                     .background {
@@ -353,34 +320,20 @@ struct ResultView: View {
                     .disabled(isProcessing)
                     
                     // Download Video Button
-                    // Download Video Button
                     Button {
                         AnalyticsManager.shared.log(.downloaded)
                         impactFeedback.impactOccurred()
-                        // Make sure text width is measured first
-                        if actualMeasuredTextWidth == 0 {
-                            // Wait a moment for measurement
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                if let url = videoURL {
-                                    saveVideoToPhotos(url)
-                                } else {
-                                    isExporting = true
-                                    convertViewToVideo(isShare: false, geoWidth: geoWidth, geoHeight: geoHeight)
-                                }
-                            }
+                        if let url = videoURL {
+                            saveVideoToPhotos(url)
                         } else {
-                            if let url = videoURL {
-                                saveVideoToPhotos(url)
-                            } else {
-                                isExporting = true
-                                convertViewToVideo(isShare: false, geoWidth: geoWidth, geoHeight: geoHeight)
-                            }
+                            isExporting = true
+                            convertViewToVideo(isShare: false)
                         }
                     } label: {
-                            Image(.downloadIcon)
-                                .resizable()
-                                .frame(width: isIPad ?  ScaleUtility.scaledValue(28.42857) : ScaleUtility.scaledValue(19.42857),
-                                       height: isIPad ?  ScaleUtility.scaledValue(28.42857) : ScaleUtility.scaledValue(19.42857))
+                        Image(.downloadIcon2)
+                            .resizable()
+                            .frame(width: isIPad ?  ScaleUtility.scaledValue(28.42857) : ScaleUtility.scaledValue(19.42857),
+                                   height: isIPad ?  ScaleUtility.scaledValue(28.42857) : ScaleUtility.scaledValue(19.42857))
                     }
                     .padding(.all, ScaleUtility.scaledSpacing(7.29))
                     .background {
@@ -398,20 +351,48 @@ struct ResultView: View {
                             .stroke(Color.accent, lineWidth: 1)
                     }
                     .disabled(isProcessing)
+                    
+                    Button(action: {
+                        if !isSavedToLibrary {
+                            saveDesignToHistory()
+                        }
+                    }) {
+                        Image(isSavedToLibrary ? .savedIcon : .saveIcon)
+                            .resizable()
+                            .frame(width: isIPad ?  ScaleUtility.scaledValue(28.42857) : ScaleUtility.scaledValue(19.42857),
+                                   height: isIPad ?  ScaleUtility.scaledValue(28.42857) : ScaleUtility.scaledValue(19.42857))
+                       
+                    }
+                    .padding(.all, ScaleUtility.scaledSpacing(7.29))
+                    .background {
+                        EllipticalGradient(
+                            stops: [
+                                Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.4), location: 0.00),
+                                Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.2), location: 0.78),
+                            ],
+                            center: UnitPoint(x: 0.36, y: 0.34)
+                        )
+                    }
+                    .cornerRadius(4.04762)
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 4.04762)
+                            .stroke(Color.accent, lineWidth: 1)
+                    }
+                
                 }
                 .sheet(isPresented: $showShareSheet) {
                     if let url = videoURL {
                         ShareSheet(items: [url], filename: "NeoLed Video")
                     }
                 }
-                .alert("Video Status", isPresented: $showSaveAlert) {
+                .alert("Video Saved", isPresented: $showSaveAlert) {
                     Button("OK", role: .cancel) { }
                 } message: {
                     Text(saveAlertMessage)
                 }
                 .tint(.blue)
             }
-            .padding(.horizontal,ScaleUtility.scaledSpacing(28))
+            .padding(.horizontal,ScaleUtility.scaledSpacing(20))
             .padding(.top,ScaleUtility.scaledSpacing(59))
             
         }
@@ -462,13 +443,6 @@ struct ResultView: View {
                 }
             }
         }
-        .onDisappear {
-            // Auto-save when leaving the view
-            if isSaved {
-                saveDesignToHistory()
-            }
-        }
-        
         .background {
             if backgroundEnabled {
                 selectedBgColor.color
@@ -476,7 +450,6 @@ struct ResultView: View {
             else {
                 Color.secondaryApp
             }
-           
         }
         .ignoresSafeArea(.all)
         .navigationBarHidden(true)
@@ -502,6 +475,7 @@ struct ResultView: View {
         }
     }
     
+    // MARK: - Helper Functions
     
     private func saveDesignToHistory() {
         viewModel.saveDesign(
@@ -530,6 +504,7 @@ struct ResultView: View {
         
         saveAlertMessage = "Design saved to history!"
         showSaveAlert = true
+        isSavedToLibrary = true
     }
     
     func saveVideoToPhotos(_ url: URL) {
@@ -545,113 +520,55 @@ struct ResultView: View {
         videoSaver.saveVideo(url)
     }
     
-    func getShadowColor() -> Color {
-        switch selectedColor.type {
-        case .solid(let color):
-            return color
-        case .linearGradient(let gradientData):
-            // Use the first color from the gradient for glow
-            return gradientData.stops.first?.color ?? .white
-        }
-    }
-    
-    func calculateVideoDuration(geoWidth: CGFloat, geoHeight: CGFloat) {
-        // MATCH THE LIVE PREVIEW EXACTLY
-        // The live preview uses: animationDuration = 10.0 / textSpeed
-        // This is NOT distance-based, it's a fixed formula
-        let animationDuration = 10.0 / textSpeed
-        
-        // Ensure reasonable bounds
-        videoDuration = max(3.0, min(30.0, animationDuration))
-        
-        print("Video Duration Calculation:")
-        print("- Text Speed: \(textSpeed)")
-        print("- Animation Duration: \(animationDuration)s")
-        print("- Final Duration: \(videoDuration)s")
-    }
-    
-    
-    // Calculate actual text width using UIFont metrics OR measured width
-    private func calculateActualTextWidth(scaleFactor: CGFloat) -> CGFloat {
-        // If we have a measured width from the live preview, scale it and use it
-        if actualMeasuredTextWidth > 0 {
-            // The measured width is from the live preview with its scale
-            // We need to adjust it for the video's scale factor
-            let livePreviewScaleFactor = geoHeight / 844.0
-            let widthRatio = scaleFactor / livePreviewScaleFactor
-            return actualMeasuredTextWidth * widthRatio
-        }
-        
-        // Fallback: calculate using UIFont metrics
-        let scaledTextSize = textSize * 50 * scaleFactor
-        
-        let fontName = FontManager.getFontWithEffects(baseFontName: selectedFont, isBold: isBold, isItalic: isItalic)
-        let font = UIFont(name: fontName, size: scaledTextSize) ?? UIFont.systemFont(ofSize: scaledTextSize)
-        
-        let attributes: [NSAttributedString.Key: Any] = [.font: font]
-        let calculatedSize = (text as NSString).size(withAttributes: attributes)
-        
-        // Add generous padding
-        let strokePadding = (strokeSize * scaleFactor) * 6
-        let safetyBuffer = scaledTextSize * 0.5
-        
-        return calculatedSize.width + strokePadding + safetyBuffer
-    }
-    
-    func convertViewToVideo(isShare: Bool, geoWidth: CGFloat, geoHeight: CGFloat) {
+    func convertViewToVideo(isShare: Bool) {
         isProcessing = true
         progress = 0.0
         
-        // Extract GIF frames using the manager
-        if selectedLiveBg != "None" {
-            gifFrames = GIFFrameManager.instance.getFrames(for: selectedLiveBg)
-            gifTotalDuration = GIFFrameManager.instance.getTotalDuration(for: selectedLiveBg)
-            
-            if gifTotalDuration == 0 {
-                gifTotalDuration = 2.0 // Fallback
-            }
-            
-            print("GIF '\(selectedLiveBg)': \(gifFrames.count) frames, duration: \(gifTotalDuration)s")
-        }
-        
-        // Calculate video duration based on scrolling distance and speed
-        calculateVideoDuration(geoWidth: geoWidth, geoHeight: geoHeight)
-        
-        // Create the video generator with correct duration
-        let videoGenerator = VideoGenerator(
-            frameRate: frameRate,
-            duration: videoDuration,
-            size: CGSize(width: geoWidth, height: geoHeight)
-        ) { frameNumber in
-            let progress = Double(frameNumber) / Double(Int(videoDuration * Double(frameRate)))
-            return AnyView(self.createVideoFrame(progress: progress, videoWidth: geoWidth, videoHeight: geoHeight))
-        }
-        
-        videoGenerator.generateVideo(progressHandler: { generationProgress in
-            self.progress = generationProgress
-        }) { result in
-            self.isProcessing = false
-            switch result {
-            case .success(let url):
-                self.videoURL = url
-                self.progress = 1.0
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    self.isExporting = false
-                    if isShare {
-                        self.showShareSheet = true
-                    } else {
-                        self.saveVideoToPhotos(url)
+        // Uses screen dimensions automatically via helper
+        VideoGenerationHelper.generateVideo(
+            text: text,
+            selectedFont: selectedFont,
+            textSize: textSize,
+            strokeSize: strokeSize,
+            selectedColor: selectedColor,
+            selectedOutlineColor: selectedOutlineColor,
+            selectedBgColor: selectedBgColor,
+            outlineEnabled: outlineEnabled,
+            backgroundEnabled: backgroundEnabled,
+            selectedEffects: selectedEffects,
+            selectedAlignment: selectedAlignment,
+            selectedShape: selectedShape,
+            textSpeed: textSpeed,
+            isHD: isHD,
+            selectedLiveBg: selectedLiveBg,
+            backgroundResultImage: backgroundResultImage,
+            frameResultBg: frameResultBg,
+            progressHandler: { generationProgress in
+                self.progress = generationProgress
+            },
+            completion: { result in
+                self.isProcessing = false
+                switch result {
+                case .success(let url):
+                    self.videoURL = url
+                    self.progress = 1.0
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        self.isExporting = false
+                        if isShare {
+                            self.showShareSheet = true
+                        } else {
+                            self.saveVideoToPhotos(url)
+                        }
                     }
+                case .failure(let error):
+                    self.isExporting = false
+                    self.progress = 0.0
+                    self.saveAlertMessage = "Failed to generate video: \(error.localizedDescription)"
+                    self.showSaveAlert = true
                 }
-            case .failure(let error):
-                self.isExporting = false
-                self.progress = 0.0
-                self.saveAlertMessage = "Failed to generate video: \(error.localizedDescription)"
-                self.showSaveAlert = true
             }
-        }
+        )
     }
-    
     
     @ViewBuilder
     func getShapeImage() -> some View {
@@ -720,415 +637,6 @@ struct ResultView: View {
             return -270
         default: // "None" - use mirror logic
             return isMirror ? 90 : -270
-        }
-    }
-    @ViewBuilder
-    private func createVideoFrame(progress: Double, videoWidth: CGFloat, videoHeight: CGFloat) -> some View {
-        let referenceDimension = max(videoWidth, videoHeight)
-        let scaleFactor = referenceDimension / 844.0
-        
-        let scaledTextSize = textSize * 50 * scaleFactor
-        let scaledStrokeSize = strokeSize * scaleFactor
-        
-        ZStack {
-            // FIXED: Show EITHER background image OR GIF, not both
-            if selectedLiveBg != "None" && !gifFrames.isEmpty {
-                // Live background (GIF) - Full screen size with iPad-specific handling
-                let currentTime = progress * videoDuration
-                let gifProgress = (currentTime / gifTotalDuration).truncatingRemainder(dividingBy: 1.0)
-                let frameIndex = Int(gifProgress * Double(gifFrames.count))
-                let safeFrameIndex = min(max(frameIndex, 0), gifFrames.count - 1)
-                
-                if isIPad {
-                    // iPad: Use proper rotation and sizing
-                    Image(uiImage: gifFrames[safeFrameIndex])
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(
-                            width: videoHeight,  // Swap dimensions before rotation
-                            height: videoWidth
-                        )
-                        .rotationEffect(.degrees(90))
-                        .frame(width: videoWidth, height: videoHeight)  // Final frame size
-                        .clipped()
-                        .if(!isHD) { view in
-                            view.mask {
-                                getShapeImageForVideo()
-                                    .frame(width: videoWidth, height: videoHeight)
-                            }
-                        }
-                } else {
-                    // iPhone: Keep original logic
-                    Image(uiImage: gifFrames[safeFrameIndex])
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .rotationEffect(.degrees(90))
-                        .frame(
-                            width: videoHeight,
-                            height: videoWidth
-                        )
-                        .position(x: videoWidth / 2, y: videoHeight / 2)
-                        .clipped()
-                        .if(!isHD) { view in
-                            view.mask {
-                                getShapeImageForVideo()
-                                    .frame(width: videoWidth, height: videoHeight)
-                            }
-                        }
-                }
-            } else if backgroundResultImage != "" {
-                // Background result image (only if no GIF)
-                Image(backgroundResultImage)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: videoWidth, height: videoHeight)
-                    .clipped()
-                    .if(!isHD) { view in
-                        view.mask {
-                            getShapeImageForVideo()
-                                .frame(width: videoWidth, height: videoHeight)
-                        }
-                    }
-            }
-            
-            // Background shape (if not HD)
-            if !isHD {
-                getShapeImageForVideo()
-                    .frame(width: videoWidth, height: videoHeight)
-                    .clipped()
-                    .opacity(0.1)
-            }
-            
-            let animatedOffsetX = calculateAnimatedOffsetX(progress: progress, geoWidth: videoWidth, geoHeight: videoHeight, scaleFactor: scaleFactor)
-            let animatedOffsetY = calculateAnimatedOffsetY(progress: progress, geoWidth: videoWidth, geoHeight: videoHeight, scaleFactor: scaleFactor)
-            
-            let isCurrentlyFlashing = isFlash && (Int(progress * videoDuration * 2) % 2 == 0)
-            
-            ZStack {
-                // Layer 1: Blurred glow
-                if strokeSize > 0 {
-                    StrokeText(
-                        text: text,
-                        width: scaledStrokeSize,
-                        color: outlineEnabled ? selectedOutlineColor.color : .white,
-                        font: .custom(selectedFont, size: scaledTextSize),
-                        fontWeight: isBold ? .heavy : (isLight ? .light : .regular)
-                    )
-                    .modifier(ColorModifier(colorOption: selectedColor))
-                    .blur(radius: isLight ? (40 * scaleFactor) : 0)
-                    .opacity(isLight ? 0.5 : 1)
-                } else {
-                    Text(text)
-                        .font(.custom(selectedFont, size: scaledTextSize))
-                        .fontWeight(isBold ? .heavy : (isLight ? .light : .regular))
-                        .modifier(ColorModifier(colorOption: selectedColor))
-                        .blur(radius: isLight ? (40 * scaleFactor) : 0)
-                        .opacity(isLight ? 0.5 : 1)
-                }
-                
-                // Layer 2: Middle glow
-                if isLight {
-                    if strokeSize > 0 {
-                        StrokeText(
-                            text: text,
-                            width: scaledStrokeSize,
-                            color: outlineEnabled ? selectedOutlineColor.color : .white,
-                            font: .custom(selectedFont, size: scaledTextSize),
-                            fontWeight: isBold ? .heavy : (isLight ? .light : .regular)
-                        )
-                        .kerning(0.6 * scaleFactor)
-                        .modifier(ColorModifier(colorOption: selectedColor))
-                        .blur(radius: 20 * scaleFactor)
-                        .opacity(0.7)
-                    } else {
-                        Text(text)
-                            .font(.custom(selectedFont, size: scaledTextSize))
-                            .kerning(0.4 * scaleFactor)
-                            .fontWeight(isBold ? .heavy : (isLight ? .light : .regular))
-                            .modifier(ColorModifier(colorOption: selectedColor))
-                            .blur(radius: 20 * scaleFactor)
-                            .opacity(0.7)
-                    }
-                }
-                
-                // Layer 3: Sharp text
-                if strokeSize > 0 {
-                    StrokeText(
-                        text: text,
-                        width: scaledStrokeSize,
-                        color: outlineEnabled ? selectedOutlineColor.color : .white,
-                        font: .custom(selectedFont, size: scaledTextSize),
-                        fontWeight: isBold ? .heavy : (isLight ? .light : .regular)
-                    )
-                    .modifier(ColorModifier(colorOption: selectedColor))
-                    .brightness(0.1)
-                    .opacity(isCurrentlyFlashing ? 0.3 : 1.0)
-                } else {
-                    Text(text)
-                        .font(.custom(selectedFont, size: scaledTextSize))
-                        .fontWeight(isBold ? .heavy : (isLight ? .light : .regular))
-                        .modifier(ColorModifier(colorOption: selectedColor))
-                        .brightness(0.1)
-                        .opacity(isCurrentlyFlashing ? 0.3 : 1.0)
-                }
-            }
-            .scaleEffect(x: isMirror ? -1 : 1, y: 1)
-            .fixedSize()
-            .offset(x: animatedOffsetX, y: animatedOffsetY)
-            .rotationEffect(.degrees(getRotation()))
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .if(!isHD) { view in
-                view.mask {
-                    getShapeImageForVideo()
-                        .frame(width: videoWidth, height: videoHeight)
-                        .clipped()
-                }
-            }
-        }
-        .overlay {
-            Image(frameResultBg)
-                .resizable()
-                .frame(width: videoWidth, height: videoHeight)
-                .if(!isHD) { view in
-                    view.mask {
-                        getShapeImageForVideo()
-                            .frame(width: videoWidth, height: videoHeight)
-                    }
-                }
-        }
-        .frame(width: videoWidth, height: videoHeight)
-        .background(backgroundEnabled ? selectedBgColor.color : Color.secondaryApp)
-    }
-//
-//    @ViewBuilder
-//    private func createVideoFrame(progress: Double, videoWidth: CGFloat, videoHeight: CGFloat) -> some View {
-//        let referenceDimension = max(videoWidth, videoHeight)
-//        let scaleFactor = referenceDimension / 844.0
-//        
-//        let scaledTextSize = textSize * 50 * scaleFactor
-//        let scaledStrokeSize = strokeSize * scaleFactor
-//        
-//        ZStack {
-//            // FIXED: Show EITHER background image OR GIF, not both
-//            if selectedLiveBg != "None" && !gifFrames.isEmpty {
-//                // Live background (GIF) - Full screen size
-//                let currentTime = progress * videoDuration
-//                let gifProgress = (currentTime / gifTotalDuration).truncatingRemainder(dividingBy: 1.0)
-//                let frameIndex = Int(gifProgress * Double(gifFrames.count))
-//                let safeFrameIndex = min(max(frameIndex, 0), gifFrames.count - 1)
-//                
-//                Image(uiImage: gifFrames[safeFrameIndex])
-//                    .resizable()
-//                    .aspectRatio(contentMode: .fill)
-//                    .rotationEffect(.degrees(90))
-//                    .frame(
-//                        width: videoHeight,
-//                        height: videoWidth
-//                    )
-//                    .position(x: videoWidth / 2, y: videoHeight / 2)
-//                    .clipped()
-//                    .if(!isHD) { view in
-//                        view.mask {
-//                            getShapeImageForVideo()
-//                                .frame(width: videoWidth, height: videoHeight)
-//                        }
-//                    }
-//            } else if backgroundResultImage != "" {
-//                // Background result image (only if no GIF)
-//                Image(backgroundResultImage)
-//                    .resizable()
-//                    .aspectRatio(contentMode: .fill)
-//                    .frame(width: videoWidth, height: videoHeight)
-//                    .clipped()
-//                    .if(!isHD) { view in
-//                        view.mask {
-//                            getShapeImageForVideo()
-//                                .frame(width: videoWidth, height: videoHeight)
-//                        }
-//                    }
-//            }
-//            
-//            // Background shape (if not HD)
-//            if !isHD {
-//                getShapeImageForVideo()
-//                    .frame(width: videoWidth, height: videoHeight)
-//                    .clipped()
-//                    .opacity(0.1)
-//            }
-//            
-//            let animatedOffsetX = calculateAnimatedOffsetX(progress: progress, geoWidth: videoWidth, geoHeight: videoHeight, scaleFactor: scaleFactor)
-//            let animatedOffsetY = calculateAnimatedOffsetY(progress: progress, geoWidth: videoWidth, geoHeight: videoHeight, scaleFactor: scaleFactor)
-//            
-//            let isCurrentlyFlashing = isFlash && (Int(progress * videoDuration * 2) % 2 == 0)
-//            
-//            ZStack {
-//                // Layer 1: Blurred glow
-//                if strokeSize > 0 {
-//                    StrokeText(
-//                        text: text,
-//                        width: scaledStrokeSize,
-//                        color: outlineEnabled ? selectedOutlineColor.color : .white,
-//                        font: .custom(selectedFont, size: scaledTextSize),
-//                        fontWeight: isBold ? .heavy : (isLight ? .light : .regular)
-//                    )
-//                    .modifier(ColorModifier(colorOption: selectedColor))
-//                    .blur(radius: isLight ? (40 * scaleFactor) : 0)
-//                    .opacity(isLight ? 0.5 : 1)
-//                } else {
-//                    Text(text)
-//                        .font(.custom(selectedFont, size: scaledTextSize))
-//                        .fontWeight(isBold ? .heavy : (isLight ? .light : .regular))
-//                        .modifier(ColorModifier(colorOption: selectedColor))
-//                        .blur(radius: isLight ? (40 * scaleFactor) : 0)
-//                        .opacity(isLight ? 0.5 : 1)
-//                }
-//                
-//                // Layer 2: Middle glow
-//                if isLight {
-//                    if strokeSize > 0 {
-//                        StrokeText(
-//                            text: text,
-//                            width: scaledStrokeSize,
-//                            color: outlineEnabled ? selectedOutlineColor.color : .white,
-//                            font: .custom(selectedFont, size: scaledTextSize),
-//                            fontWeight: isBold ? .heavy : (isLight ? .light : .regular)
-//                        )
-//                        .kerning(0.6 * scaleFactor)
-//                        .modifier(ColorModifier(colorOption: selectedColor))
-//                        .blur(radius: 20 * scaleFactor)
-//                        .opacity(0.7)
-//                    } else {
-//                        Text(text)
-//                            .font(.custom(selectedFont, size: scaledTextSize))
-//                            .kerning(0.4 * scaleFactor)
-//                            .fontWeight(isBold ? .heavy : (isLight ? .light : .regular))
-//                            .modifier(ColorModifier(colorOption: selectedColor))
-//                            .blur(radius: 20 * scaleFactor)
-//                            .opacity(0.7)
-//                    }
-//                }
-//                
-//                // Layer 3: Sharp text
-//                if strokeSize > 0 {
-//                    StrokeText(
-//                        text: text,
-//                        width: scaledStrokeSize,
-//                        color: outlineEnabled ? selectedOutlineColor.color : .white,
-//                        font: .custom(selectedFont, size: scaledTextSize),
-//                        fontWeight: isBold ? .heavy : (isLight ? .light : .regular)
-//                    )
-//                    .modifier(ColorModifier(colorOption: selectedColor))
-//                    .brightness(0.1)
-//                    .opacity(isCurrentlyFlashing ? 0.3 : 1.0)
-//                } else {
-//                    Text(text)
-//                        .font(.custom(selectedFont, size: scaledTextSize))
-//                        .fontWeight(isBold ? .heavy : (isLight ? .light : .regular))
-//                        .modifier(ColorModifier(colorOption: selectedColor))
-//                        .brightness(0.1)
-//                        .opacity(isCurrentlyFlashing ? 0.3 : 1.0)
-//                }
-//            }
-//            .scaleEffect(x: isMirror ? -1 : 1, y: 1)
-//            .fixedSize()
-//            .offset(x: animatedOffsetX, y: animatedOffsetY)
-//            .rotationEffect(.degrees(getRotation()))
-//            .frame(maxWidth: .infinity, maxHeight: .infinity)
-//            .if(!isHD) { view in
-//                view.mask {
-//                    getShapeImageForVideo()
-//                        .frame(width: videoWidth, height: videoHeight)
-//                        .clipped()
-//                }
-//            }
-//        }
-//        .overlay {
-//            Image(frameResultBg)
-//                .resizable()
-//                .frame(width: videoWidth, height: videoHeight)
-//                .if(!isHD) { view in
-//                    view.mask {
-//                        getShapeImageForVideo()
-//                            .frame(width: videoWidth, height: videoHeight)
-//                    }
-//                }
-//        }
-//        .frame(width: videoWidth, height: videoHeight)
-//        .background(backgroundEnabled ? selectedBgColor.color : Color.secondaryApp)
-//    }
-    
-    private func calculateAnimatedOffsetX(progress: Double, geoWidth: CGFloat, geoHeight: CGFloat, scaleFactor: CGFloat) -> CGFloat {
-        let actualTextWidth = calculateActualTextWidth(scaleFactor: scaleFactor)
-        let scaledTextSize = textSize * 50 * scaleFactor
-        let extraBuffer = scaledTextSize * 3  // Extra buffer proportional to text size
-        
-        switch selectedAlignment {
-        case "up":
-            // Text moves from bottom to top (rotated -270°)
-            let startPos = geoHeight + actualTextWidth / 2
-            let endPos = -(actualTextWidth / 2) - extraBuffer
-            return startPos + (endPos - startPos) * progress
-            
-        case "down":
-            // Text moves from top to bottom (rotated -270°)
-            let startPos = -(geoHeight + actualTextWidth / 2)
-            let endPos = (geoHeight + actualTextWidth / 2) + extraBuffer
-            return startPos + (endPos - startPos) * progress
-            
-        case "left", "right":
-            // Center horizontally for vertical scrolling
-            return geoWidth / 2 - 200
-            
-        default: // Horizontal scrolling (None or default)
-            let startPos: CGFloat = isMirror ? (-(actualTextWidth / 2) - extraBuffer) : (geoWidth + actualTextWidth / 2)
-            let endPos: CGFloat = isMirror ? (geoWidth + actualTextWidth / 2) : (-(actualTextWidth / 2) - extraBuffer)
-            return startPos + (endPos - startPos) * progress
-        }
-    }
-
-    private func calculateAnimatedOffsetY(progress: Double, geoWidth: CGFloat, geoHeight: CGFloat, scaleFactor: CGFloat) -> CGFloat {
-        let actualTextWidth = calculateActualTextWidth(scaleFactor: scaleFactor)
-        let scaledTextSize = textSize * 50 * scaleFactor
-        let extraBuffer = scaledTextSize * 3  // Extra buffer proportional to text size
-        
-        switch selectedAlignment {
-        case "left":
-            // Text moves from right to left (rotated -270°)
-            let startPos = -(geoWidth + actualTextWidth / 2)
-            let endPos = (geoWidth + actualTextWidth / 2) + extraBuffer
-            return startPos + (endPos - startPos) * progress
-          
-            
-        case "right":
-            // Text moves from left to right (rotated 90°)
-            let startPos = geoWidth + actualTextWidth / 2
-            let endPos = -(actualTextWidth / 2) - extraBuffer
-            return startPos + (endPos - startPos) * progress
-            
-        case "up", "down":
-            // Center vertically for horizontal scrolling
-            return 0
-            
-        default: // Horizontal scrolling
-            return 0
-        }
-    }
-
-    @ViewBuilder
-    private func getShapeImageForVideo() -> some View {
-        switch selectedShape {
-        case "circle":
-            Image(.circle).resizable().aspectRatio(contentMode: .fill)
-        case "square":
-            Image(.square).resizable().aspectRatio(contentMode: .fill)
-        case "heart":
-            Image(.heart).resizable().aspectRatio(contentMode: .fill)
-        case "star":
-            Image(.star).resizable().aspectRatio(contentMode: .fill)
-        case "ninjaStar":
-            Image(.ninjaStar).resizable().aspectRatio(contentMode: .fill)
-        default:
-            Image(.circle).resizable().aspectRatio(contentMode: .fill)
         }
     }
 }

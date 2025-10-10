@@ -10,6 +10,10 @@ import SwiftUI
 
 
 struct TopView:View {
+    @EnvironmentObject var userDefault: UserSettings
+    @EnvironmentObject var remoteConfigManager: RemoteConfigManager
+    @EnvironmentObject var purchaseManager: PurchaseManager
+    
     @Binding var backgroundImage: String
     @Binding var text: String
     @Binding var selectedFont: String
@@ -37,7 +41,9 @@ struct TopView:View {
     
     @FocusState.Binding var isInputFocused: Bool
     var showPreview: () -> Void
-    
+    var onSave: () -> Void
+    var onDownload: () -> Void
+    var onValueChange: (() -> Void)? = nil
     
     @State var offsetx: CGFloat = 0
     @State var offsety: CGFloat = 0
@@ -54,6 +60,9 @@ struct TopView:View {
     let notificationFeedback = UINotificationFeedbackGenerator()
     let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
     let selectionFeedback = UISelectionFeedbackGenerator()
+    
+    @State var showPaywall = false
+
     
     var body: some View {
         
@@ -343,7 +352,7 @@ struct TopView:View {
             }
 
             
-            HStack(spacing: ScaleUtility.scaledSpacing(10)) {
+            VStack(spacing: ScaleUtility.scaledSpacing(10)) {
                 
                 ZStack {
                     RoundedRectangle(cornerRadius: 5)
@@ -370,7 +379,7 @@ struct TopView:View {
                                 .font(FontManager.bricolageGrotesqueRegularFont(size: .scaledFontSize(14)))
                                 .foregroundColor(Color.primaryApp)
                                 .background(Color.clear)
-                               
+                            
                         }
                         
                         TextField("", text: $text)
@@ -384,47 +393,96 @@ struct TopView:View {
                     .offset(x: ScaleUtility.scaledSpacing(15))
                     
                 }
+                .padding(.horizontal,ScaleUtility.scaledSpacing(20))
                 
-                Button {
-                    impactFeedback.impactOccurred()
-                    showPreview()
-                } label: {
+                
+              HStack(spacing: ScaleUtility.scaledSpacing(11)) {
                     
-                    Text("Preview")
-                      .font(FontManager.bricolageGrotesqueMediumFont(size: .scaledFontSize(14)))
-                      .kerning(0.42)
-                      .multilineTextAlignment(.center)
-                      .foregroundColor(.white)
-                      .padding(.vertical, ScaleUtility.scaledSpacing(9))
-                      .padding(.horizontal, ScaleUtility.scaledSpacing(18))
-                      .background(
-                        EllipticalGradient(
-                            stops: [
-                                Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.4), location: 0.00),
-                                Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.2), location: 0.78),
-                            ],
-                            center: UnitPoint(x: 0.36, y: 0.34)
-                        )
-                      )
-                      .cornerRadius(5)
-                      .overlay {
-                          RoundedRectangle(cornerRadius: 5)
-                              .stroke(.accent, lineWidth: 1)
-                      }
-                }
+                    Button {
+                        onSave()
+                    } label: {
+                        Text("Save")
+                          .font(FontManager.bricolageGrotesqueMediumFont(size: .scaledFontSize(14)))
+                          .kerning(0.42)
+                          .multilineTextAlignment(.center)
+                          .foregroundColor(Color.secondaryApp)
+                          .padding(.vertical, isIPad ? ScaleUtility.scaledSpacing(11) : ScaleUtility.scaledSpacing(9))
+                          .padding(.horizontal, ScaleUtility.scaledSpacing(39.5))
+                          .background(Color.accent)
+                          .cornerRadius(5)
+                    }
+                    
+                    
+                    Button {
+                        onDownload()
+                    } label: {
+                        Image(.downloadIcon1)
+                            .resizable()
+                            .frame(width: isIPad ?  ScaleUtility.scaledValue(45) :  ScaleUtility.scaledValue(35),
+                                   height: isIPad ?  ScaleUtility.scaledValue(45) :  ScaleUtility.scaledValue(35))
+                          
+                    }
+                    
+                    Spacer()
+                    
+                    
+                    Button {
+                        impactFeedback.impactOccurred()
+                        userDefault.designCreated += 1
+                        if userDefault.designCreated > remoteConfigManager.totalFreeLED && !purchaseManager.hasPro {
+                            showPaywall = true
+                        }
+                        else {
+                            showPreview()
+                        }
+                       
+                       
+                    } label: {
+                        Text("Preview")
+                            .font(FontManager.bricolageGrotesqueMediumFont(size: .scaledFontSize(14)))
+                            .kerning(0.42)
+                            .multilineTextAlignment(.center)
+                            .foregroundColor(.white)
+                            .padding(.vertical, ScaleUtility.scaledSpacing(9))
+                            .padding(.horizontal, ScaleUtility.scaledSpacing(18))
+                            .background(
+                                EllipticalGradient(
+                                    stops: [
+                                        Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.4), location: 0.00),
+                                        Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.2), location: 0.78),
+                                    ],
+                                    center: UnitPoint(x: 0.36, y: 0.34)
+                                )
+                            )
+                            .cornerRadius(5)
+                            .overlay {
+                                RoundedRectangle(cornerRadius: 5)
+                                    .stroke(.accent, lineWidth: 1)
+                            }
+                    }
 
+                }
+                .padding(.horizontal, ScaleUtility.scaledSpacing(20))
                 
-    
             }
-            .padding(.horizontal,ScaleUtility.scaledSpacing(20))
+     
             
         }
         .padding(.top, ScaleUtility.scaledSpacing(59))
         .onChange(of: text) {
             previewText = text
+            onValueChange?()
         }
         .onAppear {
             previewText = text
+        }
+        .fullScreenCover(isPresented: $showPaywall) {
+            
+            PaywallView(isInternalOpen: true) {
+                showPaywall = false
+            } purchaseCompletSuccessfullyAction: {
+                showPaywall = false
+            }
         }
     }
     

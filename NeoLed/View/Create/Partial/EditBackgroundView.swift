@@ -28,6 +28,8 @@ struct FrameBackground {
 
 struct EditBackgroundView: View {
     
+    @EnvironmentObject var purchaseManager: PurchaseManager
+    
     let notificationFeedback = UINotificationFeedbackGenerator()
     let impactFeedback = UIImpactFeedbackGenerator(style: .light)
     let selectionFeedback = UISelectionFeedbackGenerator()
@@ -36,7 +38,7 @@ struct EditBackgroundView: View {
     @Binding var selectedShape: String
     @Binding var selectedBgColor: OutlineColorOption
     @Binding var backgroundEnabled: Bool
-    
+ 
     var shapeOption: [LEDShape] = [
         LEDShape(shapeName: "None", shapeIcon: "noSelectionIcon"),
         LEDShape(shapeName: "circle", shapeIcon: "circleIcon"),
@@ -83,8 +85,12 @@ struct EditBackgroundView: View {
     @State private var showBgColorPicker = false
     @State private var customBgColor: UIColor = .blue
     @State private var hasCustomBgColor = false
+    var onValueChange: (() -> Void)? = nil
+    
+    @State var showPaywall = false
     
     var body: some View {
+        
         VStack(spacing: 0) {
             
             VStack(spacing: ScaleUtility.scaledSpacing(20)) {
@@ -100,7 +106,11 @@ struct EditBackgroundView: View {
                             outlineEnabled: $backgroundEnabled,
                             selectedLiveBg: $selectedLiveBg,
                             isBackground: true,
-                            selectedBgColor: $selectedBgColor
+                            selectedBgColor: $selectedBgColor,
+                            onValueChange: {
+//                                onValueChange!()
+                                onValueChange?()
+                            }
                         )
                         .padding(.horizontal, ScaleUtility.scaledSpacing(30))
                     }
@@ -113,57 +123,77 @@ struct EditBackgroundView: View {
                         .frame(maxWidth: .infinity,alignment: .leading)
                         .padding(.leading, ScaleUtility.scaledSpacing(30))
                
-                    ScrollView(.horizontal) {
-                        HStack(spacing: ScaleUtility.scaledSpacing(10)) {
-                            ForEach(Array(wallpaperOption.enumerated()), id: \.offset) { index, wallpaper in
-                                
-                                Button {
-                                    impactFeedback.impactOccurred()
-                                    selectedLiveBg = wallpaper.wallpaperName
-                                    backgroundEnabled = false
-                                    AnalyticsManager.shared.log(.liveBackgroundSelected(backgroundName: wallpaper.wallpaperName))
-                                } label: {
-                                    
-                                    Image(wallpaper.wallpaperImage)
-                                        .resizable()
-                                        .frame(width: wallpaper.wallpaperName == "None"
-                                               ?  isIPad ? ScaleUtility.scaledValue(36) : ScaleUtility.scaledValue(16)
-                                               :  isIPad ? ScaleUtility.scaledValue(63) : ScaleUtility.scaledValue(42),
-                                               height: wallpaper.wallpaperName == "None"
-                                               ?  isIPad ? ScaleUtility.scaledValue(36) : ScaleUtility.scaledValue(16)
-                                               :  isIPad ? ScaleUtility.scaledValue(63) : ScaleUtility.scaledValue(42))
-                                        .padding(.all,wallpaper.wallpaperName == "None" ? ScaleUtility.scaledSpacing(13) : 0 )
-                                        .background {
-                                            if selectedLiveBg == wallpaper.wallpaperName {
-                                                EllipticalGradient(
-                                                    stops: [
-                                                        Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.4), location: 0.00),
-                                                        Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.2), location: 0.78),
-                                                    ],
-                                                    center: UnitPoint(x: 0.36, y: 0.34)
-                                                )
-                                            }
-                                            else {
-                                                Color.clear
-                                            }
-                                        }
-                                        .cornerRadius(5)
-                                        .overlay {
-                                            RoundedRectangle(cornerRadius: 5)
-                                                .stroke( selectedLiveBg == wallpaper.wallpaperName ? Color.accent : Color.clear, lineWidth: 1)
-                                               
-                                            
-                                            
-                                        }
-                                }
-                                .frame(width: isIPad ? ScaleUtility.scaledValue(66) : ScaleUtility.scaledValue(44),
-                                       height: isIPad ? ScaleUtility.scaledValue(66) :  ScaleUtility.scaledValue(44))
-                            }
-                            
-                        }
-                        .frame(alignment: .leading)
-                        .padding(.horizontal, ScaleUtility.scaledSpacing(30))
-                    }
+                    ScrollView(.horizontal,showsIndicators: false) {
+                           HStack(spacing: ScaleUtility.scaledSpacing(10)) {
+                               ForEach(Array(wallpaperOption.enumerated()), id: \.offset) { index, wallpaper in
+                                   ZStack {
+                                       let isLocked = index >= wallpaperOption.count - 5
+                                     
+                                       Button {
+                                           impactFeedback.impactOccurred()
+                                           
+                                           if isLocked && !purchaseManager.hasPro {
+                                               showPaywall = true
+                                             
+                                           } else {
+                                               selectedLiveBg = wallpaper.wallpaperName
+                                               backgroundEnabled = false
+                                               AnalyticsManager.shared.log(.liveBackgroundSelected(backgroundName: wallpaper.wallpaperName))
+                                               onValueChange?()
+                                           }
+                                       } label: {
+                                           Image(wallpaper.wallpaperImage)
+                                               .resizable()
+                                               .frame(width: wallpaper.wallpaperName == "None"
+                                                      ?  isIPad ? ScaleUtility.scaledValue(36) : ScaleUtility.scaledValue(16)
+                                                      :  isIPad ? ScaleUtility.scaledValue(63) : ScaleUtility.scaledValue(42),
+                                                      height: wallpaper.wallpaperName == "None"
+                                                      ?  isIPad ? ScaleUtility.scaledValue(36) : ScaleUtility.scaledValue(16)
+                                                      :  isIPad ? ScaleUtility.scaledValue(63) : ScaleUtility.scaledValue(42))
+                                               .padding(.all,wallpaper.wallpaperName == "None" ? ScaleUtility.scaledSpacing(13) : 0 )
+                                               .background {
+                                                   if selectedLiveBg == wallpaper.wallpaperName {
+                                                       EllipticalGradient(
+                                                        stops: [
+                                                            Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.4), location: 0.00),
+                                                            Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.2), location: 0.78),
+                                                        ],
+                                                        center: UnitPoint(x: 0.36, y: 0.34)
+                                                       )
+                                                   }
+                                                   else {
+                                                       Color.clear
+                                                   }
+                                               }
+                                               .cornerRadius(5)
+                                               .overlay {
+                                                   RoundedRectangle(cornerRadius: 5)
+                                                       .stroke( selectedLiveBg == wallpaper.wallpaperName ? Color.accent : Color.clear, lineWidth: 1)
+                                               }
+                                               .overlay {
+                                                   if isLocked && !purchaseManager.hasPro {
+                                                       Color.black.opacity(0.2)
+                                                           .cornerRadius(5)
+                                                           .allowsHitTesting(true)
+                                                       
+                                                       Image(.lockIcon)
+                                                           .resizable()
+                                                           .frame(
+                                                            width: isIPad ? ScaleUtility.scaledValue(27) : ScaleUtility.scaledValue(18),
+                                                            height: isIPad ? ScaleUtility.scaledValue(27) : ScaleUtility.scaledValue(18)
+                                                           )
+                                                   }
+                                               }
+                                       }
+                             
+                                   }
+                                      .frame(width: isIPad ? ScaleUtility.scaledValue(66) : ScaleUtility.scaledValue(44),
+                                          height: isIPad ? ScaleUtility.scaledValue(66) :  ScaleUtility.scaledValue(44))
+                               }
+                           }
+                           .frame(alignment: .leading)
+                           .padding(.horizontal, ScaleUtility.scaledSpacing(30))
+                       }
                 }
            
                 VStack(spacing: ScaleUtility.scaledSpacing(15)) {
@@ -174,7 +204,7 @@ struct EditBackgroundView: View {
                         .frame(maxWidth: .infinity,alignment: .leading)
                         .padding(.leading, ScaleUtility.scaledSpacing(30))
                
-                    ScrollView(.horizontal) {
+                    ScrollView(.horizontal,showsIndicators: false) {
                         HStack(spacing: ScaleUtility.scaledSpacing(10)) {
                             ForEach(Array(frameOption.enumerated()), id: \.offset) { index, frame in
                                 
@@ -183,6 +213,7 @@ struct EditBackgroundView: View {
                                     frameBg = frame.frameName
                                     frameResultBg = frame.framResult
                                     AnalyticsManager.shared.log(.frameBackgroundSelected(frameName: frame.frameName))
+                                    onValueChange?()
                                 } label: {
                                     
                                     Image(frame.frameImage)
@@ -239,6 +270,7 @@ struct EditBackgroundView: View {
                             impactFeedback.impactOccurred()
                             isHD = false
                             AnalyticsManager.shared.log(.bannerTypeChanged(bannerType: "LED"))
+                            onValueChange?()
                         } label: {
                             RoundedRectangle(cornerRadius: 5)
                                 .frame(width: isIPad ? ScaleUtility.scaledValue(154) : ScaleUtility.scaledValue(102),
@@ -278,6 +310,7 @@ struct EditBackgroundView: View {
                             impactFeedback.impactOccurred()
                             isHD = true
                             AnalyticsManager.shared.log(.bannerTypeChanged(bannerType: "HD"))
+                            onValueChange?()
 
                         } label: {
                             RoundedRectangle(cornerRadius: 5)
@@ -327,7 +360,7 @@ struct EditBackgroundView: View {
                         .frame(maxWidth: .infinity,alignment: .leading)
                         .padding(.leading, ScaleUtility.scaledSpacing(30))
                
-                    ScrollView(.horizontal) {
+                    ScrollView(.horizontal,showsIndicators: false) {
                         HStack(spacing: ScaleUtility.scaledSpacing(10)) {
                             ForEach(Array(shapeOption.enumerated()), id: \.offset) { index, shape in
                                 
@@ -335,6 +368,7 @@ struct EditBackgroundView: View {
                                     impactFeedback.impactOccurred()
                                     selectedShape = shape.shapeName
                                     AnalyticsManager.shared.log(.ledShapeSelected(shapeName: shape.shapeName))
+                                    onValueChange?()
                                 } label: {
                                     
                                     Image(shape.shapeIcon)
@@ -394,6 +428,14 @@ struct EditBackgroundView: View {
                 }
             )
             .presentationDetents(isIPad ? [.large, .fraction(0.95)] : [.fraction(0.9)])
+        }
+        .fullScreenCover(isPresented: $showPaywall) {
+            
+            PaywallView(isInternalOpen: true) {
+                showPaywall = false
+            } purchaseCompletSuccessfullyAction: {
+                showPaywall = false
+            }
         }
     }
 }

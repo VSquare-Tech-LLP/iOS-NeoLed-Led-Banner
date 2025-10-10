@@ -2,8 +2,6 @@
 //  MainView.swift
 //  NeoLed
 //
-//  Created by Purvi Sancheti on 24/09/25.
-//
 
 import Foundation
 import SwiftUI
@@ -14,7 +12,6 @@ enum TabSelection: Hashable {
     case history
 }
 
-
 struct MainView: View {
     
     let impactFeedback = UIImpactFeedbackGenerator(style: .light)
@@ -22,7 +19,7 @@ struct MainView: View {
     @State var backgroundImage: String = ""
     @State var backgroundResultImage: String = ""
     @State private var selectedTab: TabSelection = .explore
-    @State private var text: String = ""  // ADD THIS
+    @State private var text: String = ""
     @State private var textSize: CGFloat = 4.0
     @State private var strokeSize: CGFloat = 0.0
     @State private var selectedFont: String = FontManager.bricolageGrotesqueRegularFont
@@ -33,6 +30,11 @@ struct MainView: View {
     @State private var hasCustomTextColor = false
     @State private var customTextColor: UIColor = .white
     @State private var selectedEffects: Set<String> = ["None"]
+    @State private var hasUnsavedChanges = false
+    
+    // ✅ ADD THESE
+    @State private var pendingTabChange: TabSelection? = nil
+    @State private var showUnsavedDialog = false
     
     var body: some View {
         NavigationStack {
@@ -42,10 +44,9 @@ struct MainView: View {
                     case .explore:
                         ExploreView(
                             onTemplateSelect: { template in
-                                // Load template data into state
                                 loadTemplate(template)
-                                // Switch to create tab
                                 selectedTab = .create
+                                hasUnsavedChanges = false
                             }
                         )
                     case .create:
@@ -62,7 +63,23 @@ struct MainView: View {
                             backgroundEnabled: $backgroundEnabled,
                             hasCustomTextColor: $hasCustomTextColor,
                             customTextColor: $customTextColor,
-                            selectedEffects: $selectedEffects
+                            selectedEffects: $selectedEffects,
+                            hasUnsavedChanges: $hasUnsavedChanges,
+                            showUnsavedDialog: $showUnsavedDialog,
+                            onSaveAndContinue: {
+                                // Save was clicked in dialog
+                                if let targetTab = pendingTabChange {
+                                    switchToTab(targetTab)
+                                    pendingTabChange = nil
+                                }
+                            },
+                            onDiscardAndContinue: {
+                                // Discard was clicked in dialog
+                                if let targetTab = pendingTabChange {
+                                    switchToTab(targetTab)
+                                    pendingTabChange = nil
+                                }
+                            }
                         )
                     case .history:
                         HistoryView()
@@ -71,41 +88,24 @@ struct MainView: View {
                 .frame(maxWidth:.infinity)
                 .transition(.opacity)
                 
-                
                 VStack {
                     Spacer()
-      
                     
                     HStack {
-                        
                         Button {
                             impactFeedback.impactOccurred()
-                            selectedTab = .explore
-                            
-                            backgroundImage = ""
-                            backgroundResultImage = ""
-                            text = ""
-                            textSize = 4.0
-                            strokeSize = 0.0
-                            selectedFont = FontManager.bricolageGrotesqueRegularFont
-                            selectedColor = ColorOption.predefinedColors[1]
-                            selectedOutlineColor = OutlineColorOption.predefinedOutlineColors[0]
-                            outlineEnabled  = false
-                            backgroundEnabled = false
-                            hasCustomTextColor = false
-                            customTextColor = .white
-                            selectedEffects = ["None"]
+                            requestTabChange(to: .explore)
                         } label: {
                             VStack(spacing: ScaleUtility.scaledSpacing(4.88)) {
                                 Image(.exploreIcon)
                                     .resizable()
                                     .frame(width: ScaleUtility.scaledValue(29.26829), height: ScaleUtility.scaledValue(29.26829))
                                 
-                                Text("Explore")
+                                Text("Templates")
                                     .font(FontManager.bricolageGrotesqueMediumFont(size: .scaledFontSize(13.41463)))
                                     .multilineTextAlignment(.center)
                                     .foregroundColor(.white)
-                                    .frame(width: ScaleUtility.scaledValue(85.36585))
+                                    .frame(width: isIPad ? ScaleUtility.scaledValue(95.36585) : ScaleUtility.scaledValue(85.36585))
                             }
                             .opacity(selectedTab != .explore ? 0.5 : 1)
                         }
@@ -114,7 +114,7 @@ struct MainView: View {
                         
                         Button {
                             impactFeedback.impactOccurred()
-                            selectedTab = .create
+                            requestTabChange(to: .create)
                         } label: {
                             VStack(spacing: ScaleUtility.scaledSpacing(4.88)) {
                                 Image(.createIcon)
@@ -134,28 +134,14 @@ struct MainView: View {
                         
                         Button {
                             impactFeedback.impactOccurred()
-                            selectedTab = .history
-                            
-                            backgroundImage = ""
-                            backgroundResultImage = ""
-                            text = ""
-                            textSize = 4.0
-                            strokeSize = 0.0
-                            selectedFont = FontManager.bricolageGrotesqueRegularFont
-                            selectedColor = ColorOption.predefinedColors[1]
-                            selectedOutlineColor = OutlineColorOption.predefinedOutlineColors[0]
-                            outlineEnabled  = false
-                            backgroundEnabled = false
-                            hasCustomTextColor = false
-                            customTextColor = .white
-                            selectedEffects = ["None"]
+                            requestTabChange(to: .history)
                         } label: {
                             VStack(spacing: ScaleUtility.scaledSpacing(4.88)) {
                                 Image(.historyIcon)
                                     .resizable()
-                                    .frame(width: ScaleUtility.scaledValue(29.26829), height: ScaleUtility.scaledValue(29.26829))
+                                    .frame(width: ScaleUtility.scaledValue(24), height: ScaleUtility.scaledValue(24))
                                 
-                                Text("History")
+                                Text("Saved")
                                     .font(FontManager.bricolageGrotesqueMediumFont(size: .scaledFontSize(13.41463)))
                                     .multilineTextAlignment(.center)
                                     .foregroundColor(.white)
@@ -175,11 +161,47 @@ struct MainView: View {
                     }
                     .cornerRadius(10)
                 }
-    
             }
             .ignoresSafeArea(.all)
-            
         }
+    }
+    
+    // MARK: - Helper Functions
+    
+    private func requestTabChange(to newTab: TabSelection) {
+        if selectedTab == .create && newTab != .create && hasUnsavedChanges {
+            pendingTabChange = newTab
+            showUnsavedDialog = true
+        } else {
+            switchToTab(newTab)
+        }
+    }
+
+    
+    private func switchToTab(_ newTab: TabSelection) {
+        selectedTab = newTab
+        
+        if newTab != .create {
+            resetCreateData()
+        }
+        
+        hasUnsavedChanges = false
+    }
+    
+    private func resetCreateData() {
+        backgroundImage = ""
+        backgroundResultImage = ""
+        text = ""
+        textSize = 4.0
+        strokeSize = 0.0
+        selectedFont = FontManager.bricolageGrotesqueRegularFont
+        selectedColor = ColorOption.predefinedColors[1]
+        selectedOutlineColor = OutlineColorOption.predefinedOutlineColors[0]
+        outlineEnabled = false
+        backgroundEnabled = false
+        hasCustomTextColor = false
+        customTextColor = .white
+        selectedEffects = ["None"]
     }
     
     private func loadTemplate(_ template: LEDTemplate) {
@@ -197,12 +219,10 @@ struct MainView: View {
             selectedEffects.insert("Italic")
             selectedEffects.remove("None")
         }
-        // Load text color from hex
-        // Load text color from hex
+        
         if let hexColor = template.customTextColorHex, !hexColor.isEmpty {
             customTextColor = UIColor(hex: hexColor) ?? .white
             hasCustomTextColor = true
-            // 👇 ensure the UI uses this custom color immediately
             selectedColor = ColorOption(
                 id: "custom_text",
                 name: "Custom",
@@ -211,12 +231,8 @@ struct MainView: View {
         } else {
             hasCustomTextColor = false
             customTextColor = .white
-            // (optional) reset to a default swatch if you want:
-            // selectedColor = ColorOption.predefinedColors[1]
         }
-
         
-        // Load stroke color from predefined colors
         if let strokeSize = template.strokeSize, strokeSize > 0,
            let strokeColorId = template.strokeColorId,
            let strokeColor = OutlineColorOption.predefinedOutlineColors.first(where: { $0.id == strokeColorId }) {
