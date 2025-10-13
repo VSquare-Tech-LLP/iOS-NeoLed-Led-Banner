@@ -21,7 +21,7 @@ struct MainView: View {
     @State private var selectedTab: TabSelection = .explore
     @State private var text: String = ""
     @State private var textSize: CGFloat = 4.0
-    @State private var strokeSize: CGFloat = 0.0
+    @State private var strokeSize: CGFloat = 1.0
     @State private var selectedFont: String = FontManager.bricolageGrotesqueRegularFont
     @State private var selectedColor: ColorOption = ColorOption.predefinedColors[1]
     @State private var selectedOutlineColor: OutlineColorOption = OutlineColorOption.predefinedOutlineColors[0]
@@ -31,6 +31,7 @@ struct MainView: View {
     @State private var customTextColor: UIColor = .white
     @State private var selectedEffects: Set<String> = ["None"]
     @State private var hasUnsavedChanges = false
+    @State var isHD: Bool = false
     
     // ✅ ADD THESE
     @State private var pendingTabChange: TabSelection? = nil
@@ -66,6 +67,7 @@ struct MainView: View {
                             selectedEffects: $selectedEffects,
                             hasUnsavedChanges: $hasUnsavedChanges,
                             showUnsavedDialog: $showUnsavedDialog,
+                            isHD: $isHD,
                             onSaveAndContinue: {
                                 // Save was clicked in dialog
                                 if let targetTab = pendingTabChange {
@@ -99,10 +101,10 @@ struct MainView: View {
                             VStack(spacing: ScaleUtility.scaledSpacing(4.88)) {
                                 Image(.exploreIcon)
                                     .resizable()
-                                    .frame(width: ScaleUtility.scaledValue(29.26829), height: ScaleUtility.scaledValue(29.26829))
+                                    .frame(width: ScaleUtility.scaledValue(24), height: ScaleUtility.scaledValue(24))
                                 
                                 Text("Templates")
-                                    .font(FontManager.bricolageGrotesqueMediumFont(size: .scaledFontSize(13.41463)))
+                                    .font(FontManager.bricolageGrotesqueRegularFont(size: .scaledFontSize(12)))
                                     .multilineTextAlignment(.center)
                                     .foregroundColor(.white)
                                     .frame(width: isIPad ? ScaleUtility.scaledValue(95.36585) : ScaleUtility.scaledValue(85.36585))
@@ -119,10 +121,10 @@ struct MainView: View {
                             VStack(spacing: ScaleUtility.scaledSpacing(4.88)) {
                                 Image(.createIcon)
                                     .resizable()
-                                    .frame(width: ScaleUtility.scaledValue(29.26829), height: ScaleUtility.scaledValue(29.26829))
+                                    .frame(width: ScaleUtility.scaledValue(24), height: ScaleUtility.scaledValue(24))
                                 
                                 Text("Create")
-                                    .font(FontManager.bricolageGrotesqueMediumFont(size: .scaledFontSize(13.41463)))
+                                    .font(FontManager.bricolageGrotesqueMediumFont(size: .scaledFontSize(12)))
                                     .multilineTextAlignment(.center)
                                     .foregroundColor(.white)
                                     .frame(width: ScaleUtility.scaledValue(85.36585))
@@ -142,7 +144,7 @@ struct MainView: View {
                                     .frame(width: ScaleUtility.scaledValue(24), height: ScaleUtility.scaledValue(24))
                                 
                                 Text("Saved")
-                                    .font(FontManager.bricolageGrotesqueMediumFont(size: .scaledFontSize(13.41463)))
+                                    .font(FontManager.bricolageGrotesqueMediumFont(size: .scaledFontSize(12)))
                                     .multilineTextAlignment(.center)
                                     .foregroundColor(.white)
                                     .frame(width: ScaleUtility.scaledValue(84))
@@ -150,13 +152,13 @@ struct MainView: View {
                             .opacity(selectedTab != .history ? 0.5 : 1)
                         }
                     }
-                    .padding(.horizontal, isIPad ? ScaleUtility.scaledSpacing(84) : ScaleUtility.scaledSpacing(34))
-                    .padding(.bottom, ScaleUtility.scaledSpacing(10))
-                    .frame(height: ScaleUtility.scaledValue(97))
+                    .padding(.horizontal, isIPad ? ScaleUtility.scaledSpacing(84) : ScaleUtility.scaledSpacing(31))
+                    .padding(.bottom, ScaleUtility.scaledSpacing(19))
+                    .frame(height: ScaleUtility.scaledValue(90))
                     .background {
                         Image(.tabBg)
                             .resizable()
-                            .frame(height: ScaleUtility.scaledValue(97))
+                            .frame(height: ScaleUtility.scaledValue(90))
                             .frame(maxWidth:.infinity)
                     }
                     .cornerRadius(10)
@@ -194,6 +196,7 @@ struct MainView: View {
         text = ""
         textSize = 4.0
         strokeSize = 0.0
+        isHD = false
         selectedFont = FontManager.bricolageGrotesqueRegularFont
         selectedColor = ColorOption.predefinedColors[1]
         selectedOutlineColor = OutlineColorOption.predefinedOutlineColors[0]
@@ -210,6 +213,7 @@ struct MainView: View {
         strokeSize = template.strokeSize ?? 0.0
         backgroundImage = template.imageName
         backgroundResultImage = template.backgroundResultImage
+        isHD = template.isHD
         selectedFont = template.selectedFont
         if template.isBold {
             selectedEffects.insert("Bold")

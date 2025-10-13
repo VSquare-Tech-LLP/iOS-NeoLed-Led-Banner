@@ -48,13 +48,13 @@ struct SettingsView: View {
                 .padding(.horizontal,ScaleUtility.scaledSpacing(15))
                 .padding(.top,ScaleUtility.scaledSpacing(15))
                 
-                if remoteConfigManager.giftAfterOnBoarding {
-                    if !timerManager.isExpired && !purchaseManager.hasPro && !remoteConfigManager.showLifeTimeBannerAtHome {
-                        LifeTimeGiftOfferBannerView()
-                        
-                    }
+       
+                if !timerManager.isExpired && !purchaseManager.hasPro && !remoteConfigManager.showLifeTimeBannerAtHome {
+                    LifeTimeGiftOfferBannerView()
                     
                 }
+                    
+                
                 
                 if !purchaseManager.hasPro {
                     

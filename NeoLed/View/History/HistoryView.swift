@@ -164,6 +164,11 @@ struct HistoryView: View {
                         selectedDesign = nil
                     }
                 )
+                .background {
+                    Image(.background)
+                        .resizable()
+                        .scaledToFill()
+                }
             }
         }
         .fullScreenCover(isPresented: $isShowPayWall) {

@@ -1,5 +1,5 @@
 {
-  "originHash" : "807c3242fb61411937a498c5e4762d360708ea327cd5f0daec22b1d93e01f300",
+  "originHash" : "49b17b24e51f76145341bb8a6218b5f6e99f9710c3d73930638eded118480a17",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -26,15 +26,6 @@
       "state" : {
         "revision" : "1cce11cf94d27e2fc194112cc7ad51e8fb279230",
         "version" : "12.3.0"
-      }
-    },
-    {
-      "identity" : "flipbook",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/bgayman/FlipBook.git",
-      "state" : {
-        "revision" : "1e3104afc43eaf73dab706102a39d54e471cf51d",
-        "version" : "1.5.10"
       }
     },
     {
@@ -215,24 +206,6 @@
       "state" : {
         "revision" : "2547102afd04fe49f1b286090f13ebce07284980",
         "version" : "1.31.1"
-      }
-    },
-    {
-      "identity" : "swiftuiviewrecorder",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/frolovilya/SwiftUIViewRecorder",
-      "state" : {
-        "revision" : "c9a33f27f3bd959789f3a88123309f77236e171e",
-        "version" : "0.1.0"
-      }
-    },
-    {
-      "identity" : "uiimageextensions",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/frolovilya/UIImageExtensions.git",
-      "state" : {
-        "revision" : "21c0dea5f6bdd0dd2ab40488b2b5da302c842838",
-        "version" : "0.2.0"
       }
     }
   ],

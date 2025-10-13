@@ -29,7 +29,7 @@ class UserSettings: ObservableObject {
         static let hasShownGiftPaywall = "has_finished_paywall"
         static let isShowPayWall = "is_show_payWall"
         static let designCreated = "design_created"
-        
+        static let designDownloaded = "design_downloaded"
     }
     
     @Published var userId: String {
@@ -105,6 +105,13 @@ class UserSettings: ObservableObject {
         }
     }
     
+    @Published var designDownloaded: Int {
+        didSet {
+            defaults.set(designDownloaded, forKey: Keys.designDownloaded)
+        }
+    }
+    
+    
     
     
 
@@ -125,6 +132,8 @@ class UserSettings: ObservableObject {
         self.hasShownGiftPaywall = defaults.bool(forKey: Keys.hasShownGiftPaywall)
         self.isShowPayWall = defaults.bool(forKey: Keys.isShowPayWall)
         self.designCreated = defaults.integer(forKey: Keys.designCreated)
+        self.designDownloaded = defaults.integer(forKey: Keys.designDownloaded)
+        
         if let saveData = defaults.object(forKey: Keys.firstPurchaseDate) as? Date {
             self.firstPurchaseDate = saveData
         }

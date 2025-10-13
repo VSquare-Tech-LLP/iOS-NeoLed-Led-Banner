@@ -86,11 +86,14 @@ struct EditTextView: View {
     let notificationFeedback = UINotificationFeedbackGenerator()
     let impactFeedback = UIImpactFeedbackGenerator(style: .light)
     let selectionFeedback = UISelectionFeedbackGenerator()
-
+    
+    @State var originalTextSize = 4.0
+    @State var originalStrokeSize = 1.0
+    @State var originalSpeed = 1.0
     
    var body: some View {
        VStack(spacing: 0) {
-           VStack(spacing: ScaleUtility.scaledSpacing(20)) {
+           VStack(spacing: ScaleUtility.scaledSpacing(15)) {
                
                VStack(spacing: ScaleUtility.scaledSpacing(15)) {
                    Text("Text Effect")
@@ -98,7 +101,7 @@ struct EditTextView: View {
                        .kerning(0.40783)
                        .foregroundColor(.white.opacity(0.5))
                        .frame(maxWidth: .infinity,alignment: .leading)
-                       .padding(.leading, ScaleUtility.scaledSpacing(30))
+                       .padding(.horizontal, ScaleUtility.scaledSpacing(20))
                    
                    ScrollView(.horizontal,showsIndicators: false) {
                        
@@ -185,19 +188,25 @@ struct EditTextView: View {
                            
                        }
                        .frame(alignment: .leading)
-                       .padding(.horizontal, ScaleUtility.scaledSpacing(30))
+                       .padding(.horizontal, ScaleUtility.scaledSpacing(20))
                    }
+                   
                    
                }
                
-               
+               Rectangle()
+                   .foregroundColor(Color.primaryApp.opacity(0.2))
+                   .frame(maxWidth: .infinity)
+                   .frame(height: ScaleUtility.scaledValue(1.5))
+                   .padding(.horizontal, ScaleUtility.scaledSpacing(20))
+           
                VStack(spacing: ScaleUtility.scaledSpacing(15)) {
                    Text("Font Style")
                        .font(FontManager.bricolageGrotesqueMediumFont(size: .scaledFontSize(14)))
                        .kerning(0.42)
                        .foregroundColor(.primaryApp.opacity(0.5))
                        .frame(maxWidth: .infinity, alignment: .topLeading)
-                       .padding(.horizontal, ScaleUtility.scaledSpacing(30))
+                       .padding(.horizontal, ScaleUtility.scaledSpacing(20))
                    
                    ScrollView(.horizontal,showsIndicators: false) {
                        HStack(spacing: ScaleUtility.scaledSpacing(10)) {
@@ -236,16 +245,43 @@ struct EditTextView: View {
                                       height:isIPad ?  ScaleUtility.scaledValue(66) :  ScaleUtility.scaledValue(44))
                            }
                        }
-                       .padding(.horizontal, ScaleUtility.scaledSpacing(30))
+                       .padding(.horizontal, ScaleUtility.scaledSpacing(20))
                    }
+                   
                }
+               
+               Rectangle()
+                   .foregroundColor(Color.primaryApp.opacity(0.2))
+                   .frame(maxWidth: .infinity)
+                   .frame(height: ScaleUtility.scaledValue(1.5))
+                   .padding(.horizontal, ScaleUtility.scaledSpacing(20))
+               
 
                VStack(spacing: ScaleUtility.scaledSpacing(15)) {
-                   Text("Text Size")
-                       .font(FontManager.bricolageGrotesqueMediumFont(size: .scaledFontSize(14)))
-                       .kerning(0.42)
-                       .foregroundColor(.primaryApp.opacity(0.5))
-                       .frame(maxWidth: .infinity, alignment: .topLeading)
+                   
+                   HStack {
+                       Text("Text Size")
+                           .font(FontManager.bricolageGrotesqueMediumFont(size: .scaledFontSize(14)))
+                           .kerning(0.42)
+                           .foregroundColor(.primaryApp.opacity(0.5))
+                       
+                       Spacer()
+                       
+                       Button {
+                           DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                               textSize = originalTextSize
+                           }
+                       } label: {
+                           Text("Reset")
+                               .font(FontManager.bricolageGrotesqueLightFont(size: .scaledFontSize(14)))
+                               .kerning(0.42)
+                               .foregroundColor(Color(red: 1, green: 0.52, blue: 0.52))
+                       }
+
+                   }
+                   .frame(maxWidth: .infinity)
+                   .padding(.horizontal, ScaleUtility.scaledSpacing(20))
+                
                    
                    HStack(spacing: ScaleUtility.scaledSpacing(17)) {
                        Text("A")
@@ -262,14 +298,40 @@ struct EditTextView: View {
                            .foregroundColor(.white)
                    }
                }
-               .padding(.horizontal, ScaleUtility.scaledSpacing(30))
+             
+               
+               Rectangle()
+                   .foregroundColor(Color.primaryApp.opacity(0.2))
+                   .frame(maxWidth: .infinity)
+                   .frame(height: ScaleUtility.scaledValue(1.5))
+                   .padding(.horizontal, ScaleUtility.scaledSpacing(20))
+               
 
                VStack(spacing: ScaleUtility.scaledSpacing(15)) {
-                   Text("Stroke Size")
-                       .font(FontManager.bricolageGrotesqueMediumFont(size: .scaledFontSize(14)))
-                       .kerning(0.42)
-                       .foregroundColor(.primaryApp.opacity(0.5))
-                       .frame(maxWidth: .infinity, alignment: .topLeading)
+                   
+                   HStack {
+                       Text("Stroke Size")
+                           .font(FontManager.bricolageGrotesqueMediumFont(size: .scaledFontSize(14)))
+                           .kerning(0.42)
+                           .foregroundColor(.primaryApp.opacity(0.5))
+                       
+                       Spacer()
+                       
+                       Button {
+                           DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                               strokeSize = originalStrokeSize
+                             
+                           }
+                       } label: {
+                           Text("Reset")
+                               .font(FontManager.bricolageGrotesqueLightFont(size: .scaledFontSize(14)))
+                               .kerning(0.42)
+                               .foregroundColor(Color(red: 1, green: 0.52, blue: 0.52))
+                       }
+
+                   }
+                   .frame(maxWidth: .infinity)
+                   .padding(.horizontal, ScaleUtility.scaledSpacing(20))
                    
                    HStack(spacing: ScaleUtility.scaledSpacing(17)) {
                        
@@ -294,7 +356,13 @@ struct EditTextView: View {
 
                    }
                }
-               .padding(.horizontal, ScaleUtility.scaledSpacing(30))
+             
+               
+               Rectangle()
+                   .foregroundColor(Color.primaryApp.opacity(0.2))
+                   .frame(maxWidth: .infinity)
+                   .frame(height: ScaleUtility.scaledValue(1.5))
+                   .padding(.horizontal, ScaleUtility.scaledSpacing(20))
           
       
                
@@ -304,7 +372,7 @@ struct EditTextView: View {
                        .kerning(0.40783)
                        .foregroundColor(Color.primaryApp.opacity(0.5))
                        .frame(maxWidth: .infinity, alignment: .topLeading)
-                       .padding(.horizontal, ScaleUtility.scaledSpacing(30))
+                       .padding(.horizontal, ScaleUtility.scaledSpacing(20))
                    
                    ScrollView(.horizontal, showsIndicators: false) {
                        VStack(spacing: ScaleUtility.scaledSpacing(10)) {
@@ -317,7 +385,7 @@ struct EditTextView: View {
                                        .frame(height:  isIPad ? ScaleUtility.scaledValue(45) : ScaleUtility.scaledValue(30))
                                }
                            }
-                           .padding(.horizontal, ScaleUtility.scaledSpacing(30))
+                           .padding(.horizontal, ScaleUtility.scaledSpacing(20))
                            
                            // Second Row - 10 colors
                            HStack(spacing: ScaleUtility.scaledSpacing(10)) {
@@ -328,10 +396,16 @@ struct EditTextView: View {
                                        .frame(height:  isIPad ? ScaleUtility.scaledValue(45) : ScaleUtility.scaledValue(30))
                                }
                            }
-                           .padding(.horizontal, ScaleUtility.scaledSpacing(30))
+                           .padding(.horizontal, ScaleUtility.scaledSpacing(20))
                        }
                    }
                }
+               
+               Rectangle()
+                   .foregroundColor(Color.primaryApp.opacity(0.2))
+                   .frame(maxWidth: .infinity)
+                   .frame(height: ScaleUtility.scaledValue(1.5))
+                   .padding(.horizontal, ScaleUtility.scaledSpacing(20))
                
                ScrollView(.horizontal, showsIndicators: false) {
                    OutlineColorPickerView(
@@ -348,17 +422,41 @@ struct EditTextView: View {
                            onValueChange!()
                        }
                    )
-                   .padding(.horizontal, ScaleUtility.scaledSpacing(30))
+                   .padding(.horizontal, ScaleUtility.scaledSpacing(20))
                }
+               
+               Rectangle()
+                   .foregroundColor(Color.primaryApp.opacity(0.2))
+                   .frame(maxWidth: .infinity)
+                   .frame(height: ScaleUtility.scaledValue(1.5))
+                   .padding(.horizontal, ScaleUtility.scaledSpacing(20))
                
                
                VStack(spacing: ScaleUtility.scaledSpacing(15)) {
-                   Text("Text Speed")
-                       .font(FontManager.bricolageGrotesqueMediumFont(size: .scaledFontSize(13.5942)))
-                       .kerning(0.40783)
-                       .foregroundColor(.white.opacity(0.5))
-                       .frame(maxWidth: .infinity,alignment: .leading)
-                       .padding(.leading, ScaleUtility.scaledSpacing(30))
+                   
+                   HStack {
+                       Text("Text Speed")
+                           .font(FontManager.bricolageGrotesqueMediumFont(size: .scaledFontSize(13.5942)))
+                           .kerning(0.40783)
+                           .foregroundColor(.primaryApp.opacity(0.5))
+                       
+                       Spacer()
+                       
+                       Button {
+                           DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                               textSpeed = originalSpeed
+                             
+                           }
+                       } label: {
+                           Text("Reset")
+                               .font(FontManager.bricolageGrotesqueLightFont(size: .scaledFontSize(14)))
+                               .kerning(0.42)
+                               .foregroundColor(Color(red: 1, green: 0.52, blue: 0.52))
+                       }
+
+                   }
+                   .frame(maxWidth: .infinity)
+                   .padding(.horizontal, ScaleUtility.scaledSpacing(20))
                    
                    ReusableCustomSlider(value: $textSpeed, range: 0.5...5.0)
                        .onChange(of: textSpeed) { _, _ in
@@ -367,6 +465,12 @@ struct EditTextView: View {
               
                }
                
+               Rectangle()
+                   .foregroundColor(Color.primaryApp.opacity(0.2))
+                   .frame(maxWidth: .infinity)
+                   .frame(height: ScaleUtility.scaledValue(1.5))
+                   .padding(.horizontal, ScaleUtility.scaledSpacing(20))
+               
                
                VStack(spacing: ScaleUtility.scaledSpacing(15)) {
                    Text("Scroll Direction")
@@ -374,7 +478,7 @@ struct EditTextView: View {
                        .kerning(0.40783)
                        .foregroundColor(Color.primaryApp.opacity(0.5))
                        .frame(maxWidth: .infinity, alignment: .topLeading)
-                       .padding(.horizontal, ScaleUtility.scaledSpacing(30))
+                       .padding(.horizontal, ScaleUtility.scaledSpacing(20))
                    
                    ScrollView(.horizontal,showsIndicators: false) {
                        
@@ -426,11 +530,17 @@ struct EditTextView: View {
                        
                    }
                    .frame(alignment: .leading)
-                   .padding(.horizontal, ScaleUtility.scaledSpacing(30))
+                   .padding(.horizontal, ScaleUtility.scaledSpacing(20))
                }
           
 
            }
+       }
+       .onAppear {
+           originalTextSize = textSize
+           originalStrokeSize = strokeSize
+           originalSpeed = textSpeed
+         
        }
        .onChange(of: selectedFont) { _, newFont in
            // Remove Bold effect if new font doesn't support it

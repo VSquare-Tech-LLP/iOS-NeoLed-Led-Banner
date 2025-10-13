@@ -14,10 +14,11 @@ struct BannerFilter: View {
     let selectionFeedback = UISelectionFeedbackGenerator()
     
     @Binding var selectedOption: String
-    var bannerOptions = ["LED",
+    var bannerOptions = ["All",
+                         "LED",
                          "Business",
-                         "Holidays",
                          "Celebrations",
+                         "Holidays",
                          "Informational",]
     
     

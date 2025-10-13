@@ -21,6 +21,7 @@ struct LEDTemplate: Identifiable {
     let isBold: Bool
     let isItalic: Bool
     let backgroundResultImage: String
+    let isHD: Bool
 }
 
 // Template Data Manager
@@ -45,7 +46,8 @@ class TemplateDataManager {
                 strokeColorId: nil,
                 isBold: false,
                 isItalic: true,
-                backgroundResultImage: "lr1"
+                backgroundResultImage: "lr1",
+                isHD: false
             )
         
         case "l2":
@@ -60,7 +62,8 @@ class TemplateDataManager {
                 strokeColorId: nil,
                 isBold: true,
                 isItalic: false,
-                backgroundResultImage: "lr2"
+                backgroundResultImage: "lr2",
+                isHD: false
             )
         
         case "l3":
@@ -75,7 +78,8 @@ class TemplateDataManager {
                 strokeColorId: nil,
                 isBold: true,
                 isItalic: false,
-                backgroundResultImage: "lr3"
+                backgroundResultImage: "lr3",
+                isHD: false
             )
         
         case "l4":
@@ -90,7 +94,8 @@ class TemplateDataManager {
                 strokeColorId: "outlineBabyPink",
                 isBold: true,
                 isItalic: false,
-                backgroundResultImage: "lr4"
+                backgroundResultImage: "lr4",
+                isHD: false
             )
         
         case "l5":
@@ -105,7 +110,8 @@ class TemplateDataManager {
                 strokeColorId: nil,
                 isBold: true,
                 isItalic: false,
-                backgroundResultImage: "lr5"
+                backgroundResultImage: "lr5",
+                isHD: false
             )
         
         case "l6":
@@ -120,7 +126,8 @@ class TemplateDataManager {
                 strokeColorId: nil,
                 isBold: true,
                 isItalic: false,
-                backgroundResultImage: "lr6"
+                backgroundResultImage: "lr6",
+                isHD: false
             )
         
         // Business Templates
@@ -136,7 +143,8 @@ class TemplateDataManager {
                 strokeColorId: nil,
                 isBold: true,
                 isItalic: false,
-                backgroundResultImage: "br1"
+                backgroundResultImage: "br1",
+                isHD: true
             )
         
         case "b2":
@@ -151,7 +159,8 @@ class TemplateDataManager {
                 strokeColorId: nil,
                 isBold: true,
                 isItalic: false,
-                backgroundResultImage: "br2"
+                backgroundResultImage: "br2",
+                isHD: true
             )
         
         case "b3":
@@ -166,7 +175,8 @@ class TemplateDataManager {
                 strokeColorId: nil,
                 isBold: true,
                 isItalic: false,
-                backgroundResultImage: "br3"
+                backgroundResultImage: "br3",
+                isHD: true
             )
         
         case "b4":
@@ -181,7 +191,8 @@ class TemplateDataManager {
                 strokeColorId: "outlineBlue",
                 isBold: true,
                 isItalic: false,
-                backgroundResultImage: "br4"
+                backgroundResultImage: "br4",
+                isHD: true
                 
             )
         
@@ -197,7 +208,8 @@ class TemplateDataManager {
                 strokeColorId: nil,
                 isBold: true,
                 isItalic: false,
-                backgroundResultImage: "br5"
+                backgroundResultImage: "br5",
+                isHD: true
             )
         
         // Holidays Templates
@@ -213,7 +225,8 @@ class TemplateDataManager {
                 strokeColorId: "outlineWhite",
                 isBold: false,
                 isItalic: false,
-                backgroundResultImage: "hr1"
+                backgroundResultImage: "hr1",
+                isHD: true
             )
         
         case "h2":
@@ -228,7 +241,8 @@ class TemplateDataManager {
                 strokeColorId: nil,
                 isBold: true,
                 isItalic: false,
-                backgroundResultImage: "hr2"
+                backgroundResultImage: "hr2",
+                isHD: true
             )
         
         case "h3":
@@ -243,7 +257,8 @@ class TemplateDataManager {
                 strokeColorId: "outlineDarkRed",
                 isBold: false,
                 isItalic: false,
-                backgroundResultImage: "hr3"
+                backgroundResultImage: "hr3",
+                isHD: true
             )
         
         case "h4":
@@ -258,7 +273,8 @@ class TemplateDataManager {
                 strokeColorId: nil,
                 isBold: false,
                 isItalic: true,
-                backgroundResultImage: "hr4"
+                backgroundResultImage: "hr4",
+                isHD: true
             )
         
         case "h5":
@@ -273,7 +289,8 @@ class TemplateDataManager {
                 strokeColorId: nil,
                 isBold: true,
                 isItalic: false,
-                backgroundResultImage: "hr5"
+                backgroundResultImage: "hr5",
+                isHD: true
             )
         
         case "h6":
@@ -288,7 +305,8 @@ class TemplateDataManager {
                 strokeColorId: nil,
                 isBold: true,
                 isItalic: false,
-                backgroundResultImage: "hr6"
+                backgroundResultImage: "hr6",
+                isHD: true
             )
         
         // Celebrations Templates
@@ -304,7 +322,8 @@ class TemplateDataManager {
                 strokeColorId: nil,
                 isBold: true,
                 isItalic: false,
-                backgroundResultImage: "cr1"
+                backgroundResultImage: "cr1",
+                isHD: true
             )
         
         case "c2":
@@ -319,7 +338,8 @@ class TemplateDataManager {
                 strokeColorId: "outlineDarkRed",
                 isBold: true,
                 isItalic: false,
-                backgroundResultImage: "cr2"
+                backgroundResultImage: "cr2",
+                isHD: true
             )
         
         case "c3":
@@ -334,7 +354,8 @@ class TemplateDataManager {
                 strokeColorId: nil,
                 isBold: true,
                 isItalic: false,
-                backgroundResultImage: "cr3"
+                backgroundResultImage: "cr3",
+                isHD: true
             )
         
         case "c4":
@@ -349,7 +370,8 @@ class TemplateDataManager {
                 strokeColorId: nil,
                 isBold: true,
                 isItalic: false,
-                backgroundResultImage: "cr4"
+                backgroundResultImage: "cr4",
+                isHD: true
             )
         
         case "c5":
@@ -364,7 +386,8 @@ class TemplateDataManager {
                 strokeColorId: nil,
                 isBold: false,
                 isItalic: true,
-                backgroundResultImage: "cr5"
+                backgroundResultImage: "cr5",
+                isHD: true
             )
         
         // Informational Templates
@@ -380,7 +403,8 @@ class TemplateDataManager {
                 strokeColorId: "outlineBabyPink",
                 isBold: false,
                 isItalic: false,
-                backgroundResultImage: "ir1"
+                backgroundResultImage: "ir1",
+                isHD: true
             )
         
         case "i2":
@@ -395,7 +419,8 @@ class TemplateDataManager {
                 strokeColorId: nil,
                 isBold: true,
                 isItalic: false,
-                backgroundResultImage: "ir2"
+                backgroundResultImage: "ir2",
+                isHD: true
             )
         
         case "i3":
@@ -410,7 +435,8 @@ class TemplateDataManager {
                 strokeColorId: nil,
                 isBold: true,
                 isItalic: false,
-                backgroundResultImage: "ir3"
+                backgroundResultImage: "ir3",
+                isHD: true
             )
         
         case "i4":
@@ -425,7 +451,8 @@ class TemplateDataManager {
                 strokeColorId: nil,
                 isBold: true,
                 isItalic: false,
-                backgroundResultImage: "ir4"
+                backgroundResultImage: "ir4",
+                isHD: true
             )
         
         case "i5":
@@ -440,7 +467,8 @@ class TemplateDataManager {
                 strokeColorId: nil,
                 isBold: true,
                 isItalic: false,
-                backgroundResultImage: "ir5"
+                backgroundResultImage: "ir5",
+                isHD: true
             )
         
         // Default template
@@ -456,7 +484,8 @@ class TemplateDataManager {
                 strokeColorId: nil,
                 isBold: false,
                 isItalic: true,
-                backgroundResultImage: "lr1"
+                backgroundResultImage: "lr1",
+                isHD: false 
             )
         }
     }

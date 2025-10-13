@@ -59,10 +59,10 @@ struct PaywallView: View {
                     }, closeAction: {
                         closePayAll()
                         if isInternalOpen {
-                                                            AnalyticsManager.shared.log(.internalPaywallXClicked)
+                            AnalyticsManager.shared.log(.internalPaywallXClicked)
                         }
                         else {
-                                                            AnalyticsManager.shared.log(.firstPaywallXClicked)
+                            AnalyticsManager.shared.log(.firstPaywallXClicked)
                         }
                     },
                     delayCloseButton: remoteConfigManager.isShowDelayPaywallCloseButton,

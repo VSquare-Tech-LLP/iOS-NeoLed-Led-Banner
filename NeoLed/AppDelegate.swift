@@ -8,8 +8,6 @@
 import Foundation
 import UIKit
 import IQKeyboardManagerSwift
-import UserNotifications
-
 
 
 class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
@@ -19,13 +17,13 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
     ) -> Bool {
         
         // MARK: - Notification Center Delegate Setup
-        UNUserNotificationCenter.current().delegate = self
+      
         
         // MARK: - Keyboard Setup
         IQKeyboardManager.shared.isEnabled = false
         IQKeyboardManager.shared.enableAutoToolbar = true // enables "Done" button
         IQKeyboardManager.shared.resignOnTouchOutside = true // tap outside to dismiss
-        IQKeyboardManager.shared.toolbarConfiguration.tintColor = UIColor.black
+        IQKeyboardManager.shared.toolbarConfiguration.tintColor = UIColor.appBlue
         return true
     }
     

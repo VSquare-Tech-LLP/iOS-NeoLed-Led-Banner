@@ -93,16 +93,16 @@ struct GiftPaywallView: View {
                                 } label: {
                                     
                                     Text("Collect Gift")
-                                      .font(FontManager.bricolageGrotesqueSemiBoldFont(size: .scaledFontSize(14)))
-                                      .kerning(0.14)
+                                      .font(FontManager.bricolageGrotesqueBoldFont(size: .scaledFontSize(16)))
+                                      .kerning(0.16)
                                       .foregroundColor(Color.secondaryApp)
                                       .frame(maxWidth: .infinity)
-                                      .frame(height: ScaleUtility.scaledValue(42))
+                                      .frame(height: ScaleUtility.scaledValue(52))
                                       .background(Color.accent)
                                       .cornerRadius(10)
                      
                                 }
-                                .padding(.horizontal, ScaleUtility.scaledValue(52))
+                                .padding(.horizontal, ScaleUtility.scaledValue(42))
                                 
                                 
                             

@@ -58,7 +58,7 @@ struct TopView:View {
     @State private var animationID = UUID() // Add this
     
     let notificationFeedback = UINotificationFeedbackGenerator()
-    let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+    let impactFeedback = UIImpactFeedbackGenerator(style: .light)
     let selectionFeedback = UISelectionFeedbackGenerator()
     
     @State var showPaywall = false
@@ -203,19 +203,26 @@ struct TopView:View {
                             if strokeSize > 0.2 {
                                 Text(previewText)
                                     .font(.custom(FontManager.getFontWithEffects(baseFontName: selectedFont, isBold: isBold, isItalic: isItalic), size: textSize * 30))
-                                    .modifier(ColorModifier(colorOption: selectedColor))
+                                    .modifier(ColorModifier(
+                                        colorOption: (isFlash && blinkPhase) ? blinkFillColorOption : selectedColor
+                                    ))
+                                    .brightness(isFlash && blinkPhase ? 0.15 : 0)
                                     .stroke(
                                         color: outlineEnabled ? selectedOutlineColor.color : .white,
                                         width: strokeSize
                                     )
-                                    .brightness(0.1)
-                                    .opacity(isFlash && blinkPhase ? 0.1 : 1.0)
+                
+                              
                             } else {
                                 Text(previewText)
                                     .font(.custom(FontManager.getFontWithEffects(baseFontName: selectedFont, isBold: isBold, isItalic: isItalic), size: textSize * 30))
-                                    .modifier(ColorModifier(colorOption: selectedColor))
-                                    .brightness(0.1)
-                                    .opacity(isFlash && blinkPhase ? 0.1 : 1.0)
+                                    .modifier(ColorModifier(
+                                        colorOption: (isFlash && blinkPhase) ? blinkFillColorOption : selectedColor
+                                    ))
+                                    .brightness(isFlash && blinkPhase ? 0.15 : 0)
+
+                         
+                                   
                             }
                         }
                     }
@@ -266,53 +273,16 @@ struct TopView:View {
                         offsety = 0
                         restartAnimation(geo: geo)
                     }
-
-//                    .onChange(of: text) { _, _ in
-//                        offsetx = 0
-//                        offsety = 0
-//                        restartAnimation(geo: geo)
-//                    }
-
-//                    .onChange(of: textSize) { _, _ in
-//                        offsetx = 0
-//                        offsety = 0
-//                        restartAnimation(geo: geo)
-//                    }
-
-//                    .onChange(of: selectedEffects) { _, _ in
-//                        offsetx = 0
-//                        offsety = 0
-//                        restartAnimation(geo: geo)
-//                    }
-//                    .onChange(of: selectedFont) { _, _ in
-//                        // Stop all animations immediately
-//                        withAnimation(.linear(duration: 0)) {
-//                            offsetx = 0
-//                            offsety = 0
-//                        }
-//                        
-//                        // Force text width recalculation with a longer delay
-//                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-//                            restartAnimation(geo: geo)
-//                        }
-//                    }
-//                    .onChange(of: isFlash) { _, newValue in
-//                        if newValue {
-//                            withAnimation(
-//                                .easeInOut(duration: 0.2)
-//                                .repeatForever(autoreverses: true)
-//                            ) {
-//                                blinkPhase = true
-//                            }
-//                        } else {
-//                            blinkPhase = false
-//                        }
-//                    }
+                    .onChange(of: isFlash) {_, _ in
+                        offsetx = 0
+                        offsety = 0
+                        restartAnimation(geo: geo)
+                    }
                     .onAppear() {
                         offsetx = 0
                         offsety = 0
-//                        restartAnimation(geo: geo)
-                        startContinuousAnimation(geo: geo)
+                        restartAnimation(geo: geo)
+//                        startContinuousAnimation(geo: geo)
                
                     }
                     .onChange(of: textWidth) { oldValue, newValue in
@@ -399,7 +369,14 @@ struct TopView:View {
               HStack(spacing: ScaleUtility.scaledSpacing(11)) {
                     
                     Button {
-                        onSave()
+                        impactFeedback.impactOccurred()
+                        if userDefault.designCreated >= remoteConfigManager.totalFreeLED && !purchaseManager.hasPro {
+                            showPaywall = true
+                        }
+                        else {
+                            onSave()
+                            userDefault.designCreated += 1
+                        }
                     } label: {
                         Text("Save")
                           .font(FontManager.bricolageGrotesqueMediumFont(size: .scaledFontSize(14)))
@@ -411,10 +388,17 @@ struct TopView:View {
                           .background(Color.accent)
                           .cornerRadius(5)
                     }
-                    
+                    .disabled(text == "")
                     
                     Button {
-                        onDownload()
+                        impactFeedback.impactOccurred()
+                        userDefault.designDownloaded += 1
+                        if userDefault.designDownloaded > remoteConfigManager.totalFreeDownload && !purchaseManager.hasPro {
+                            showPaywall = true
+                        }
+                        else {
+                            onDownload()
+                        }
                     } label: {
                         Image(.downloadIcon1)
                             .resizable()
@@ -422,21 +406,14 @@ struct TopView:View {
                                    height: isIPad ?  ScaleUtility.scaledValue(45) :  ScaleUtility.scaledValue(35))
                           
                     }
+                    .disabled(text == "")
                     
                     Spacer()
                     
                     
                     Button {
                         impactFeedback.impactOccurred()
-                        userDefault.designCreated += 1
-                        if userDefault.designCreated > remoteConfigManager.totalFreeLED && !purchaseManager.hasPro {
-                            showPaywall = true
-                        }
-                        else {
-                            showPreview()
-                        }
-                       
-                       
+                        showPreview()
                     } label: {
                         Text("Preview")
                             .font(FontManager.bricolageGrotesqueMediumFont(size: .scaledFontSize(14)))
@@ -486,6 +463,20 @@ struct TopView:View {
         }
     }
     
+    private var blinkFillColorOption: ColorOption {
+        if outlineEnabled {
+            return ColorOption(id: "blink_outline",
+                               name: "BlinkOutline",
+                               type: .solid(selectedOutlineColor.color))
+        } else {
+            return ColorOption(id: "blink_default",
+                               name: "BlinkDefault",
+                               type: .solid(Color.appGiftBox)) // fallback if no outline
+        }
+    }
+
+
+
     private func restartAnimation(geo: GeometryProxy) {
         // Cancel any existing animations
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
@@ -531,13 +522,18 @@ struct TopView:View {
         
         // Flash effect - reset and restart
         if isFlash {
-            withAnimation(
-                .easeInOut(duration: 0.5)
-                .repeatForever(autoreverses: true)
-            ) {
-                blinkPhase = true
+            flashTimer?.invalidate()
+            flashTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
+                withAnimation(.easeInOut(duration: 0.1)) {
+                    blinkPhase.toggle()
+                }
             }
+        } else {
+            flashTimer?.invalidate()
+            flashTimer = nil
+            blinkPhase = false
         }
+
     }
     
     private func startContinuousAnimation(geo: GeometryProxy) {

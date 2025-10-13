@@ -73,28 +73,26 @@ struct PagingTabView<Content: View>: View {
                     Rectangle()
                         .foregroundColor(.clear)
                         .frame(maxWidth:.infinity)
-                        .frame(height: isIPad ?  ScaleUtility.scaledValue(42) * heightRatio : ScaleUtility.scaledValue(42) )
+                        .frame(height: isIPad ?  ScaleUtility.scaledValue(52) * heightRatio : ScaleUtility.scaledValue(52) )
                         .background(Color.accent)
                         .cornerRadius(10)
                         .overlay {
                             Text(selectedIndex == 0 ? "Get Started" : "Continue")
-                                .font(FontManager.bricolageGrotesqueSemiBoldFont(size: .scaledFontSize(14)))
-                                .kerning(0.14)
+                                .font(FontManager.bricolageGrotesqueBoldFont(size: .scaledFontSize(16)))
+                                .kerning(0.16)
                                 .foregroundColor(Color.secondaryApp)
                                
                         }
-                        .padding(.horizontal, ScaleUtility.scaledValue(52))
+                        .padding(.horizontal, ScaleUtility.scaledValue(42))
                 }
-                .padding(.bottom, ScaleUtility.scaledSpacing(36))
+                .padding(.bottom, ScaleUtility.scaledSpacing(40))
                 .buttonStyle(.plain)
             
         }
         .background {
-          
                 Image(.background)
                     .resizable()
                     .frame(maxWidth: .infinity,maxHeight: .infinity)
-            
         }
         .edgesIgnoringSafeArea(.all)
         

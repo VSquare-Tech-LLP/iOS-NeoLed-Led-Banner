@@ -9,6 +9,11 @@ import Foundation
 import SwiftUI
 
 struct CreateView: View {
+    
+    @EnvironmentObject var userDefault: UserSettings
+    @EnvironmentObject var remoteConfigManager: RemoteConfigManager
+    @EnvironmentObject var purchaseManager: PurchaseManager
+    
     @StateObject private var viewModel = LEDDesignViewModel()
     let notificationFeedback = UINotificationFeedbackGenerator()
     let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
@@ -29,6 +34,9 @@ struct CreateView: View {
     @Binding var selectedEffects: Set<String>
     @Binding var hasUnsavedChanges: Bool  // ✅ KEEP ONLY THIS ONE
     @Binding var showUnsavedDialog: Bool  // ✅ ADD THIS
+    
+    @Binding var isHD: Bool
+    
     @FocusState private var inputFocused: Bool
     
     @State var selectedEditOption: String = "Text"
@@ -44,7 +52,7 @@ struct CreateView: View {
     @State var frameResultBg: String = "None"
     @State private var textSpeed: CGFloat = 1.0
     @State var showPreview: Bool = false
-    @State var isHD: Bool = false
+
     @State var selectedTab: Int = 0
     
     // Add video generation states
@@ -65,6 +73,9 @@ struct CreateView: View {
     var isLight: Bool { selectedEffects.contains("Blink") }
     var isFlash: Bool { selectedEffects.contains("Glow") }
     var isMirror: Bool { selectedEffects.contains("Mirror") }
+    
+    
+    @State var showPaywall = false
  
     var body: some View {
         VStack(spacing:0) {
@@ -120,7 +131,7 @@ struct CreateView: View {
             ScrollView {
                 
                 Spacer()
-                    .frame(height: ScaleUtility.scaledValue(25))
+                    .frame(height: ScaleUtility.scaledValue(20))
                 
                 if selectedTab == 0 {
                     EditTextView(
@@ -174,6 +185,14 @@ struct CreateView: View {
                 ShareSheet(items: [url], filename: "NeoLed Video")
             }
         }
+        .fullScreenCover(isPresented: $showPaywall) {
+            
+            PaywallView(isInternalOpen: true) {
+                showPaywall = false
+            } purchaseCompletSuccessfullyAction: {
+                showPaywall = false
+            }
+        }
         .alert("Video Status", isPresented: $showSaveAlert) {
             Button("OK", role: .cancel) { }
         } message: {
@@ -185,8 +204,14 @@ struct CreateView: View {
             titleVisibility: .visible
         ) {
             Button("Save Design") {
-                saveDesignToHistory()
-                onSaveAndContinue()
+                if userDefault.designCreated >= remoteConfigManager.totalFreeLED && !purchaseManager.hasPro {
+                    showPaywall = true
+                }
+                else {
+                    userDefault.designCreated += 1
+                    saveDesignToHistory()
+                    onSaveAndContinue()
+                }
             }
             
             Button("Don’t Save", role: .destructive) {

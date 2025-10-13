@@ -66,7 +66,7 @@ struct CustomTabPicker: View {
                     }
                 }
             }
-            .padding(.horizontal, ScaleUtility.scaledValue(22))  // 16px padding around the whole tab picker
+            .padding(.horizontal, ScaleUtility.scaledValue(20))  // 16px padding around the whole tab picker
         }
         .scaledFrame(baseHeight: ScaleUtility.scaledValue(42))
     }

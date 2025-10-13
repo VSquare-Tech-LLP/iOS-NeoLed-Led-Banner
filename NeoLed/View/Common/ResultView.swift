@@ -7,6 +7,10 @@ import SwiftUI
 
 struct ResultView: View {
     
+    @EnvironmentObject var userDefault: UserSettings
+    @EnvironmentObject var remoteConfigManager: RemoteConfigManager
+    @EnvironmentObject var purchaseManager: PurchaseManager
+    
     let notificationFeedback = UINotificationFeedbackGenerator()
     let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
     let selectionFeedback = UISelectionFeedbackGenerator()
@@ -38,12 +42,13 @@ struct ResultView: View {
     
     var isBold: Bool { selectedEffects.contains("Bold") }
     var isItalic: Bool { selectedEffects.contains("Italic") }
-    var isLight: Bool { selectedEffects.contains("Blink") }
-    var isFlash: Bool { selectedEffects.contains("Glow") }
+    var isLight: Bool { selectedEffects.contains("Glow") }   // Glow → blur layer
+    var isFlash: Bool { selectedEffects.contains("Blink") }  // Blink → color toggle
     var isMirror: Bool { selectedEffects.contains("Mirror") }
     var onBack: () -> Void
    
-    @State var isFlashing = false
+    @State private var flashTimer: Timer?
+    @State private var isFlashing = false
     @State var isSavedToLibrary = false
     @State var offsetx: CGFloat = 0
     @State var offsety: CGFloat = 0
@@ -60,6 +65,8 @@ struct ResultView: View {
     
     @State var progress: Double = 0.0
     @State var isExporting: Bool = false
+    
+    @State var showPaywall = false
     
     var body: some View {
         ZStack(alignment: .top) {
@@ -105,75 +112,96 @@ struct ResultView: View {
                 
                 
                 ZStack {
-                    // Blurred glow layers behind
-                    if strokeSize > 0 {
-                        Text(text)
-                            .font(.custom(FontManager.getFontWithEffects(baseFontName: selectedFont, isBold: isBold, isItalic: isItalic),
-                                          size:  .scaledFontSize(textSize * 50)))
-                            .modifier(ColorModifier(colorOption: selectedColor))
-                            .stroke(
-                                color: outlineEnabled ? selectedOutlineColor.color : .white,
-                                width: strokeSize
-                            )
-                            .blur(radius: isLight ? 40 : 0)
-                            .opacity(isLight ? 0.5 : 1)
-                    } else {
-                        Text(text)
-                            .font(.custom(FontManager.getFontWithEffects(baseFontName: selectedFont, isBold: isBold, isItalic: isItalic),
-                                          size:  .scaledFontSize(textSize * 50)))
-                            .modifier(ColorModifier(colorOption: selectedColor))
-                            .blur(radius: isLight ? 40 : 0)
-                            .opacity(isLight ? 0.5 : 1)
-                    }
-                    
-                    // Middle glow layer for Blink effect
+       
+                    // Proper glow — smooth outer light only, no rectangle artifacts
                     if isLight {
-                        if strokeSize > 0 {
+                        ZStack {
+                            // Outer glow
                             Text(text)
                                 .font(.custom(FontManager.getFontWithEffects(baseFontName: selectedFont, isBold: isBold, isItalic: isItalic),
-                                              size:  .scaledFontSize(textSize * 50)))
+                                              size: .scaledFontSize(textSize * 50)))
                                 .modifier(ColorModifier(colorOption: selectedColor))
-                                .stroke(
-                                    color: outlineEnabled ? selectedOutlineColor.color : .white,
-                                    width: strokeSize
-                                )
-                                .kerning(0.6)
                                 .blur(radius: 20)
-                                .opacity(0.7)
-                        } else {
+                                .opacity(0.6)
+
+                            // Inner glow for depth
                             Text(text)
                                 .font(.custom(FontManager.getFontWithEffects(baseFontName: selectedFont, isBold: isBold, isItalic: isItalic),
-                                              size:  .scaledFontSize(textSize * 50)))
-                                .kerning(0.4)
+                                              size: .scaledFontSize(textSize * 50)))
                                 .modifier(ColorModifier(colorOption: selectedColor))
                                 .blur(radius: 20)
                                 .opacity(0.7)
                         }
+                        // Mask ensures the glow follows letter shapes only (no rectangular blur)
+                        .mask(
+                            Text(text)
+                                .font(.custom(FontManager.getFontWithEffects(baseFontName: selectedFont, isBold: isBold, isItalic: isItalic),
+                                              size: .scaledFontSize(textSize * 50)))
+                        )
                     }
+
+                    
+ 
+                    // Blink + Glow layer (works even if Glow is off)
+                    if isLight || isFlash {
+                        
+                        if strokeSize > 0 {
+                            Text(text)
+                                .font(.custom(FontManager.getFontWithEffects(baseFontName: selectedFont, isBold: isBold, isItalic: isItalic),
+                                              size: .scaledFontSize(textSize * 50)))
+                                .modifier(ColorModifier(
+                                    colorOption: (isFlash && blinkPhase) ? blinkFillColorOption : selectedColor
+                                ))
+                                .brightness(isFlash && blinkPhase ? 0.15 : 0)
+                                .stroke(
+                                    color: outlineEnabled ? selectedOutlineColor.color : .white,
+                                    width: strokeSize
+                                )
+                                .blur(radius: isLight ? 20 : 0)
+                                .opacity(isLight ? 0.6 : 1)
+                                .kerning(0.6)
+                        } else {
+                            Text(text)
+                                .font(.custom(FontManager.getFontWithEffects(baseFontName: selectedFont, isBold: isBold, isItalic: isItalic),
+                                              size: .scaledFontSize(textSize * 50)))
+                                .modifier(ColorModifier(
+                                    colorOption: (isFlash && blinkPhase) ? blinkFillColorOption : selectedColor
+                                ))
+                                .brightness(isFlash && blinkPhase ? 0.15 : 0)
+                                .blur(radius: isLight ? 20 : 0)
+                                .opacity(isLight ? 0.6 : 1)
+                                .kerning(0.4)
+                        }
+                    }
+
                     
                     // Sharp text on top
                     if strokeSize > 0 {
                         Text(text)
                             .font(.custom(FontManager.getFontWithEffects(baseFontName: selectedFont, isBold: isBold, isItalic: isItalic),
                                           size:  .scaledFontSize(textSize * 50)))
-                            .modifier(ColorModifier(colorOption: selectedColor))
+                            .modifier(ColorModifier(
+                                colorOption: (isFlash && blinkPhase) ? blinkFillColorOption : selectedColor
+                            ))
+                            .brightness(isFlash && blinkPhase ? 0.15 : 0)
                             .stroke(
                                 color: outlineEnabled ? selectedOutlineColor.color : .white,
                                 width: strokeSize
                             )
-                            .brightness(0.1)
                             .opacity(isFlash && blinkPhase ? 0.1 : 1.0)
                     } else {
                         Text(text)
                             .font(.custom(FontManager.getFontWithEffects(baseFontName: selectedFont, isBold: isBold, isItalic: isItalic),
                                           size:  .scaledFontSize(textSize * 50)))
-                            .modifier(ColorModifier(colorOption: selectedColor))
-                            .brightness(0.1)
+                            .modifier(ColorModifier(
+                                colorOption: (isFlash && blinkPhase) ? blinkFillColorOption : selectedColor
+                            ))
+                            .brightness(isFlash && blinkPhase ? 0.15 : 0)
                             .opacity(isFlash && blinkPhase ? 0.1 : 1.0)
                     }
                 }
                 .scaleEffect(x: isMirror ? -1 : 1, y: 1)
-                .frame(height: isIPad ? ScaleUtility.scaledValue(500) : ScaleUtility.scaledValue(200))
+                .frame(height: isIPad ? ScaleUtility.scaledValue(500) : ScaleUtility.scaledValue(300))
                 .fixedSize()
                 .padding(.all, strokeSize * 3)
                 .clipped()
@@ -228,14 +256,19 @@ struct ResultView: View {
                         }
                     }
                     
+                    
                     // Flash effect - reset and restart
                     if isFlash {
-                        withAnimation(
-                            .easeInOut(duration: 0.5)
-                            .repeatForever(autoreverses: true)
-                        ) {
-                            blinkPhase = true
+                        flashTimer?.invalidate()
+                        flashTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
+                            withAnimation(.easeInOut(duration: 0.3)) {
+                                blinkPhase.toggle()
+                            }
                         }
+                    } else {
+                        flashTimer?.invalidate()
+                        flashTimer = nil
+                        blinkPhase = false
                     }
                 }
                 .overlay {
@@ -323,11 +356,19 @@ struct ResultView: View {
                     Button {
                         AnalyticsManager.shared.log(.downloaded)
                         impactFeedback.impactOccurred()
-                        if let url = videoURL {
-                            saveVideoToPhotos(url)
-                        } else {
-                            isExporting = true
-                            convertViewToVideo(isShare: false)
+                        
+                  
+                        if userDefault.designDownloaded > remoteConfigManager.totalFreeDownload && !purchaseManager.hasPro {
+                            showPaywall = true
+                        }
+                        else {
+                            if let url = videoURL {
+                                saveVideoToPhotos(url)
+                            } else {
+                                isExporting = true
+                                convertViewToVideo(isShare: false)
+                                userDefault.designDownloaded += 1
+                            }
                         }
                     } label: {
                         Image(.downloadIcon2)
@@ -351,33 +392,33 @@ struct ResultView: View {
                             .stroke(Color.accent, lineWidth: 1)
                     }
                     .disabled(isProcessing)
-                    
-                    Button(action: {
-                        if !isSavedToLibrary {
-                            saveDesignToHistory()
-                        }
-                    }) {
-                        Image(isSavedToLibrary ? .savedIcon : .saveIcon)
-                            .resizable()
-                            .frame(width: isIPad ?  ScaleUtility.scaledValue(28.42857) : ScaleUtility.scaledValue(19.42857),
-                                   height: isIPad ?  ScaleUtility.scaledValue(28.42857) : ScaleUtility.scaledValue(19.42857))
-                       
-                    }
-                    .padding(.all, ScaleUtility.scaledSpacing(7.29))
-                    .background {
-                        EllipticalGradient(
-                            stops: [
-                                Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.4), location: 0.00),
-                                Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.2), location: 0.78),
-                            ],
-                            center: UnitPoint(x: 0.36, y: 0.34)
-                        )
-                    }
-                    .cornerRadius(4.04762)
-                    .overlay {
-                        RoundedRectangle(cornerRadius: 4.04762)
-                            .stroke(Color.accent, lineWidth: 1)
-                    }
+//                    
+//                    Button(action: {
+//                        if !isSavedToLibrary {
+//                            saveDesignToHistory()
+//                        }
+//                    }) {
+//                        Image(isSavedToLibrary ? .savedIcon : .saveIcon)
+//                            .resizable()
+//                            .frame(width: isIPad ?  ScaleUtility.scaledValue(28.42857) : ScaleUtility.scaledValue(19.42857),
+//                                   height: isIPad ?  ScaleUtility.scaledValue(28.42857) : ScaleUtility.scaledValue(19.42857))
+//                       
+//                    }
+//                    .padding(.all, ScaleUtility.scaledSpacing(7.29))
+//                    .background {
+//                        EllipticalGradient(
+//                            stops: [
+//                                Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.4), location: 0.00),
+//                                Gradient.Stop(color: Color(red: 1, green: 0.87, blue: 0.03).opacity(0.2), location: 0.78),
+//                            ],
+//                            center: UnitPoint(x: 0.36, y: 0.34)
+//                        )
+//                    }
+//                    .cornerRadius(4.04762)
+//                    .overlay {
+//                        RoundedRectangle(cornerRadius: 4.04762)
+//                            .stroke(Color.accent, lineWidth: 1)
+//                    }
                 
                 }
                 .sheet(isPresented: $showShareSheet) {
@@ -462,20 +503,46 @@ struct ResultView: View {
             }
         }
         .onChange(of: isFlash) { _, newValue in
-            if newValue {
-                withAnimation(
-                    .easeInOut(duration: 0.5)
-                    .repeatForever(autoreverses: true)
-                ) {
-                    blinkPhase = true
+    
+            if isFlash {
+                flashTimer?.invalidate()
+                flashTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        blinkPhase.toggle()
+                    }
                 }
             } else {
+                flashTimer?.invalidate()
+                flashTimer = nil
                 blinkPhase = false
+            }
+        }
+        .fullScreenCover(isPresented: $showPaywall) {
+            
+            PaywallView(isInternalOpen: true) {
+                showPaywall = false
+            } purchaseCompletSuccessfullyAction: {
+                showPaywall = false
             }
         }
     }
     
+    
     // MARK: - Helper Functions
+    
+    
+    private var blinkFillColorOption: ColorOption {
+        if outlineEnabled {
+            return ColorOption(id: "blink_outline",
+                               name: "BlinkOutline",
+                               type: .solid(selectedOutlineColor.color))
+        } else {
+            return ColorOption(id: "blink_default",
+                               name: "BlinkDefault",
+                               type: .solid(Color.appGiftBox)) // fallback if no outline
+        }
+    }
+
     
     private func saveDesignToHistory() {
         viewModel.saveDesign(

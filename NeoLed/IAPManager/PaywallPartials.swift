@@ -332,12 +332,12 @@ struct PaywallBottmView: View{
                 }
                 else {
                     Text("Continue")
-                        .font(FontManager.bricolageGrotesqueBoldFont(size: .scaledFontSize(14)))
+                        .font(FontManager.bricolageGrotesqueBoldFont(size: .scaledFontSize(16)))
                         .foregroundColor(Color.secondaryApp)
                         .frame(maxWidth: .infinity)
                 }
             }
-            .frame(height: ScaleUtility.scaledValue(42))
+            .frame(height: ScaleUtility.scaledValue(52))
             .frame(maxWidth: .infinity)
             .background(Color.accent)
             .cornerRadius(10)

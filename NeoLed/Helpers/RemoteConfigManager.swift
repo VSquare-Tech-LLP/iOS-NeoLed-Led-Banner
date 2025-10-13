@@ -31,6 +31,7 @@ class RemoteConfigManager: ObservableObject {
     @Published var isApproved: Bool = false
     
     @Published var totalFreeLED: Int = 2
+    @Published var totalFreeDownload: Int = 2
 //    @Published var freeConvertion: Int = 1
 //    @Published var maximumRewardAd: Int = 3
 //    @Published var showAds: Bool = false
@@ -94,6 +95,10 @@ class RemoteConfigManager: ObservableObject {
             self.isApproved = remoteConfig.configValue(forKey: "isApproved").boolValue
             
             self.totalFreeLED = remoteConfig.configValue(forKey: "totalFreeLED").numberValue.intValue
+            
+            self.totalFreeDownload = remoteConfig.configValue(forKey: "totalFreeDownload").numberValue.intValue
+            
+            
             
 //
 //            self.freeConvertion = remoteConfig.configValue(forKey: "freeConvertion").numberValue.intValue

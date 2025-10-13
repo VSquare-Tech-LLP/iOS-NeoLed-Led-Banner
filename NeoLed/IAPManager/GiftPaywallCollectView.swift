@@ -39,7 +39,7 @@ struct GiftPaywallCollectView: View {
                 
                 Color.secondaryApp.ignoresSafeArea(.all)
                 
-                VStack {
+                VStack(spacing: 0) {
                     
                     VStack(spacing: ScaleUtility.scaledSpacing(30)) {
                         
@@ -165,8 +165,8 @@ struct GiftPaywallCollectView: View {
                            
                         }
                         else {
-                            Text("Claim Offer Now!")
-                                .font(FontManager.bricolageGrotesqueMediumFont(size: .scaledFontSize(14)))
+                            Text("Claim Now")
+                                .font(FontManager.bricolageGrotesqueBoldFont(size: .scaledFontSize(16)))
                                 .kerning(0.16)
                                 .foregroundColor(Color.secondaryApp)
                                 .frame(maxWidth: .infinity)
@@ -174,14 +174,14 @@ struct GiftPaywallCollectView: View {
                
                            
                     }
-                    .padding(.vertical, ScaleUtility.scaledSpacing(11))
+                    .padding(.vertical, ScaleUtility.scaledSpacing(15))
                     .frame(maxWidth: .infinity)
                     .background(Color.accent)
                     .cornerRadius(10)
                     .opacity(purchaseManager.isInProgress ? 0.5 : 1)
                     .disabled(purchaseManager.isInProgress || timerManager.isExpired)
-                    .padding(.horizontal, ScaleUtility.scaledSpacing(52))
-                    .padding(.bottom, ScaleUtility.scaledSpacing(21))
+                    .padding(.horizontal, ScaleUtility.scaledSpacing(42))
+                    .padding(.bottom, ScaleUtility.scaledSpacing(25))
                     
         
                     

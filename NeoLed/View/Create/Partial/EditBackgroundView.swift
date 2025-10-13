@@ -93,7 +93,7 @@ struct EditBackgroundView: View {
         
         VStack(spacing: 0) {
             
-            VStack(spacing: ScaleUtility.scaledSpacing(20)) {
+            VStack(spacing: ScaleUtility.scaledSpacing(15)) {
                 
                     
                     ScrollView(.horizontal, showsIndicators: false) {
@@ -112,8 +112,14 @@ struct EditBackgroundView: View {
                                 onValueChange?()
                             }
                         )
-                        .padding(.horizontal, ScaleUtility.scaledSpacing(30))
+                        .padding(.horizontal, ScaleUtility.scaledSpacing(20))
                     }
+                
+                Rectangle()
+                    .foregroundColor(Color.primaryApp.opacity(0.2))
+                    .frame(maxWidth: .infinity)
+                    .frame(height: ScaleUtility.scaledValue(1.5))
+                    .padding(.horizontal, ScaleUtility.scaledSpacing(20))
                 
                 VStack(spacing: ScaleUtility.scaledSpacing(15)) {
                     Text("Live Background")
@@ -121,7 +127,7 @@ struct EditBackgroundView: View {
                         .kerning(0.40783)
                         .foregroundColor(.white.opacity(0.5))
                         .frame(maxWidth: .infinity,alignment: .leading)
-                        .padding(.leading, ScaleUtility.scaledSpacing(30))
+                        .padding(.leading, ScaleUtility.scaledSpacing(20))
                
                     ScrollView(.horizontal,showsIndicators: false) {
                            HStack(spacing: ScaleUtility.scaledSpacing(10)) {
@@ -192,17 +198,23 @@ struct EditBackgroundView: View {
                                }
                            }
                            .frame(alignment: .leading)
-                           .padding(.horizontal, ScaleUtility.scaledSpacing(30))
+                           .padding(.horizontal, ScaleUtility.scaledSpacing(20))
                        }
                 }
            
+                Rectangle()
+                    .foregroundColor(Color.primaryApp.opacity(0.2))
+                    .frame(maxWidth: .infinity)
+                    .frame(height: ScaleUtility.scaledValue(1.5))
+                    .padding(.horizontal, ScaleUtility.scaledSpacing(20))
+                
                 VStack(spacing: ScaleUtility.scaledSpacing(15)) {
                     Text("Frame Background")
                         .font(FontManager.bricolageGrotesqueMediumFont(size: .scaledFontSize(13.5942)))
                         .kerning(0.40783)
                         .foregroundColor(.white.opacity(0.5))
                         .frame(maxWidth: .infinity,alignment: .leading)
-                        .padding(.leading, ScaleUtility.scaledSpacing(30))
+                        .padding(.leading, ScaleUtility.scaledSpacing(20))
                
                     ScrollView(.horizontal,showsIndicators: false) {
                         HStack(spacing: ScaleUtility.scaledSpacing(10)) {
@@ -252,9 +264,15 @@ struct EditBackgroundView: View {
                             
                         }
                         .frame(alignment: .leading)
-                        .padding(.horizontal, ScaleUtility.scaledSpacing(30))
+                        .padding(.horizontal, ScaleUtility.scaledSpacing(20))
                     }
                 }
+                
+                Rectangle()
+                    .foregroundColor(Color.primaryApp.opacity(0.2))
+                    .frame(maxWidth: .infinity)
+                    .frame(height: ScaleUtility.scaledValue(1.5))
+                    .padding(.horizontal, ScaleUtility.scaledSpacing(20))
                 
                 VStack(spacing: ScaleUtility.scaledSpacing(15)) {
                     Text("Banner Type")
@@ -262,7 +280,7 @@ struct EditBackgroundView: View {
                       .kerning(0.40783)
                       .foregroundColor(Color.primaryApp.opacity(0.5))
                       .frame(maxWidth: .infinity, alignment: .topLeading)
-                      .padding(.horizontal, ScaleUtility.scaledSpacing(30))
+                      .padding(.horizontal, ScaleUtility.scaledSpacing(20))
                     
                     HStack(spacing: ScaleUtility.scaledSpacing(10)) {
                         
@@ -348,8 +366,14 @@ struct EditBackgroundView: View {
                         
                     }
                     .frame(maxWidth: .infinity, alignment: .topLeading)
-                    .padding(.horizontal, ScaleUtility.scaledSpacing(30))
+                    .padding(.horizontal, ScaleUtility.scaledSpacing(20))
                 }
+                
+                Rectangle()
+                    .foregroundColor(Color.primaryApp.opacity(0.2))
+                    .frame(maxWidth: .infinity)
+                    .frame(height: ScaleUtility.scaledValue(1.5))
+                    .padding(.horizontal, ScaleUtility.scaledSpacing(20))
                 
                 
                 VStack(spacing: ScaleUtility.scaledSpacing(15)) {
@@ -358,7 +382,7 @@ struct EditBackgroundView: View {
                         .kerning(0.40783)
                         .foregroundColor(.white.opacity(0.5))
                         .frame(maxWidth: .infinity,alignment: .leading)
-                        .padding(.leading, ScaleUtility.scaledSpacing(30))
+                        .padding(.leading, ScaleUtility.scaledSpacing(20))
                
                     ScrollView(.horizontal,showsIndicators: false) {
                         HStack(spacing: ScaleUtility.scaledSpacing(10)) {
@@ -403,7 +427,7 @@ struct EditBackgroundView: View {
                             
                         }
                         .frame(alignment: .leading)
-                        .padding(.horizontal, ScaleUtility.scaledSpacing(30))
+                        .padding(.horizontal, ScaleUtility.scaledSpacing(20))
                     }
                 }
            

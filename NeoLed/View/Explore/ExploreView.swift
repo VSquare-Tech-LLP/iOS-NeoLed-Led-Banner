@@ -14,20 +14,26 @@ struct ExploreView: View {
     @EnvironmentObject var purchaseManager: PurchaseManager
     @EnvironmentObject var timerManager: TimerManager
     
-    @State var selectedOption: String = "LED"
+    @State var selectedOption: String = "All"
     var onTemplateSelect: (LEDTemplate) -> Void  // Add callback
     
     // Function to get images based on selected filter
     private func getImagesForFilter(_ filter: String) -> [String] {
         switch filter {
+        case "All":
+              return ["l1", "l2", "l3", "l4", "l5", "l6",
+                      "b1", "b2", "b3", "b4", "b5",
+                      "h1", "h2", "h3", "h4", "h5", "h6",
+                      "c1", "c2", "c3", "c4", "c5",
+                      "i1", "i2", "i3", "i4", "i5"]
         case "LED":
             return ["l1", "l2", "l3", "l4", "l5", "l6"]
         case "Business":
             return ["b1", "b2", "b3", "b4", "b5"]
-        case "Holidays":
-            return ["h1", "h2", "h3", "h4", "h5", "h6"]
         case "Celebrations":
             return ["c1", "c2", "c3", "c4", "c5"]
+        case "Holidays":
+            return ["h1", "h2", "h3", "h4", "h5", "h6"]
         case "Informational":
             return ["i1", "i2", "i3", "i4", "i5"]
         default:
@@ -44,11 +50,11 @@ struct ExploreView: View {
                 
                 BannerFilter(selectedOption: $selectedOption)
                 
-                if remoteConfigManager.giftAfterOnBoarding {
-                    if !timerManager.isExpired && !purchaseManager.hasPro && remoteConfigManager.showLifeTimeBannerAtHome {
-                        LifeTimeGiftOfferBannerView()
-                    }
+                
+                if !timerManager.isExpired && !purchaseManager.hasPro && remoteConfigManager.showLifeTimeBannerAtHome {
+                    LifeTimeGiftOfferBannerView()
                 }
+                
                 
             }
             

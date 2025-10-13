@@ -5,9 +5,6 @@
 //  Created by Purvi Sancheti on 04/10/25.
 //
 
-
-
-
 import SwiftUI
 import Gifu
 
