@@ -195,7 +195,7 @@ struct MainView: View {
         backgroundResultImage = ""
         text = ""
         textSize = 4.0
-        strokeSize = 0.0
+        strokeSize = 1.0
         isHD = false
         selectedFont = FontManager.bricolageGrotesqueRegularFont
         selectedColor = ColorOption.predefinedColors[1]
