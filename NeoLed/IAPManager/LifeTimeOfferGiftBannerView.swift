@@ -24,8 +24,8 @@ struct LifeTimeGiftOfferBannerView: View {
     
     var body: some View {
         
-        if let product = purchaseManager.products.first(where: { $0.id == SubscriptionPlan.yearlygift.productId }),
-           let lifetimePlan = purchaseManager.products.first(where: { $0.id == SubscriptionPlan.yearly.productId }) {
+        if let product = purchaseManager.products.first(where: { $0.id == SubscriptionPlan.gift.rawValue }),
+           let lifetimePlan = purchaseManager.products.first(where: { $0.id == SubscriptionPlan.lifetime.rawValue }) {
             
             let discountPrice = product.displayPrice
             let originalPrice = lifetimePlan.displayPrice

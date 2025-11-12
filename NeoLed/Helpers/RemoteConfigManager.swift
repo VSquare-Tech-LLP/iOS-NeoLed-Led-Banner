@@ -29,6 +29,7 @@ class RemoteConfigManager: ObservableObject {
     @Published var giftAfterOnBoarding: Bool = false
     @Published var showLifeTimeBannerAtHome: Bool = false
     @Published var isApproved: Bool = false
+    @Published var freeTrialPlan: Bool = false
     
     @Published var totalFreeLED: Int = 2
     @Published var totalFreeDownload: Int = 2
@@ -93,6 +94,7 @@ class RemoteConfigManager: ObservableObject {
             self.giftAfterOnBoarding = remoteConfig.configValue(forKey: "giftAfterOnBoarding").boolValue
             self.showLifeTimeBannerAtHome = remoteConfig.configValue(forKey: "showLifeTimeBannerAtHome").boolValue
             self.isApproved = remoteConfig.configValue(forKey: "isApproved").boolValue
+            self.freeTrialPlan = remoteConfig.configValue(forKey: "freeTrialPlan").boolValue
             
             self.totalFreeLED = remoteConfig.configValue(forKey: "totalFreeLED").numberValue.intValue
             

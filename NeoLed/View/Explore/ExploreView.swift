@@ -64,8 +64,8 @@ struct ExploreView: View {
                     .frame(height: ScaleUtility.scaledValue(15))
                 
                 LazyVStack(spacing: ScaleUtility.scaledSpacing(15)) {
-                    ForEach(getImagesForFilter(selectedOption), id: \.self) { imageName in
-                        CardView(imageName: imageName) {
+                    ForEach(Array(getImagesForFilter(selectedOption).enumerated()), id: \.element) { index, imageName in
+                        CardView(imageName: imageName,delay: Double(index) * 0.15) {
                             // Get template and call callback
                             let template = TemplateDataManager.shared.getTemplate(for: imageName)
                             onTemplateSelect(template)

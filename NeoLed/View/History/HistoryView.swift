@@ -92,9 +92,11 @@ struct HistoryView: View {
                            .frame(height: ScaleUtility.scaledValue(20))
                        
                        VStack(spacing: ScaleUtility.scaledSpacing(15)) {
-                           ForEach(viewModel.designs, id: \.id) { design in
+
+                           ForEach(Array(viewModel.designs.enumerated()), id: \.element) { index, design in
                                HistoryCardViewCoreData(
                                    design: design,
+                                   delay:  Double(index) * 0.15,
                                    onTap: {
                                        selectedDesign = design
                                        navigateToResult = true

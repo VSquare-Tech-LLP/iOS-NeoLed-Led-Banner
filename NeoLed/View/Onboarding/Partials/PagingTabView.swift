@@ -17,6 +17,8 @@ struct PagingTabView<Content: View>: View {
     let content: () -> Content
     var buttonAction: () -> Void
 
+    @State private var isPressed = false
+    
     let notificationFeedback = UINotificationFeedbackGenerator()
     let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
     let selectionFeedback = UISelectionFeedbackGenerator()
@@ -83,10 +85,19 @@ struct PagingTabView<Content: View>: View {
                                 .foregroundColor(Color.secondaryApp)
                                
                         }
+                        .shadow(
+                            color: isPressed ? Color.black.opacity(0.1) : Color.black.opacity(0.3),
+                            radius: isPressed ? 4 : 10,
+                            x: 0,
+                            y: isPressed ? 2 : 6
+                        )
+                        .scaleEffect(isPressed ? 0.96 : 1.0)
+                        .offset(y: isPressed ? 2 : 0)
+                        .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isPressed)
                         .padding(.horizontal, ScaleUtility.scaledValue(42))
                 }
                 .padding(.bottom, ScaleUtility.scaledSpacing(40))
-                .buttonStyle(.plain)
+                .buttonStyle(PressButtonStyle(isPressed: $isPressed))
             
         }
         .background {

@@ -62,6 +62,11 @@ struct TopView:View {
     let selectionFeedback = UISelectionFeedbackGenerator()
     
     @State var showPaywall = false
+    
+    @State private var isSavePressed = false
+    @State private var isDownloadPressed = false
+    @State private var isPreviewPressed = false
+    
 
     
     var body: some View {
@@ -387,7 +392,17 @@ struct TopView:View {
                           .padding(.horizontal, ScaleUtility.scaledSpacing(39.5))
                           .background(Color.accent)
                           .cornerRadius(5)
+                          .shadow(
+                              color: isSavePressed ? Color.black.opacity(0.1) : Color.black.opacity(0.3),
+                              radius: isSavePressed ? 4 : 10,
+                              x: 0,
+                              y: isSavePressed ? 2 : 6
+                          )
+                          .scaleEffect(isSavePressed ? 0.96 : 1.0)
+                          .offset(y: isSavePressed ? 2 : 0)
+                          .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isSavePressed)
                     }
+                    .buttonStyle(PressButtonStyle(isPressed: $isSavePressed))
                     .disabled(text == "")
                     
                     Button {
@@ -404,8 +419,18 @@ struct TopView:View {
                             .resizable()
                             .frame(width: isIPad ?  ScaleUtility.scaledValue(45) :  ScaleUtility.scaledValue(35),
                                    height: isIPad ?  ScaleUtility.scaledValue(45) :  ScaleUtility.scaledValue(35))
-                          
+                            .shadow(
+                                color: isDownloadPressed ? Color.black.opacity(0.1) : Color.black.opacity(0.3),
+                                radius: isDownloadPressed ? 4 : 10,
+                                x: 0,
+                                y: isDownloadPressed ? 2 : 6
+                            )
+                            .scaleEffect(isDownloadPressed ? 0.96 : 1.0)
+                            .offset(y: isDownloadPressed ? 2 : 0)
+                            .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isDownloadPressed)
+                    
                     }
+                    .buttonStyle(PressButtonStyle(isPressed: $isDownloadPressed))
                     .disabled(text == "")
                     
                     Spacer()
@@ -436,7 +461,17 @@ struct TopView:View {
                                 RoundedRectangle(cornerRadius: 5)
                                     .stroke(.accent, lineWidth: 1)
                             }
+                            .shadow(
+                                color: isPreviewPressed ? Color.black.opacity(0.1) : Color.black.opacity(0.3),
+                                radius: isPreviewPressed ? 4 : 10,
+                                x: 0,
+                                y: isPreviewPressed ? 2 : 6
+                            )
+                            .scaleEffect(isPreviewPressed ? 0.96 : 1.0)
+                            .offset(y: isPreviewPressed ? 2 : 0)
+                            .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isPreviewPressed)
                     }
+                    .buttonStyle(PressButtonStyle(isPressed: $isPreviewPressed))
 
                 }
                 .padding(.horizontal, ScaleUtility.scaledSpacing(20))

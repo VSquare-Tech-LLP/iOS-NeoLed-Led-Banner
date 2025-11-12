@@ -1,259 +1,204 @@
 //
 //  PurchaseManager.swift
-//  CarQ
+//  iOS-Word-Vibe
 //
-//  Created by Purvi Sancheti on 16/09/25.
+//  Created by Darsh Viroja on 20/05/25.
 //
-
-
 
 import Foundation
 import StoreKit
-import WidgetKit
 
 @MainActor
 class PurchaseManager: NSObject, ObservableObject {
     @Published var products: [Product] = []
-    
-    @Published var productIds: [String] = SubscriptionPlan.productIDs.values.map { $0 }
+    @Published var productIds: [String] = SubscriptionPlan.allCases.map { $0.rawValue }
     
     @Published var userSettings = UserSettings()
     @Published private(set) var purchasedProductIDs = Set<String>()
     @Published var hasPro: Bool = false {
-        didSet {
-            userSettings.isPaid = hasPro
-        }
+        didSet { userSettings.isPaid = hasPro }
     }
-    
+
     @Published var isInProgress = true
     @Published var showAlert = false
     @Published var alertMessage = ""
     
-    private var productLoaded = false
-    private var updates: Task<Void, Never>? = nil
+    private var productsLoaded = false
 
     override init() {
         super.init()
-        
-        self.updates =  observeTransactionUpdates()
-        
+        observeTransactionUpdates()
         Task {
-            //Fetch products
-            await self.fetchProducts()
-            
-            await self.updatePurchaseProducts()
+            await fetchProducts()
+            await updatePurchaseProducts()
         }
-        
-        //  Observe App Foreground Events
+
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(appDidBecomeActive),
             name: UIApplication.willEnterForegroundNotification,
             object: nil
         )
-        
-        
-    }
-    
-    deinit {
-        self.updates?.cancel()
     }
     
     @objc func appDidBecomeActive() {
-           Task {
-               await updatePurchaseProducts()
-           }
-       }
-    
-    @MainActor
+        Task { await updatePurchaseProducts() }
+    }
+
     func fetchProducts() async {
-        guard !self.productLoaded else {
-            print("Product already loaded.")
+        guard !productsLoaded else {
+            print("Products already loaded.")
             return
         }
-        self.isInProgress = true
-        
+        isInProgress = true
         do {
-            self.products = try await Product.products(for: productIds)
-            self.productLoaded = true
+            products = try await Product.products(for: productIds)
+            productsLoaded = true
         } catch {
-            print("Failed to load products with error: \(error)")
+            print("Failed to load products: \(error)")
         }
+        isInProgress = false
     }
-    
-    
-    func findProduct(for plan: SubscriptionPlan) -> Product? {
-        return SubscriptionPlan.getProduct(for: plan, in: products)
-    }
-    
-    func purchase(_ product: Product) async throws -> Bool {
-        self.isInProgress = true
-        let result = try await product.purchase()
-        var didComplete = false
-        
-        if purchasedProductIDs.contains(product.id) {
-            self.showAlert = true
-            self.alertMessage = "You've already purchased this plan"
-            self.isInProgress = false
-            userSettings.isPaid = true
-            didComplete = true
-        } else {
-            switch result {
-            case let .success(.verified(transaction)):
-                print(transaction)
-                
-                // Successful purchase
-                await transaction.finish()
-                
-                userSettings.isPaid = true
-                
-                if let plan = SubscriptionPlan.plan(for: transaction.productID) {
-                    userSettings.planType = plan.planName
-                }
-                print("Calling updatePurchaseProducts() after successful purchase")
-                didComplete = true
-                await self.updatePurchaseProducts()
-            
-            case .success(.unverified(_, _)):
-                // Successful purchase but transaction/receipt can't be verified
-                // Could be a jailbroken phone
-                self.alertMessage = "Transaction/receipt can't be verified, phone might be jailbroken!"
-                self.isInProgress = false
-                break
 
-            
-            case .userCancelled:
-                self.hasPro = false
-                userSettings.isPaid = false
-                self.isInProgress = false
-                break
-            case .pending:
-                // Transaction waiting on SCA (Strong Customer Authentication) or
-                // approval from Ask to Buy
-                self.alertMessage = "Transaction waiting on Strong Customer Authentication!"
-                self.isInProgress = false
-                break
-            @unknown default:
-                self.hasPro = false
-                userSettings.isPaid = false
-                self.isInProgress = false
-                break
-            }
+    func purchase(_ product: Product) async throws {
+        isInProgress = true
+        let result = try await product.purchase()
+
+        guard !purchasedProductIDs.contains(product.id) else {
+            showAlert(message: "You've already purchased this plan")
+            isInProgress = false
+            userSettings.isPaid = true
+            return
         }
-        return didComplete
+
+        switch result {
+        case let .success(.verified(transaction)):
+            await transaction.finish()
+            updateUserSettings(for: transaction.productID)
+            await updatePurchaseProducts()
+
+        case .success(.unverified(_, _)):
+            showAlert(message: "Transaction/receipt can't be verified, phone might be jailbroken!")
+            
+        case .userCancelled:
+            resetUserStatus()
+
+        case .pending:
+            showAlert(message: "Transaction pending Strong Customer Authentication!")
+
+        @unknown default:
+            resetUserStatus()
+        }
+        isInProgress = false
     }
-    
-    @MainActor
+
     func updatePurchaseProducts(isRestore: Bool = false) async {
-        self.isInProgress = true
-                        
+        isInProgress = true
         for await result in Transaction.currentEntitlements {
             guard case .verified(let transaction) = result else {
-                print("Unverified transaction found")
+                print("Unverified transaction: \(result)")
                 continue
             }
-            print("Verified transaction found: \(transaction.productID)")
 
+            let productID = transaction.productID
             if transaction.revocationDate == nil {
-                self.purchasedProductIDs.insert(transaction.productID)
-                updatePlanType(for: transaction.productID)
-                UserDefaults.standard.set(true, forKey: "is_paid")
+                purchasedProductIDs.insert(productID)
+                updateUserSettings(for: productID)
             } else {
-                self.showAlert = true
-                self.alertMessage = "Your subscription has been cancelled or expired."
-                self.purchasedProductIDs.remove(transaction.productID)
-                UserDefaults.standard.set(true, forKey: "is_paid")
+                purchasedProductIDs.remove(productID)
+                showAlert(message: "Your subscription has been cancelled or expired.")
             }
-            
+
             if isRestore {
-                // Fetch the set of product IDs from transactions
-                
-                // Fetch product information
-                
                 do {
-                    let products = try await Product.products(for: [transaction.productID])
-                    
-                    let productInfo = Dictionary(uniqueKeysWithValues: products.map {
-                        ($0.id, $0)
-                    })
+                    _ = try await Product.products(for: [productID])
                 } catch {
-                    print(error)
+                    print("Restore failed: \(error)")
                 }
             }
         }
-        if isRestore && self.purchasedProductIDs.isEmpty {
-            self.showAlert = true
-            self.alertMessage = "Subscription does not exist!"
+
+        if isRestore && purchasedProductIDs.isEmpty {
+            showAlert(message: "Subscription does not exist!")
         }
-        
-        self.hasPro = !self.purchasedProductIDs.isEmpty
-        userSettings.isPaid = !self.purchasedProductIDs.isEmpty
-        self.isInProgress = false
-        
-        
+
+        let isPaid = !purchasedProductIDs.isEmpty
+        hasPro = isPaid
+        userSettings.isPaid = isPaid
+        isInProgress = false
     }
-    
-    func updatePlanType(for productID: String) {
-        if let plan = SubscriptionPlan.plan(for: productID) {
-                userSettings.planType = plan.planName
-                userSettings.isPaid = true
-            
-        }
+
+    private func updateUserSettings(for productID: String) {
+        guard let plan = SubscriptionPlan(rawValue: productID) else { return }
+        userSettings.planType = plan.planName
+        userSettings.planId = plan.rawValue
+        userSettings.isPaid = true
     }
-    
-    func observeTransactionUpdates() -> Task<Void, Never> {
+
+    private func resetUserStatus() {
+        hasPro = false
+        userSettings.isPaid = false
+    }
+
+    private func showAlert(message: String) {
+        alertMessage = message
+        showAlert = true
+    }
+
+    private func observeTransactionUpdates() {
         Task(priority: .background) {
             for await _ in Transaction.updates {
-                await self.updatePurchaseProducts()
+                await updatePurchaseProducts()
             }
         }
     }
 }
 
 enum SubscriptionPlan: String, CaseIterable {
-    case weekly
-    case yearly
-    case yearlygift
-
+    case weekly = "com.neoled.weekly"
+    case yearly = "com.neoled.yearly"
+    case lifetime = "com.neoled.lifetime"
+    case gift = "com.neoled.lifetimegiftplan"
+    
     // Add new product IDs here as new cases:
     // case monthly = "com.zyric.monthly"
-
-
-    static let productIDs: [SubscriptionPlan: String] = [
-        .weekly: "com.neoled.weekly",
-        .yearly: "com.neoled.yearly",
-        .yearlygift: "com.neoled.yearlygift",
-
-    ]
-    
-    static func plan(for productId: String) -> SubscriptionPlan? {
-        return productIDs.first(where: { $0.value == productId })?.key
-    }
-    
-    static func getProduct(for plan: SubscriptionPlan, in products: [Product]) -> Product? {
-        return products.first { $0.id == plan.rawValue }
-    }
 
     var planName: String {
         switch self {
         case .weekly: return "Weekly"
         case .yearly: return "Yearly"
-        case .yearlygift: return "Yearly Gift"
-
+        case .lifetime: return "Lifetime"
+        case .gift: return "Gift - Lifetime"
         }
     }
 
-    var productId: String {
-        return SubscriptionPlan.productIDs[self] ?? ""
+    var planSubTitle: String {
+        switch self {
+        case .weekly: return "Start with the cheapest"
+        case .yearly: return "Free for 3 days, then only $9.99/year"
+        case .lifetime: return "One-time offer. Redeem Now"
+        case .gift: return ""
+        }
+    }
+
+    var price: String {
+        switch self {
+        case .weekly: return "$3.99/week"
+        case .yearly: return "$9.99/year"
+        case .lifetime: return "$9.99 Once"
+        case .gift: return ""
+        }
     }
 }
+
+
 
 enum PremiumFeature: CaseIterable {
     case first
     case second
     case third
     case fourth
-
+    
     
     var title: String {
         switch self {
@@ -268,29 +213,26 @@ enum PremiumFeature: CaseIterable {
         }
     }
     
-    var image: ImageResource {
+    var image: String {
         switch self {
         case .first:
-                .magnifierIcon
+            "magnifierIcon"
         case .second:
-                .infiniteIcon
+            "infiniteIcon"
         case .third:
-                .noAdsIcon
+            "noAdsIcon"
         case .fourth:
-                .energyIcon
+            "energyIcon"
         }
     }
-    
+
 }
 
 struct PlanDetails: Codable {
     let planName: String
- 
+
     init(planName: String) {
            self.planName = planName
- 
        }
 }
-
-
 

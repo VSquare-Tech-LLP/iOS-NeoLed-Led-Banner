@@ -17,23 +17,6 @@ struct SwipeView: View {
     var showPaywall: () -> Void
     @State private var selections: Set<String> = []
     @AppStorage("currentOnboardingIndex") private var currentOnboardingIndex: Int = 0
-    
-    var screens: [AnyView] {
-        [
-            AnyView(WelcomeView()),
-            AnyView(OnboardingView(imageName: "intro1",
-                                   title: "Choose From\n Templates",)),
-            AnyView(OnboardingView(imageName: "intro2",
-                                   title: "Create Custom\n Designs",)),
-            AnyView(OnboardingView(imageName: "intro3",
-                                   title: "Preview & Share\n Instantly",)),
-            AnyView(OnboardingView(imageName: "intro4",
-                                   title: "Save & Edit Your\n Designs",)),
-            AnyView(RatingView()),
-            AnyView(UserCommentsView()),
-
-        ]
-    }
 
     
     let notificationfeedback = UINotificationFeedbackGenerator()
@@ -44,30 +27,35 @@ struct SwipeView: View {
         PagingTabView(selectedIndex: $currentIndex, tabCount: totalScreens, spacing: 0) {
             Group {
                 
-                WelcomeView()
+                WelcomeView(isActive: currentIndex == 0)
                     .tag(0)
                 
                 OnboardingView(imageName: "intro1",
-                                       title: "Choose From\n Templates")
+                               title: "Choose From\n Templates",
+                               isActive: currentIndex == 1)
+                               
                                .tag(1)
                 
                 OnboardingView(imageName: "intro2",
-                                       title: "Create Custom\n Designs")
+                               title: "Create Custom\n Designs",
+                               isActive: currentIndex == 2)
                               .tag(2)
                 
                 OnboardingView(imageName: "intro3",
-                                       title: "Preview & Share\n Instantly")
+                               title: "Preview & Share\n Instantly",
+                               isActive: currentIndex == 3)
                                .tag(3)
                 
                 OnboardingView(imageName: "intro4",
-                                       title: "Save & Edit Your\n Designs")
+                               title: "Save & Edit Your\n Designs",
+                               isActive: currentIndex == 4)
                                         .tag(4)
             
                 
-                RatingView()
+                RatingView(isActive: currentIndex == 5)
                     .tag(5)
                 
-                UserCommentsView()
+                UserCommentsView(isActive: currentIndex == 6)
                     .tag(6)
                 
 

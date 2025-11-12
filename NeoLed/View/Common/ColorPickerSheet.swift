@@ -17,6 +17,8 @@ struct ColorPickerSheet: View {
     let impactFeedback = UIImpactFeedbackGenerator(style: .light)
     let selectionFeedback = UISelectionFeedbackGenerator()
     
+    @State private var isPressed = false
+    
     var body: some View {
         ZStack(alignment: .bottom) {
             // Dark background
@@ -72,12 +74,21 @@ struct ColorPickerSheet: View {
                     .font(FontManager.bricolageGrotesqueBoldFont(size: .scaledFontSize(13.46154)))
                     .multilineTextAlignment(.center)
                     .foregroundColor(Color.secondaryApp)
+                    .frame(height: 40.38462)
                     .frame(maxWidth: .infinity)
+                    .background(Color.accent)
+                    .cornerRadius(9.61538)
+                    .shadow(
+                        color: isPressed ? Color.black.opacity(0.1) : Color.black.opacity(0.3),
+                        radius: isPressed ? 4 : 10,
+                        x: 0,
+                        y: isPressed ? 2 : 6
+                    )
+                    .scaleEffect(isPressed ? 0.96 : 1.0)
+                    .offset(y: isPressed ? 2 : 0)
+                    .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isPressed)
             }
-            .frame(height: 40.38462)
-            .background(Color.accent)
-            .cornerRadius(9.61538)
-            .frame(maxWidth: .infinity)
+            .buttonStyle(PressButtonStyle(isPressed: $isPressed))
             .padding(.bottom, ScaleUtility.scaledSpacing(28.44))
             .padding(.horizontal, ScaleUtility.scaledSpacing(57))
           

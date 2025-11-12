@@ -15,6 +15,7 @@ struct HistoryCardViewCoreData: View {
     let selectionFeedback = UISelectionFeedbackGenerator()
     
     let design: LEDDesignEntity
+    var delay: Double = 0
     let onTap: () -> Void
     let onDelete: () -> Void
     
@@ -26,6 +27,8 @@ struct HistoryCardViewCoreData: View {
     var isLight: Bool { design.effectsArray.contains("Blink") }
     var isFlash: Bool { design.effectsArray.contains("Glow") }
     var isMirror: Bool { design.effectsArray.contains("Mirror") }
+    
+    @State private var isVisible = false
     
     var body: some View {
         Button(action: {
@@ -173,6 +176,13 @@ struct HistoryCardViewCoreData: View {
             )
         }
         .buttonStyle(PlainButtonStyle())
+        .offset(x: isVisible ? 0 : UIScreen.main.bounds.width)
+        .opacity(isVisible ? 1 : 0)
+        .onAppear {
+            withAnimation(.spring(response: 0.6, dampingFraction: 0.8).delay(delay)) {
+                isVisible = true
+            }
+        }
     }
     
     @ViewBuilder
